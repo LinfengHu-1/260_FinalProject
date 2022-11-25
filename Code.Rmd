@@ -8,9 +8,43 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
-## Data Wrangling
 ```{r}
-
+library(tidyverse) 
+library(dplyr)
+library(dslabs)
+library(ggplot2)
+library(lubridate) 
+library(caret)
+library(HistData)
+library(Lahman)
+library(purrr)
+library(pdftools)
+library(broom)
+library(stringr)
+library(tidyr)
+library(readr)
 ```
+
+
+## Exploratory Data Analysis
+```{r}
+dat <- read_csv('./data/depressed.csv')
+glimpse(dat)
+names(dat)
+```
+
+```{r}
+summary(dat)
+```
+
+```{r}
+depressed_sub <- dat %>% filter(depressed == 1)
+nrow(depressed_sub)
+depressed_percent <- nrow(depressed_sub)/nrow(dat)
+depressed_percent
+```
+
+
+
 
 
