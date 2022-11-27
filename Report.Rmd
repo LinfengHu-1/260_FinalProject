@@ -1,0 +1,31 @@
+---
+title: "Report"
+author: "Linfeng Hu"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction & Background
+
+This project aims to examine the potential association between 75 individual-level features such as socioeconomic status and health indicators, and depression onset. The original data come from a 2015 study conducted by the Busara Center in rural Siaya County in western Kenya; all study participants were asked to complete depression screening to determine the outcome of interest. (The Original Link is here: https://zindi.africa/competitions/busara-mental-health-prediction-challenge/data). From this heterogeneous data, we aim to use regression in investigating the association, and use machine learning methods in predicting individual level depression.
+
+### EDA
+
+First, we check for missing data included in our dataset. There are in total 23 out of 75 features that includes missing NAs. Since we have huge number of features included, it is understandable that there are very few observations with no missing values at all. We proceed with a naive approach by replacing the missing values with the mean.
+
+
+
+### Description  & justification of Methodology
+
+
+
+## Results
+
+
+
+
+
+

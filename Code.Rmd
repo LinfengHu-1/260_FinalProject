@@ -28,10 +28,12 @@ library(readr)
 
 ## Exploratory Data Analysis
 ```{r}
-dat <- read_csv('./data/depressed.csv')
+dat <- read_csv('./data/train.csv')
+var_explain <- read_csv('./data/var_explain.csv')
+var_explain
 glimpse(dat)
-names(dat)
 ```
+
 
 ```{r}
 summary(dat)
@@ -42,6 +44,63 @@ depressed_sub <- dat %>% filter(depressed == 1)
 nrow(depressed_sub)
 depressed_percent <- nrow(depressed_sub)/nrow(dat)
 depressed_percent
+```
+
+#### Missing Data
+```{r}
+#check for missing data
+anyNA(dat)
+sum(is.na(dat))
+col_NA <- colnames(dat)[colSums(is.na(dat)) > 0]
+col_NA
+```
+
+```{r}
+#look at rows with missing data
+dat_NA <- dat[!complete.cases(dat), ]
+nrow(na.omit(dat))
+#look at missing pattern
+library(ggmice)
+plot_pattern(dat[, col_NA])
+```
+
+```{r}
+for(i in 1:length(col_NA)){
+  dat[col_NA[i]][is.na(dat[col_NA[i]])] <- round(sum(dat[col_NA[i]], na.rm=TRUE)/nrow(dat))
+}
+anyNA(dat)
+```
+
+```{r}
+cols <- colnames(dat)
+cols
+library(Hmisc)
+hist.data.frame(dat)
+```
+
+#### Examine continuous covariates
+```{r}
+#family factors
+pairs(depressed ~ age + children + hhsize + edu + children + hhsize + hh_totalmembers + hh_children, dat)
+
+#socio-economic indicating factors
+pairs(depressed ~ cons_nondurable + asset_savings + cons_allfood + cons_med_total + cons_ed + cons_social + ent_total_cost, dat)
+
+# life-style/financial factors
+pairs(depressed ~ fs_adskipm_often + fs_meat + med_portion_sickinjured + ed_sch_missedpc + durable_investment, dat)
+```
+
+## Regression - Association
+```{r}
+
+```
+
+
+
+
+## Machine Learning - Prediction
+```{r}
+
 ```
 
 
