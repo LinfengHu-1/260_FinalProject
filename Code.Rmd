@@ -100,8 +100,6 @@ dat <- dat[, cov]
 ## Regression - Association
 ```{r}
 
-
-plot(dat)
 ```
 
 
