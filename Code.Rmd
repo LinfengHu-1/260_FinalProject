@@ -89,11 +89,25 @@ pairs(depressed ~ cons_nondurable + asset_savings + cons_allfood + cons_med_tota
 # life-style/financial factors
 pairs(depressed ~ fs_adskipm_often + fs_meat + med_portion_sickinjured + ed_sch_missedpc + durable_investment, dat)
 ```
+
+
 ```{r}
 # Interested/understandable factors
-cov <- c("age", "children", "hhsize", "edu" , "hh_totalmembers", "hh_children", "cons_nondurable", "asset_savings", "cons_allfood", "cons_med_total", "cons_ed", "cons_social", "ent_total_cost", "fs_adskipm_often", "fs_meat", "med_portion_sickinjured", "ed_sch_missedpc", "durable_investment", "femaleres", "married")
+cov <- c("age", "children", "hhsize", "edu" , "hh_totalmembers", "hh_children", "cons_nondurable", "asset_savings", "cons_allfood", "cons_med_total", "cons_ed", "cons_social", "ent_total_cost", "fs_adskipm_often", "fs_meat", "med_portion_sickinjured", "ed_sch_missedpc", "durable_investment", "femaleres", "married", "depressed")
 
 dat <- dat[, cov]
+```
+
+
+```{r}
+library(glmnet)
+library(vip)
+#define outcome variable
+y <- dat[,"depressed"] |> as.matrix()
+#define matrix of predictor variables
+x <- dat[, c("age", "children", "hhsize", "edu" , "hh_totalmembers", "hh_children", "cons_nondurable", "asset_savings", "cons_allfood", "cons_med_total", "cons_ed", "cons_social", "ent_total_cost", "fs_adskipm_often", "fs_meat", "med_portion_sickinjured", "ed_sch_missedpc", "durable_investment", "femaleres", "married")] |> as.matrix()
+elasticnet.mod = glmnet(x,y,alpha=0.5,family="binomial")
+vip(elasticnet.mod, num_features=10, geom = "point")
 ```
 
 
