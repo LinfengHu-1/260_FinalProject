@@ -81,7 +81,7 @@ hist.data.frame(dat)
 #### Examine continuous covariates
 ```{r}
 #family factors
-pairs(depressed ~ age + children + hhsize + edu + children + hhsize + hh_totalmembers + hh_children, dat)
+pairs(depressed ~ age + children + hhsize + edu + hh_totalmembers + hh_children, dat)
 
 #socio-economic indicating factors
 pairs(depressed ~ cons_nondurable + asset_savings + cons_allfood + cons_med_total + cons_ed + cons_social + ent_total_cost, dat)
@@ -89,10 +89,19 @@ pairs(depressed ~ cons_nondurable + asset_savings + cons_allfood + cons_med_tota
 # life-style/financial factors
 pairs(depressed ~ fs_adskipm_often + fs_meat + med_portion_sickinjured + ed_sch_missedpc + durable_investment, dat)
 ```
+```{r}
+# Interested/understandable factors
+cov <- c("age", "children", "hhsize", "edu" , "hh_totalmembers", "hh_children", "cons_nondurable", "asset_savings", "cons_allfood", "cons_med_total", "cons_ed", "cons_social", "ent_total_cost", "fs_adskipm_often", "fs_meat", "med_portion_sickinjured", "ed_sch_missedpc", "durable_investment", "femaleres", "married")
+
+dat <- dat[, cov]
+```
+
 
 ## Regression - Association
 ```{r}
 
+
+plot(dat)
 ```
 
 
