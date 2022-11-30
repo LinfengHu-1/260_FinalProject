@@ -24,9 +24,9 @@ I proceeded with using an influence plot which graphs the studentized residuals 
 From the correlation matrix of all our covariates, we can observe that factors that are highly correlated (correlation > 0.6) include hhsize & children & hh_totalmembers & hhchildren, cons_nondurable and cons_allfood and cons_med_total. Therefore, we proceed to eliminate covariates that are highly correlated in our model. After further cleaning, we have the influenceIndexPlot below. 
 ![Diagnostic Plot](./influenceIndexPlot.png)
 
-
 ### Description  & justification of Methodology
 
+From the ROC curve of a general logistic regression fitted for this dataset, we can see that it comes quite closer to the diagonal line, indicating low accuracy. From the general model summary, we can also see that most of the covariates are not statistically significant in the classification. Therefore we can conclude that this general linear model is not sufficient to depict the relationship of the covariates listed and the outcome of interest depression status. We proceed with other machine learning tools. 
 
 
 ## Results

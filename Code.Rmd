@@ -135,9 +135,14 @@ summary(mod_log)
 
 png('./influenceIndexPlot.png')
 influenceIndexPlot(mod_log)
+```
 
-library(aod)
-wald.test(b = coef(mod_log), Sigma = vcov(mod_log), Terms = 4:6)
+```{r}
+summary(mod_log)$coefficients
+library(pROC)
+predprob <- predict(mod_log,type=c("response")) 
+roccurve <- roc(dat$depressed ~ predprob)
+plot(roccurve,col="red")
 ```
 
 
