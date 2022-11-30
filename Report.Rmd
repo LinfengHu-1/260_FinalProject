@@ -14,9 +14,11 @@ This project aims to examine the potential association between 75 individual-lev
 
 ### EDA
 
-First, we check for missing data included in our dataset. There are in total 23 out of 75 features that includes missing NAs. Since we have huge number of features included, it is understandable that there are very few observations with no missing values at all. We proceed with a naive approach by replacing the missing values with the mean.
+First, we check for missing data included in our dataset. There are in total 23 out of 75 features that includes missing NAs. Since we have huge number of features included, it is understandable that there are very few observations with no missing values at all. We proceed with a naive approach by replacing the missing values with the mean for each feature.
 
+I then chose to examine the covariates that I have a clear understanding for, since we need to identify potential confounding in the model and one cannot refer to the classical/epidemiological definition of confounding if they do not fully understand the nature of that factor. So we only have 20 features left for modeling the association. 
 
+I proceeded with using an influence plot which graphs the studentized residuals against hat values ---- fitted values made by my logistic model. 
 
 ### Description  & justification of Methodology
 
@@ -24,7 +26,11 @@ First, we check for missing data included in our dataset. There are in total 23 
 
 ## Results
 
-
+INFLUENCE PLOT
+I used influence plot is useful in identifying unusual observations because it plots studentized residuals against hat-values, and the size of circle is proportional to Cook’s distance.
+– Points with large studentized residuals, hat-values or Cook’s distances are labeled. – Nine points may be identified at maximum.
+• Studentized residuals are plotted against hat-values, and the size of the circle is proportional to Cook’s distance.
+– Observation ‘13.1’ shows that largest Cook’s distance, but it is moderate in hat-values.
 
 
 
