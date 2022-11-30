@@ -18,7 +18,12 @@ First, we check for missing data included in our dataset. There are in total 23 
 
 I then chose to examine the covariates that I have a clear understanding for, since we need to identify potential confounding in the model and one cannot refer to the classical/epidemiological definition of confounding if they do not fully understand the nature of that factor. So we only have 20 features left for modeling the association. 
 
-I proceeded with using an influence plot which graphs the studentized residuals against hat values ---- fitted values made by my logistic model. 
+I proceeded with using an influence plot which graphs the studentized residuals against hat values ---- fitted values made by my logistic model, and the sizes and fill color of the red circles are proportional to Cook’s distance. We can see that there are around 4 points with large studentized residuals with their Cook’s distances labeled. We can see that although these 4 points are labeled because of their large residual values, none of the points have an absolute value larger than 3. Therefore we temporarily conclude that there is no obvious outlier in our dataset.
+![Influence Plot](./influencePlot.png)
+
+From the correlation matrix of all our covariates, we can observe that factors that are highly correlated (correlation > 0.6) include hhsize & children & hh_totalmembers & hhchildren, cons_nondurable and cons_allfood and cons_med_total. Therefore, we proceed to eliminate covariates that are highly correlated in our model. After further cleaning, we have the influenceIndexPlot below. 
+![Diagnostic Plot](./influenceIndexPlot.png)
+
 
 ### Description  & justification of Methodology
 
@@ -26,11 +31,7 @@ I proceeded with using an influence plot which graphs the studentized residuals 
 
 ## Results
 
-INFLUENCE PLOT
-I used influence plot is useful in identifying unusual observations because it plots studentized residuals against hat-values, and the size of circle is proportional to Cook’s distance.
-– Points with large studentized residuals, hat-values or Cook’s distances are labeled. – Nine points may be identified at maximum.
-• Studentized residuals are plotted against hat-values, and the size of the circle is proportional to Cook’s distance.
-– Observation ‘13.1’ shows that largest Cook’s distance, but it is moderate in hat-values.
+
 
 
 
