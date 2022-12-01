@@ -1,14 +1,6 @@
-name: "project-website"
+name: "my-website"
 navbar:
-  title: "My project' website"
-left:
-  - text: "Home"
-href: index.html
-right: 
-  - icon: fa-envelope fa-lg
-href: mailto:<lhu1@hsph.harvard.edu>
-  - icon: fa-github fa-lg
-href: https://github.com/LinfengHu-1/
-  output:
-  html_document:
-  theme: darkly
+  title: "My Website"
+  left:
+    - text: "Home"
+      href: Code.html
