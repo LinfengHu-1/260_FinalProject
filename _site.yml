@@ -5,3 +5,7 @@ navbar:
   left:
     - text: "Home"
       href: index.html
+  href: https://linfenghu-1.github.io/260_FinalProject/
+  output:
+  html_document:
+  theme: darkly
