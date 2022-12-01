@@ -243,7 +243,7 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="Code.html">Home</a>
+  <a href="index.html">Home</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -560,7 +560,7 @@ nrow(na.omit(dat))</code></pre>
 <pre class="r"><code>#look at missing pattern
 library(ggmice)
 plot_pattern(dat[, col_NA])</code></pre>
-<p><img src="Code_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code>for(i in 1:length(col_NA)){
   dat[col_NA[i]][is.na(dat[col_NA[i]])] &lt;- round(sum(dat[col_NA[i]], na.rm=TRUE)/nrow(dat))
 }
@@ -608,19 +608,19 @@ cols</code></pre>
 ## [75] &quot;day_of_week&quot;</code></pre>
 <pre class="r"><code>library(Hmisc)
 hist.data.frame(dat)</code></pre>
-<p><img src="Code_files/figure-html/unnamed-chunk-8-1.png" width="672" /><img src="Code_files/figure-html/unnamed-chunk-8-2.png" width="672" /><img src="Code_files/figure-html/unnamed-chunk-8-3.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /><img src="index_files/figure-html/unnamed-chunk-8-2.png" width="672" /><img src="index_files/figure-html/unnamed-chunk-8-3.png" width="672" /></p>
 </div>
 <div id="examine-continuous-covariates" class="section level4">
 <h4>Examine continuous covariates</h4>
 <pre class="r"><code>#family factors
 pairs(depressed ~ age + children + hhsize + edu + hh_totalmembers + hh_children, dat)</code></pre>
-<p><img src="Code_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <pre class="r"><code>#socio-economic indicating factors
 pairs(depressed ~ cons_nondurable + asset_savings + cons_allfood + cons_med_total + cons_ed + cons_social + ent_total_cost, dat)</code></pre>
-<p><img src="Code_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
 <pre class="r"><code># life-style/financial factors
 pairs(depressed ~ fs_adskipm_often + fs_meat + med_portion_sickinjured + ed_sch_missedpc + durable_investment, dat)</code></pre>
-<p><img src="Code_files/figure-html/unnamed-chunk-9-3.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-9-3.png" width="672" /></p>
 <pre class="r"><code># Interested/understandable factors
 cov &lt;- c(&quot;age&quot;, &quot;children&quot;, &quot;hhsize&quot;, &quot;edu&quot; , &quot;hh_totalmembers&quot;, &quot;hh_children&quot;, &quot;cons_nondurable&quot;, &quot;asset_savings&quot;, &quot;cons_allfood&quot;, &quot;cons_med_total&quot;, &quot;cons_ed&quot;, &quot;cons_social&quot;, &quot;ent_total_cost&quot;, &quot;fs_adskipm_often&quot;, &quot;fs_meat&quot;, &quot;med_portion_sickinjured&quot;, &quot;ed_sch_missedpc&quot;, &quot;durable_investment&quot;, &quot;femaleres&quot;, &quot;married&quot;, &quot;depressed&quot;)
 
@@ -633,7 +633,7 @@ y &lt;- dat[,&quot;depressed&quot;] |&gt; as.matrix()
 x &lt;- dat[, c(&quot;age&quot;, &quot;children&quot;, &quot;hhsize&quot;, &quot;edu&quot; , &quot;hh_totalmembers&quot;, &quot;hh_children&quot;, &quot;cons_nondurable&quot;, &quot;asset_savings&quot;, &quot;cons_allfood&quot;, &quot;cons_med_total&quot;, &quot;cons_ed&quot;, &quot;cons_social&quot;, &quot;ent_total_cost&quot;, &quot;fs_adskipm_often&quot;, &quot;fs_meat&quot;, &quot;med_portion_sickinjured&quot;, &quot;ed_sch_missedpc&quot;, &quot;durable_investment&quot;, &quot;femaleres&quot;, &quot;married&quot;)] |&gt; as.matrix()
 elasticnet.mod = glmnet(x,y,alpha=0.5,family=&quot;binomial&quot;)
 vip(elasticnet.mod, num_features=10, geom = &quot;point&quot;)</code></pre>
-<p><img src="Code_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 </div>
 <div id="regression---association" class="section level2">
@@ -690,7 +690,7 @@ summary(mod_log)</code></pre>
 library(car)
 par(mfrow=c(1,1))
 influencePlot(mod_log,col=&quot;red&quot;)</code></pre>
-<p><img src="Code_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <pre><code>##         StudRes         Hat       CookD
 ## 33   -1.2011290 0.403660391 0.035167313
 ## 118   2.3648827 0.007682324 0.005383474
@@ -921,7 +921,7 @@ influenceIndexPlot(mod_log)</code></pre>
 predprob &lt;- predict(mod_log,type=c(&quot;response&quot;)) 
 roccurve &lt;- roc(dat$depressed ~ predprob)
 plot(roccurve,col=&quot;red&quot;)</code></pre>
-<p><img src="Code_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 <div id="machine-learning---prediction" class="section level2">
 <h2>Machine Learning - Prediction</h2>
