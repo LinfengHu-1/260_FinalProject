@@ -5,6 +5,10 @@ navbar:
   left:
     - text: "Home"
       href: index.html
+    - text: "Prediction"
+      href: prediction.html 
+    - text: "Report"
+      href: Report.html 
   href: https://linfenghu-1.github.io/260_FinalProject/
   output:
   html_document:

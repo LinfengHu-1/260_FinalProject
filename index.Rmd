@@ -90,10 +90,13 @@ pairs(depressed ~ fs_adskipm_often + fs_meat + med_portion_sickinjured + ed_sch_
 
 
 ```{r}
+dat_old <- dat
 # Interested/understandable factors
 cov <- c("age", "children", "hhsize", "edu" , "hh_totalmembers", "hh_children", "cons_nondurable", "asset_savings", "cons_allfood", "cons_med_total", "cons_ed", "cons_social", "ent_total_cost", "fs_adskipm_often", "fs_meat", "med_portion_sickinjured", "ed_sch_missedpc", "durable_investment", "femaleres", "married", "depressed")
 
 dat <- dat[, cov]
+
+hist.data.frame(dat)
 ```
 
 
@@ -131,7 +134,6 @@ corrMatrix
 mod_log <- glm(depressed ~ age + children + hhsize + edu + cons_nondurable+ asset_savings + cons_ed+ cons_social+ ent_total_cost+ fs_adskipm_often  + fs_meat + med_portion_sickinjured+ ed_sch_missedpc+ durable_investment+ femaleres + married, data = dat, family = "binomial")
 summary(mod_log)
 
-png('./influenceIndexPlot.png')
 influenceIndexPlot(mod_log)
 ```
 
@@ -142,13 +144,16 @@ predprob <- predict(mod_log,type=c("response"))
 roccurve <- roc(dat$depressed ~ predprob)
 plot(roccurve,col="red")
 ```
-
-
-
-## Machine Learning - Prediction
 ```{r}
-
+#calculate and intepret the coefficients the odds ratio and 95% CI
+exp(cbind(OR = coef(mod_log), confint(mod_log)))
 ```
+
+We can interpret these coefficients in terms of odds ratios. For example, for a one unit increase in the number of children one has, the odds of being depressed (versus not being depressed) increase by a factor of 1.1225961, on average, holding all other covariates fixed. 
+
+
+
+
 
 
 
