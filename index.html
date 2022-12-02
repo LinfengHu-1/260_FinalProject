@@ -245,6 +245,12 @@ $(document).ready(function () {
         <li>
   <a href="index.html">Home</a>
 </li>
+<li>
+  <a href="prediction.html">Prediction</a>
+</li>
+<li>
+  <a href="Report.html">Report</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -621,10 +627,14 @@ pairs(depressed ~ cons_nondurable + asset_savings + cons_allfood + cons_med_tota
 <pre class="r"><code># life-style/financial factors
 pairs(depressed ~ fs_adskipm_often + fs_meat + med_portion_sickinjured + ed_sch_missedpc + durable_investment, dat)</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-9-3.png" width="672" /></p>
-<pre class="r"><code># Interested/understandable factors
+<pre class="r"><code>dat_old &lt;- dat
+# Interested/understandable factors
 cov &lt;- c(&quot;age&quot;, &quot;children&quot;, &quot;hhsize&quot;, &quot;edu&quot; , &quot;hh_totalmembers&quot;, &quot;hh_children&quot;, &quot;cons_nondurable&quot;, &quot;asset_savings&quot;, &quot;cons_allfood&quot;, &quot;cons_med_total&quot;, &quot;cons_ed&quot;, &quot;cons_social&quot;, &quot;ent_total_cost&quot;, &quot;fs_adskipm_often&quot;, &quot;fs_meat&quot;, &quot;med_portion_sickinjured&quot;, &quot;ed_sch_missedpc&quot;, &quot;durable_investment&quot;, &quot;femaleres&quot;, &quot;married&quot;, &quot;depressed&quot;)
 
-dat &lt;- dat[, cov]</code></pre>
+dat &lt;- dat[, cov]
+
+hist.data.frame(dat)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <pre class="r"><code>library(glmnet)
 library(vip)
 #define outcome variable
@@ -896,8 +906,8 @@ summary(mod_log)</code></pre>
 ## AIC: 1044.5
 ## 
 ## Number of Fisher Scoring iterations: 5</code></pre>
-<pre class="r"><code>png(&#39;./influenceIndexPlot.png&#39;)
-influenceIndexPlot(mod_log)</code></pre>
+<pre class="r"><code>influenceIndexPlot(mod_log)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <pre class="r"><code>summary(mod_log)$coefficients</code></pre>
 <pre><code>##                              Estimate   Std. Error     z value    Pr(&gt;|z|)
 ## (Intercept)             -1.086077e+00 0.5800727783 -1.87231227 0.061163415
@@ -922,9 +932,30 @@ predprob &lt;- predict(mod_log,type=c(&quot;response&quot;))
 roccurve &lt;- roc(dat$depressed ~ predprob)
 plot(roccurve,col=&quot;red&quot;)</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-</div>
-<div id="machine-learning---prediction" class="section level2">
-<h2>Machine Learning - Prediction</h2>
+<pre class="r"><code>#calculate and intepret the coefficients the odds ratio and 95% CI
+exp(cbind(OR = coef(mod_log), confint(mod_log)))</code></pre>
+<pre><code>##                                OR     2.5 %    97.5 %
+## (Intercept)             0.3375379 0.1073003 1.0460918
+## age                     1.0073041 0.9939551 1.0205780
+## children                1.1225961 0.8786272 1.4427715
+## hhsize                  0.9704567 0.7718952 1.2104990
+## edu                     0.9136266 0.8598873 0.9703067
+## cons_nondurable         0.9996059 0.9979265 1.0010828
+## asset_savings           1.0000258 0.9958610 1.0019416
+## cons_ed                 1.0009298 0.9772279 1.0198042
+## cons_social             1.0008738 0.9718386 1.0250738
+## ent_total_cost          0.9975037 0.9930955 1.0003150
+## fs_adskipm_often        0.9983045 0.9712414 1.0246402
+## fs_meat                 1.0268108 0.9441240 1.1118755
+## med_portion_sickinjured 1.2726766 0.7493222 2.1494483
+## ed_sch_missedpc         1.0134510 0.9335042 1.0867208
+## durable_investment      1.0000496 0.9995021 1.0005422
+## femaleres               0.9200510 0.5124645 1.7290943
+## married                 0.7481379 0.4819722 1.1766084</code></pre>
+<p>We can interpret these coefficients in terms of odds ratios. For
+example, for a one unit increase in the number of children one has, the
+odds of being depressed (versus not being depressed) increase by a
+factor of 1.1225961, on average, holding all other covariates fixed.</p>
 </div>
 
 
