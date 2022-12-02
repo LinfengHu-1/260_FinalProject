@@ -3,7 +3,7 @@ output_dir: "."
 navbar:
   title: "BST260 Final Project"
   left:
-    - text: "Home"
+    - text: "Exploratory Data Analysis"
       href: index.html
     - text: "Prediction"
       href: prediction.html 
