@@ -7,6 +7,58 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
 ```{r}
+library(tidyverse) 
+library(dplyr)
+library(dslabs)
+library(ggplot2)
+library(lubridate) 
+library(caret)
+library(HistData)
+library(Lahman)
+library(purrr)
+library(tidyr)
+```
+
+```{r}
+d <- read_csv('./data/train.csv')
+d <- d[, !(names(d) %in% c("surveyid", "village", "survey_date"))]
+
+#Data partition
+set.seed(260)
+test_index <- createDataPartition(d$depressed, times = 1, p = 0.2, list = FALSE)
+test_set <- d[test_index, ]
+train_set <- d[-test_index, ]
+ggplot()
+```
+
+
+### Logistic Regression with tune parameter
+```{r}
+library(glmnet)
+train_x <- as.matrix(train_set[, names(train_set) != "depressed"])
+glm_fit = cv.glmnet(x=train_x, y=train_set$depressed, family="binomial")
+plot(glm_fit$glmnet.fit)
+
+test_x <- as.matrix(test_set[, names(test_set) != "depressed"])
+phat = predict(glm_fit, test_x, s=glm_fit$lambda.1se, type = "response")
+yhat = apply(phat,1,which.max) - 1
+ot = table(yhat, test_set$depressed)
+print(ot)
+sum(diag(ot)) / 10000 # accuracy 
+```
+
+### kNN
+
+```{r}
 
 ```
+
+
+
+
+
+
+
+
+
 

@@ -1,5 +1,5 @@
 ---
-title: "BST260 Final Project"
+title: "Exploratory Data Analysis"
 ---
 
 ```{r setup, include=FALSE}
@@ -42,7 +42,18 @@ depressed_sub <- dat %>% filter(depressed == 1)
 nrow(depressed_sub)
 depressed_percent <- nrow(depressed_sub)/nrow(dat)
 depressed_percent
+
+prop.table(table(dat$depressed))
 ```
+```{r}
+dat_depressed <- dat %>% filter(depressed == 1)
+dat_notDepressed <- dat %>% filter(depressed == 0)
+library(reshape2)
+dat["Xax"] <- NULL
+dxax <- melt(dat, id.vars="Xax")
+dat |> ggplot() + geom_point(aes(age, depressed))
+```
+
 
 #### Missing Data
 ```{r}
