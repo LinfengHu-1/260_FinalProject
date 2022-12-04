@@ -268,7 +268,61 @@ $(document).ready(function () {
 </div>
 
 
+<pre class="r"><code>library(tidyverse) 
+library(dplyr)
+library(dslabs)
+library(ggplot2)
+library(lubridate) 
+library(caret)
+library(HistData)
+library(Lahman)
+library(purrr)
+library(tidyr)</code></pre>
+<pre class="r"><code>d &lt;- read_csv(&#39;./data/train.csv&#39;)
+d &lt;- d[, !(names(d) %in% c(&quot;surveyid&quot;, &quot;village&quot;, &quot;survey_date&quot;))]
 
+#Data partition
+set.seed(260)
+test_index &lt;- createDataPartition(d$depressed, times = 1, p = 0.2, list = FALSE)
+test_set &lt;- d[test_index, ]
+train_set &lt;- d[-test_index, ]
+
+#up sampling for imbalanced data
+set.seed(260)
+traindown &lt;- downSample(x=train_set[, -which(names(train_set) == &quot;depressed&quot;)], y=train_set$depressed)
+prop.table(table(traindown$y))</code></pre>
+<pre><code>## 
+##         0         1 
+## 0.8271335 0.1728665</code></pre>
+<pre class="r"><code>#combination of over- and under-sampling where the minority class is oversampled with replacement and majority class is undersampled without replacement.
+library(ROSE)
+dat_blc_over &lt;- ovun.sample(depressed ~ ., data = train_set, method = &quot;both&quot;, N = 1900)$data
+table(dat_blc_over$depressed)</code></pre>
+<pre><code>## 
+##   0   1 
+## 919 981</code></pre>
+<div id="logistic-regression-with-tune-parameter"
+class="section level3">
+<h3>Logistic Regression with tune parameter</h3>
+<pre class="r"><code>library(glmnet)
+train_x &lt;- as.matrix(train_set[, names(train_set) != &quot;depressed&quot;])
+glm_fit = cv.glmnet(x=train_x, y=train_set$depressed, family=&quot;binomial&quot;)
+plot(glm_fit$glmnet.fit)</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>test_x &lt;- as.matrix(test_set[, names(test_set) != &quot;depressed&quot;])
+phat = predict(glm_fit, test_x, s=glm_fit$lambda.1se, type = &quot;response&quot;)
+yhat = apply(phat,1,which.max) - 1
+ot = table(yhat, test_set$depressed)
+print(ot)</code></pre>
+<pre><code>##     
+## yhat   0   1
+##    0 194  35</code></pre>
+<pre class="r"><code>sum(diag(ot)) / 10000 # accuracy </code></pre>
+<pre><code>## [1] 0.0194</code></pre>
+</div>
+<div id="knn" class="section level3">
+<h3>kNN</h3>
+</div>
 
 
 

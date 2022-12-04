@@ -154,6 +154,7 @@ library(pROC)
 predprob <- predict(mod_log,type=c("response")) 
 roccurve <- roc(dat$depressed ~ predprob)
 plot(roccurve,col="red")
+roccurve
 ```
 ```{r}
 #calculate and intepret the coefficients the odds ratio and 95% CI

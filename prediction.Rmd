@@ -28,7 +28,17 @@ set.seed(260)
 test_index <- createDataPartition(d$depressed, times = 1, p = 0.2, list = FALSE)
 test_set <- d[test_index, ]
 train_set <- d[-test_index, ]
-ggplot()
+
+#up sampling for imbalanced data
+set.seed(260)
+traindown <- downSample(x=train_set[, -which(names(train_set) == "depressed")], y=train_set$depressed)
+prop.table(table(traindown$y))
+
+#combination of over- and under-sampling where the minority class is oversampled with replacement and majority class is undersampled without replacement.
+library(ROSE)
+dat_blc_over <- ovun.sample(depressed ~ ., data = train_set, method = "both", N = 1900)$data
+table(dat_blc_over$depressed)
+
 ```
 
 
