@@ -34,7 +34,7 @@ glimpse(dat)
 
 
 ```{r}
-summary(dat)
+head(summary(dat))
 ```
 
 ```{r}
@@ -133,12 +133,24 @@ influencePlot(mod_log,col="red")
 ```{r}
 covMatrix <- vcov(mod_log)
 corrMatrix <- cov2cor(covMatrix)
-corrMatrix 
+head(corrMatrix) 
 ```
 
 
 ```{r}
-mod_log <- glm(depressed ~ age + children + hhsize + edu + cons_nondurable+ asset_savings + cons_ed+ cons_social+ ent_total_cost+ fs_adskipm_often  + fs_meat + med_portion_sickinjured+ ed_sch_missedpc+ durable_investment+ femaleres + married, data = dat, family = "binomial")
+#up sampling for imbalanced data
+set.seed(260)
+datdown <- downSample(x=dat[, -which(names(dat) == "depressed")], y=dat$depressed)
+prop.table(table(datdown$y))
+
+#ROSE algorithm
+library(ROSE)
+drose <- ROSE(depressed ~ ., N = 1900, data = dat, seed = 260)$data
+table(drose$depressed)
+```
+
+```{r}
+mod_log <- glm(depressed ~ age + children + hhsize + edu + cons_nondurable+ asset_savings + cons_ed+ cons_social+ ent_total_cost+ fs_adskipm_often  + fs_meat + med_portion_sickinjured+ ed_sch_missedpc+ durable_investment+ femaleres + married, data = drose, family = "binomial")
 summary(mod_log)
 
 influenceIndexPlot(mod_log)
@@ -148,7 +160,7 @@ influenceIndexPlot(mod_log)
 summary(mod_log)$coefficients
 library(pROC)
 predprob <- predict(mod_log,type=c("response")) 
-roccurve <- roc(dat$depressed ~ predprob)
+roccurve <- roc(drose$depressed ~ predprob)
 plot(roccurve,col="red")
 roccurve
 ```
@@ -158,6 +170,7 @@ exp(cbind(OR = coef(mod_log), confint(mod_log)))
 ```
 
 We can interpret these coefficients in terms of odds ratios. For example, for a one unit increase in the number of children one has, the odds of being depressed (versus not being depressed) increase by a factor of 1.1225961, on average, holding all other covariates fixed. 
+
 
 
 

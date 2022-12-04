@@ -23,21 +23,17 @@ library(tidyr)
 d <- read_csv('./data/train.csv')
 d <- d[, !(names(d) %in% c("surveyid", "village", "survey_date"))]
 
-#Data partition
-set.seed(260)
-test_index <- createDataPartition(d$depressed, times = 1, p = 0.2, list = FALSE)
-test_set <- d[test_index, ]
-train_set <- d[-test_index, ]
-
-#up sampling for imbalanced data
-set.seed(260)
-traindown <- downSample(x=train_set[, -which(names(train_set) == "depressed")], y=train_set$depressed)
-prop.table(table(traindown$y))
-
+# Correct imbalance in data
 #ROSE algorithm
 library(ROSE)
-data.rose <- ROSE(depressed ~ ., N = 1900, data = train_set, seed = 260)$data
-table(data.rose$depressed)
+drose <- ROSE(depressed ~ ., N = 1900, data = d, seed = 260)$data
+table(drose$depressed)
+
+#Data partition
+set.seed(260)
+test_index <- createDataPartition(drose$depressed, times = 1, p = 0.2, list = FALSE)
+test_set <- d[test_index, ]
+train_set <- d[-test_index, ]
 ```
 
 

@@ -318,6 +318,11 @@ src="influenceIndexPlot.png" alt="Diagnostic Plot" /></p>
 <div id="description-justification-of-methodology"
 class="section level3">
 <h3>Description &amp; justification of Methodology</h3>
+<p>The data set is heavily imbalanced with only 16% of participants
+having the outcome of interest. Using imbalanced data set may result in
+poor outcomes in the ROC-AUC result. Therefore we generated a sample of
+synthetic data by Randomly Over Sampling Examples (ROSE) which resulted
+in a roughly balanced data set to combat this problem.</p>
 <p>From the ROC curve of a general logistic regression fitted for this
 dataset, we can see that it comes quite closer to the diagonal line,
 indicating low accuracy. From the general model summary, we can also see
@@ -327,11 +332,21 @@ assumption in the predictors does not hold well.</p>
 <p>Therefore we can conclude that this general linear model is not
 sufficient to depict the relationship of the covariates listed and the
 outcome of interest depression status. We proceed with other machine
-learning tools.</p>
+learning approaches.</p>
 </div>
 </div>
 <div id="results" class="section level2">
 <h2>Results</h2>
+<p>We first drop unnecessary features for our analysis such as village
+identifier, personal identification number and the survey date. We then
+create initial data partition for further examination.</p>
+<div id="logistic-regression-with-tuned-parameters"
+class="section level3">
+<h3>Logistic Regression with tuned parameters</h3>
+</div>
+<div id="knn" class="section level3">
+<h3>kNN</h3>
+</div>
 </div>
 
 

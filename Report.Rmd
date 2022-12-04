@@ -26,6 +26,8 @@ From the correlation matrix of all our covariates, we can observe that factors t
 
 ### Description  & justification of Methodology
 
+The data set is heavily imbalanced with only 16% of participants having the outcome of interest. Using imbalanced data set may result in poor outcomes in the ROC-AUC result. Therefore we generated a sample of synthetic data by Randomly Over Sampling Examples (ROSE) which resulted in a roughly balanced data set to combat this problem. 
+
 From the ROC curve of a general logistic regression fitted for this dataset, we can see that it comes quite closer to the diagonal line, indicating low accuracy. From the general model summary, we can also see that most of the covariates are not statistically significant in the classification. This may be due to the fact that the linearity assumption in the predictors does not hold well. 
 
 Therefore we can conclude that this general linear model is not sufficient to depict the relationship of the covariates listed and the outcome of interest depression status. We proceed with other machine learning approaches. 
@@ -33,7 +35,7 @@ Therefore we can conclude that this general linear model is not sufficient to de
 
 ## Results
 
-We first drop unnecessary features for our analysis such as village identifier, personal identification number and the survey date. We then create initial data partition for further examination. In previous EDA, we have seen that this data set is heavily imbalanced where most participants don't have depression. Using imbalanced data set may result in poor outcomes as we have observed in the ROC-AUC result. Therefore we generated a sample of synthetic data by Randomly Over Sampling Examples (ROSE) which resulted in a roughly balanced data set to combat this problem.
+We first drop unnecessary features for our analysis such as village identifier, personal identification number and the survey date. We then create initial data partition for further examination.  
 
 
 ### Logistic Regression with tuned parameters
