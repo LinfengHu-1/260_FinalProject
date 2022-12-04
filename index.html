@@ -11,7 +11,7 @@
 
 
 
-<title>BST260 Final Project</title>
+<title>Exploratory Data Analysis</title>
 
 <script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -263,7 +263,7 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">BST260 Final Project</h1>
+<h1 class="title toc-ignore">Exploratory Data Analysis</h1>
 
 </div>
 
@@ -538,6 +538,12 @@ nrow(depressed_sub)</code></pre>
 <pre class="r"><code>depressed_percent &lt;- nrow(depressed_sub)/nrow(dat)
 depressed_percent</code></pre>
 <pre><code>## [1] 0.1688539</code></pre>
+<pre class="r"><code>prop.table(table(dat$depressed))</code></pre>
+<pre><code>## 
+##         0         1 
+## 0.8311461 0.1688539</code></pre>
+<pre class="r"><code>dat_depressed &lt;- dat %&gt;% filter(depressed == 1)
+dat_notDepressed &lt;- dat %&gt;% filter(depressed == 0)</code></pre>
 <div id="missing-data" class="section level4">
 <h4>Missing Data</h4>
 <pre class="r"><code>#check for missing data
@@ -566,7 +572,7 @@ nrow(na.omit(dat))</code></pre>
 <pre class="r"><code>#look at missing pattern
 library(ggmice)
 plot_pattern(dat[, col_NA])</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code>for(i in 1:length(col_NA)){
   dat[col_NA[i]][is.na(dat[col_NA[i]])] &lt;- round(sum(dat[col_NA[i]], na.rm=TRUE)/nrow(dat))
 }
@@ -614,19 +620,19 @@ cols</code></pre>
 ## [75] &quot;day_of_week&quot;</code></pre>
 <pre class="r"><code>library(Hmisc)
 hist.data.frame(dat)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /><img src="index_files/figure-html/unnamed-chunk-8-2.png" width="672" /><img src="index_files/figure-html/unnamed-chunk-8-3.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" width="672" /><img src="index_files/figure-html/unnamed-chunk-9-2.png" width="672" /><img src="index_files/figure-html/unnamed-chunk-9-3.png" width="672" /></p>
 </div>
 <div id="examine-continuous-covariates" class="section level4">
 <h4>Examine continuous covariates</h4>
 <pre class="r"><code>#family factors
 pairs(depressed ~ age + children + hhsize + edu + hh_totalmembers + hh_children, dat)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <pre class="r"><code>#socio-economic indicating factors
 pairs(depressed ~ cons_nondurable + asset_savings + cons_allfood + cons_med_total + cons_ed + cons_social + ent_total_cost, dat)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
 <pre class="r"><code># life-style/financial factors
 pairs(depressed ~ fs_adskipm_often + fs_meat + med_portion_sickinjured + ed_sch_missedpc + durable_investment, dat)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-9-3.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-10-3.png" width="672" /></p>
 <pre class="r"><code>dat_old &lt;- dat
 # Interested/understandable factors
 cov &lt;- c(&quot;age&quot;, &quot;children&quot;, &quot;hhsize&quot;, &quot;edu&quot; , &quot;hh_totalmembers&quot;, &quot;hh_children&quot;, &quot;cons_nondurable&quot;, &quot;asset_savings&quot;, &quot;cons_allfood&quot;, &quot;cons_med_total&quot;, &quot;cons_ed&quot;, &quot;cons_social&quot;, &quot;ent_total_cost&quot;, &quot;fs_adskipm_often&quot;, &quot;fs_meat&quot;, &quot;med_portion_sickinjured&quot;, &quot;ed_sch_missedpc&quot;, &quot;durable_investment&quot;, &quot;femaleres&quot;, &quot;married&quot;, &quot;depressed&quot;)
@@ -634,7 +640,7 @@ cov &lt;- c(&quot;age&quot;, &quot;children&quot;, &quot;hhsize&quot;, &quot;edu
 dat &lt;- dat[, cov]
 
 hist.data.frame(dat)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <pre class="r"><code>library(glmnet)
 library(vip)
 #define outcome variable
@@ -643,7 +649,7 @@ y &lt;- dat[,&quot;depressed&quot;] |&gt; as.matrix()
 x &lt;- dat[, c(&quot;age&quot;, &quot;children&quot;, &quot;hhsize&quot;, &quot;edu&quot; , &quot;hh_totalmembers&quot;, &quot;hh_children&quot;, &quot;cons_nondurable&quot;, &quot;asset_savings&quot;, &quot;cons_allfood&quot;, &quot;cons_med_total&quot;, &quot;cons_ed&quot;, &quot;cons_social&quot;, &quot;ent_total_cost&quot;, &quot;fs_adskipm_often&quot;, &quot;fs_meat&quot;, &quot;med_portion_sickinjured&quot;, &quot;ed_sch_missedpc&quot;, &quot;durable_investment&quot;, &quot;femaleres&quot;, &quot;married&quot;)] |&gt; as.matrix()
 elasticnet.mod = glmnet(x,y,alpha=0.5,family=&quot;binomial&quot;)
 vip(elasticnet.mod, num_features=10, geom = &quot;point&quot;)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 </div>
 <div id="regression---association" class="section level2">
@@ -700,7 +706,7 @@ summary(mod_log)</code></pre>
 library(car)
 par(mfrow=c(1,1))
 influencePlot(mod_log,col=&quot;red&quot;)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <pre><code>##         StudRes         Hat       CookD
 ## 33   -1.2011290 0.403660391 0.035167313
 ## 118   2.3648827 0.007682324 0.005383474
@@ -907,7 +913,7 @@ summary(mod_log)</code></pre>
 ## 
 ## Number of Fisher Scoring iterations: 5</code></pre>
 <pre class="r"><code>influenceIndexPlot(mod_log)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <pre class="r"><code>summary(mod_log)$coefficients</code></pre>
 <pre><code>##                              Estimate   Std. Error     z value    Pr(&gt;|z|)
 ## (Intercept)             -1.086077e+00 0.5800727783 -1.87231227 0.061163415
@@ -931,7 +937,14 @@ summary(mod_log)</code></pre>
 predprob &lt;- predict(mod_log,type=c(&quot;response&quot;)) 
 roccurve &lt;- roc(dat$depressed ~ predprob)
 plot(roccurve,col=&quot;red&quot;)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre class="r"><code>roccurve</code></pre>
+<pre><code>## 
+## Call:
+## roc.formula(formula = dat$depressed ~ predprob)
+## 
+## Data: predprob in 950 controls (dat$depressed 0) &lt; 193 cases (dat$depressed 1).
+## Area under the curve: 0.6075</code></pre>
 <pre class="r"><code>#calculate and intepret the coefficients the odds ratio and 95% CI
 exp(cbind(OR = coef(mod_log), confint(mod_log)))</code></pre>
 <pre><code>##                                OR     2.5 %    97.5 %

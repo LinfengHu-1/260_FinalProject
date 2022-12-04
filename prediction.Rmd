@@ -34,27 +34,17 @@ set.seed(260)
 traindown <- downSample(x=train_set[, -which(names(train_set) == "depressed")], y=train_set$depressed)
 prop.table(table(traindown$y))
 
-#combination of over- and under-sampling where the minority class is oversampled with replacement and majority class is undersampled without replacement.
+#ROSE algorithm
 library(ROSE)
-dat_blc_over <- ovun.sample(depressed ~ ., data = train_set, method = "both", N = 1900)$data
-table(dat_blc_over$depressed)
-
+data.rose <- ROSE(depressed ~ ., N = 1900, data = train_set, seed = 260)$data
+table(data.rose$depressed)
 ```
 
 
 ### Logistic Regression with tune parameter
 ```{r}
-library(glmnet)
-train_x <- as.matrix(train_set[, names(train_set) != "depressed"])
-glm_fit = cv.glmnet(x=train_x, y=train_set$depressed, family="binomial")
-plot(glm_fit$glmnet.fit)
-
-test_x <- as.matrix(test_set[, names(test_set) != "depressed"])
-phat = predict(glm_fit, test_x, s=glm_fit$lambda.1se, type = "response")
-yhat = apply(phat,1,which.max) - 1
-ot = table(yhat, test_set$depressed)
-print(ot)
-sum(diag(ot)) / 10000 # accuracy 
+glm_train <- glm(depressed ~ ., data = data.rose, family = "binomial")
+summary(glm_train)
 ```
 
 ### kNN

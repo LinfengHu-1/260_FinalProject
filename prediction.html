@@ -294,31 +294,108 @@ prop.table(table(traindown$y))</code></pre>
 <pre><code>## 
 ##         0         1 
 ## 0.8271335 0.1728665</code></pre>
-<pre class="r"><code>#combination of over- and under-sampling where the minority class is oversampled with replacement and majority class is undersampled without replacement.
+<pre class="r"><code>#ROSE algorithm
 library(ROSE)
-dat_blc_over &lt;- ovun.sample(depressed ~ ., data = train_set, method = &quot;both&quot;, N = 1900)$data
-table(dat_blc_over$depressed)</code></pre>
+data.rose &lt;- ROSE(depressed ~ ., N = 1900, data = train_set, seed = 260)$data
+table(data.rose$depressed)</code></pre>
 <pre><code>## 
 ##   0   1 
 ## 919 981</code></pre>
 <div id="logistic-regression-with-tune-parameter"
 class="section level3">
 <h3>Logistic Regression with tune parameter</h3>
-<pre class="r"><code>library(glmnet)
-train_x &lt;- as.matrix(train_set[, names(train_set) != &quot;depressed&quot;])
-glm_fit = cv.glmnet(x=train_x, y=train_set$depressed, family=&quot;binomial&quot;)
-plot(glm_fit$glmnet.fit)</code></pre>
-<p><img src="prediction_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<pre class="r"><code>test_x &lt;- as.matrix(test_set[, names(test_set) != &quot;depressed&quot;])
-phat = predict(glm_fit, test_x, s=glm_fit$lambda.1se, type = &quot;response&quot;)
-yhat = apply(phat,1,which.max) - 1
-ot = table(yhat, test_set$depressed)
-print(ot)</code></pre>
-<pre><code>##     
-## yhat   0   1
-##    0 194  35</code></pre>
-<pre class="r"><code>sum(diag(ot)) / 10000 # accuracy </code></pre>
-<pre><code>## [1] 0.0194</code></pre>
+<pre class="r"><code>glm_train &lt;- glm(depressed ~ ., data = data.rose, family = &quot;binomial&quot;)
+summary(glm_train)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = depressed ~ ., family = &quot;binomial&quot;, data = data.rose)
+## 
+## Deviance Residuals: 
+##        Min          1Q      Median          3Q         Max  
+## -4.520e-05  -2.100e-08   2.100e-08   2.100e-08   4.998e-05  
+## 
+## Coefficients: (9 not defined because of singularities)
+##                           Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept)             -1.149e+02  1.333e+05  -0.001    0.999
+## femaleres               -3.896e+00  1.532e+04   0.000    1.000
+## age                      1.247e-01  1.034e+03   0.000    1.000
+## married                         NA         NA      NA       NA
+## children                 3.405e+00  7.944e+03   0.000    1.000
+## hhsize                   2.709e-01  7.109e+03   0.000    1.000
+## edu                     -8.002e-01  6.281e+03   0.000    1.000
+## hh_children              3.764e+00  8.516e+03   0.000    1.000
+## hh_totalmembers         -9.105e-01  6.875e+03   0.000    1.000
+## cons_nondurable         -1.489e-02  7.206e+01   0.000    1.000
+## asset_livestock          6.741e-03  1.399e+02   0.000    1.000
+## asset_durable            1.078e-01  2.213e+02   0.000    1.000
+## asset_phone              7.888e-02  3.388e+02   0.000    1.000
+## asset_savings            8.658e-02  4.008e+02   0.000    1.000
+## asset_land_owned_total  -2.891e+00  8.993e+03   0.000    1.000
+## asset_niceroof                  NA         NA      NA       NA
+## cons_allfood             2.157e-02  1.503e+02   0.000    1.000
+## cons_ownfood             1.588e-01  1.382e+03   0.000    1.000
+## cons_alcohol             1.193e-01  4.076e+02   0.000    1.000
+## cons_tobacco            -1.823e+00  1.112e+04   0.000    1.000
+## cons_med_total          -2.160e-02  6.039e+02   0.000    1.000
+## cons_med_children       -2.311e-02  1.453e+03   0.000    1.000
+## cons_ed                 -3.028e-01  1.693e+03   0.000    1.000
+## cons_social             -5.205e-01  1.681e+03   0.000    1.000
+## cons_other              -1.700e-01  4.502e+02   0.000    1.000
+## ent_wagelabor           -1.060e+01  2.589e+04   0.000    1.000
+## ent_ownfarm             -2.325e+01  3.003e+04  -0.001    0.999
+## ent_business            -2.149e+01  3.758e+04  -0.001    1.000
+## ent_nonagbusiness        1.256e+01  2.125e+04   0.001    1.000
+## ent_employees                   NA         NA      NA       NA
+## ent_nonag_revenue        5.543e-03  2.066e+02   0.000    1.000
+## ent_nonag_flowcost       2.134e-02  8.071e+02   0.000    1.000
+## ent_farmrevenue          3.465e-02  1.497e+03   0.000    1.000
+## ent_farmexpenses         1.116e+00  3.206e+03   0.000    1.000
+## ent_animalstockrev       1.126e-01  3.715e+02   0.000    1.000
+## ent_total_cost           3.495e-01  1.029e+03   0.000    1.000
+## fs_adskipm_often         2.276e-01  8.306e+03   0.000    1.000
+## fs_adwholed_often        3.772e-01  5.126e+03   0.000    1.000
+## fs_chskipm_often        -5.016e+00  8.789e+03  -0.001    1.000
+## fs_chwholed_often               NA         NA      NA       NA
+## fs_meat                  7.297e-01  4.632e+03   0.000    1.000
+## fs_enoughtom             8.286e-01  1.822e+04   0.000    1.000
+## fs_sleephun              1.522e-01  1.958e+04   0.000    1.000
+## med_expenses_hh_ep      -5.698e-01  3.137e+03   0.000    1.000
+## med_expenses_sp_ep       2.053e-01  3.144e+03   0.000    1.000
+## med_expenses_child_ep   -5.287e-01  4.361e+03   0.000    1.000
+## med_portion_sickinjured  5.459e+00  2.605e+04   0.000    1.000
+## med_port_sick_child      4.877e+00  2.097e+04   0.000    1.000
+## med_afford_port         -2.124e+00  3.692e+04   0.000    1.000
+## med_sickdays_hhave       7.134e-01  5.085e+03   0.000    1.000
+## med_healthconsult       -5.802e+00  2.357e+04   0.000    1.000
+## med_vacc_newborns               NA         NA      NA       NA
+## med_child_check                 NA         NA      NA       NA
+## med_u5_deaths           -1.700e+01  8.523e+04   0.000    1.000
+## ed_expenses             -7.677e-02  1.074e+02  -0.001    0.999
+## ed_expenses_perkid      -9.027e-02  8.068e+02   0.000    1.000
+## ed_schoolattend          8.150e+00  3.410e+04   0.000    1.000
+## ed_sch_missedpc          1.973e-01  4.437e+03   0.000    1.000
+## ed_work_act_pc          -1.790e+00  1.211e+04   0.000    1.000
+## labor_primary           -4.113e+00  4.332e+04   0.000    1.000
+## wage_expenditures               NA         NA      NA       NA
+## durable_investment       7.712e-02  1.958e+02   0.000    1.000
+## nondurable_investment    3.667e-01  8.858e+02   0.000    1.000
+## given_mpesa                     NA         NA      NA       NA
+## amount_given_mpesa       8.114e-01  3.608e+03   0.000    1.000
+## received_mpesa           2.382e+00  2.111e+04   0.000    1.000
+## amount_received_mpesa    1.321e-01  9.085e+02   0.000    1.000
+## net_mpesa                2.752e-01  1.525e+03   0.000    1.000
+## saved_mpesa              3.806e-01  5.183e+04   0.000    1.000
+## amount_saved_mpesa              NA         NA      NA       NA
+## early_survey            -2.174e+00  3.278e+04   0.000    1.000
+## day_of_week              2.043e+00  5.878e+03   0.000    1.000
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 2.6319e+03  on 1899  degrees of freedom
+## Residual deviance: 5.7442e-08  on 1837  degrees of freedom
+## AIC: 126
+## 
+## Number of Fisher Scoring iterations: 25</code></pre>
 </div>
 <div id="knn" class="section level3">
 <h3>kNN</h3>

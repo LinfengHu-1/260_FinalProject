@@ -33,8 +33,7 @@ Therefore we can conclude that this general linear model is not sufficient to de
 
 ## Results
 
-We first drop unnecessary features for our analysis such as village identifier, personal identification number and the survey date. We then create initial data partition for further examination. In previous EDA, we have seen that this data set is heavily imbalanced where most participants don't have depression. Using imbalanced data set may result in poor outcomes as we have observed in the ROC-AUC result. Therefore we attempt to correct the imbalances using upsampling and downsampling, to no avail. We then used a combination of oversampling the minority class with replacement and undersampling the class majority class without replacement to achieve a roughly balanced data set.
-
+We first drop unnecessary features for our analysis such as village identifier, personal identification number and the survey date. We then create initial data partition for further examination. In previous EDA, we have seen that this data set is heavily imbalanced where most participants don't have depression. Using imbalanced data set may result in poor outcomes as we have observed in the ROC-AUC result. Therefore we generated a sample of synthetic data by Randomly Over Sampling Examples (ROSE) which resulted in a roughly balanced data set to combat this problem.
 
 
 ### Logistic Regression with tuned parameters
