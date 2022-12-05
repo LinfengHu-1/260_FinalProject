@@ -163,7 +163,15 @@ predprob <- predict(mod_log,type=c("response"))
 roccurve <- roc(drose$depressed ~ predprob)
 plot(roccurve,col="red")
 roccurve
+
+library(rpart)
+#build decision tree models
+tree.rose <- rpart(depressed ~ ., data = drose)
+pred.tree.rose <- predict(tree.rose, newdata = drose)
+roc.curve(drose$depressed, pred.tree.rose)
 ```
+
+
 ```{r}
 #calculate and intepret the coefficients the odds ratio and 95% CI
 exp(cbind(OR = coef(mod_log), confint(mod_log)))

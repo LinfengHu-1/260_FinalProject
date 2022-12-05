@@ -23,15 +23,18 @@ library(tidyr)
 d <- read_csv('./data/train.csv')
 d <- d[, !(names(d) %in% c("surveyid", "village", "survey_date"))]
 
+na_cols <- names(which(colSums(is.na(d))>0))
+d <- d[ , !(names(d) %in% na_cols)]
+
 # Correct imbalance in data
 #ROSE algorithm
 library(ROSE)
-drose <- ROSE(depressed ~ ., N = 1900, data = d, seed = 260)$data
+drose <- ROSE(depressed ~ ., N = 500, data = d, seed = 260)$data
 table(drose$depressed)
 
 #Data partition
 set.seed(260)
-test_index <- createDataPartition(drose$depressed, times = 1, p = 0.2, list = FALSE)
+test_index <- createDataPartition(d$depressed, times = 1, p = 0.2, list = FALSE)
 test_set <- d[test_index, ]
 train_set <- d[-test_index, ]
 ```
@@ -39,9 +42,23 @@ train_set <- d[-test_index, ]
 
 ### Logistic Regression with tune parameter
 ```{r}
-glm_train <- glm(depressed ~ ., data = data.rose, family = "binomial")
-summary(glm_train)
+glm_train <- glm(depressed ~ ., data = d, family = "binomial")
+#summary(glm_train)
+pred <- predict(glm_train, test_set, type="response")
+pred <- as.integer(pred>0.3)
+cm <- confusionMatrix(as.factor(pred), as.factor(test_set$depressed))
+cm$overall["Accuracy"]
+cm
 ```
+
+
+```{r}
+#build decision tree models on training set
+tree.rose <- rpart(depressed ~ ., data = train_set)
+pred.tree.rose <- predict(tree.rose, newdata = test_set)
+roc.curve(test_set$depressed, pred.tree.rose)
+```
+
 
 ### kNN
 
