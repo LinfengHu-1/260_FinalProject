@@ -26,7 +26,7 @@ From the correlation matrix of all our covariates, we can observe that factors t
 
 ### Description  & justification of Methodology
 
-The data set is heavily imbalanced with only 16% of participants having the outcome of interest. Using imbalanced data set may result in poor outcomes in the ROC-AUC result. Therefore we attempted to generate a sample of synthetic data by Randomly Over Sampling Examples (ROSE) which resulted in a roughly balanced data set to combat this problem. However, the degree of imbalance was still severe and generating synthetic data seem to worsen the prediction accuracy. Therefore, we moved forward with changing the cutoff for prediction.
+The data set is heavily imbalanced with only 16% of participants having the outcome of interest. Using imbalanced data set may result in poor outcomes in the ROC-AUC result. Therefore we attempted to generate a sample of synthetic data by Randomly Over Sampling Examples (ROSE) which resulted in a roughly balanced data set to combat this problem. However, the degree of imbalance was still severe and generating synthetic data seem to worsen the prediction accuracy. Therefore, we moved forward with changing the cutoff threshold for prediction.
 
 From the ROC curve of a general logistic regression fitted for this dataset, we can see that it comes quite closer to the diagonal line, indicating low accuracy. From the general model summary, we can also see that most of the covariates are not statistically significant in the classification. This may be due to the fact that the linearity assumption in the predictors does not hold well. 
 

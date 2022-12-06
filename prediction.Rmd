@@ -42,17 +42,21 @@ train_set <- d[-test_index, ]
 
 ### Logistic Regression with tune parameter
 ```{r}
-glm_train <- glm(depressed ~ ., data = d, family = "binomial")
+glm_train <- glm(depressed ~ ., data = train_set, family = "binomial")
 #summary(glm_train)
 pred <- predict(glm_train, test_set, type="response")
-pred <- as.integer(pred>0.3)
+pred <- as.integer(pred>0.18)
 cm <- confusionMatrix(as.factor(pred), as.factor(test_set$depressed))
 cm$overall["Accuracy"]
 cm
+
+library(verification)
+roc.plot(test_set$depressed, pred)
 ```
 
 
 ```{r}
+library(rpart)
 #build decision tree models on training set
 tree.rose <- rpart(depressed ~ ., data = train_set)
 pred.tree.rose <- predict(tree.rose, newdata = test_set)
@@ -63,7 +67,18 @@ roc.curve(test_set$depressed, pred.tree.rose)
 ### kNN
 
 ```{r}
-
+control <- trainControl(method = "cv", p = .9)
+train_knn <- train(train_set[, -which(names(train_set) == "depressed")], 
+                   train_set$depressed, method = "knn", 
+                   tuneGrid = data.frame(k = seq(3,20, 2)), trControl = control)
+train_knn
+fit_knn <- knn3(train_set[, -which(names(train_set) == "depressed")], 
+                factor(train_set$depressed),  k = 3)
+y_hat_knn <- predict(fit_knn, test_set[, -which(names(train_set) == "depressed")], type="class")
+cm <- confusionMatrix(factor(y_hat_knn), factor(test_set$depressed))
+cm$overall["Accuracy"]
+cm
+```
 ```
 
 
