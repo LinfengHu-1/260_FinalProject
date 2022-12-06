@@ -51,7 +51,7 @@ cm$overall["Accuracy"]
 cm
 
 library(verification)
-roc.plot(test_set$depressed, pred)
+roc.curve(test_set$depressed, pred)
 ```
 
 
