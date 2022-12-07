@@ -35,7 +35,6 @@ d <- d[ , !(names(d) %in% na_cols)]
 library(ROSE)
 drose <- ROSE(depressed ~ ., N = 500, data = d, seed = 260)$data
 table(drose$depressed)
-#d<- d[,-48]
 
 #Data partition
 set.seed(260)
@@ -61,7 +60,7 @@ pred <- as.integer(pred>0.18)
 cm <- confusionMatrix(as.factor(pred), as.factor(test_set$depressed))
 
 
-
+library(pROC)
 library(verification)
 roc.curve(test_set$depressed, pred)
 auc_log <- as.numeric(auc(roc(test_set$depressed, pred)))
@@ -110,7 +109,12 @@ pred.ipred <- predict(fit_ipred, newdata = test_set)
 pred.ipred <- as.integer(pred.ipred>0.2)
 
 roc.curve(test_set$depressed, pred.ipred)
-confusionMatrix(as.factor(pred.ipred), as.factor(test_set$depressed))
+cm_ipred <- confusionMatrix(as.factor(pred.ipred), as.factor(test_set$depressed))
+
+results <- bind_rows(results, tibble(Method = "Bagging", 
+                      AUC = as.numeric(auc(roc(test_set$depressed, pred.ipred))),
+                      F1 = cm_ipred$byClass["F1"], Specificity = cm_ipred$byClass["Specificity"],
+                      Balanced_Accuracy = cm_ipred$byClass["Balanced Accuracy"]))
 ```
 
 
@@ -121,18 +125,20 @@ control <- trainControl(method = "cv",number = 5, p = .8, classProbs = TRUE)
 train_knn <- train(train_set[, -which(names(train_set) == "depressed")],
                    make.names(train_set$depressed), method = "knn",
                    tuneGrid = data.frame(k = seq(3,10, 2)), trControl = control,
-                   metric = "F1", maximize = TRUE
+                   metric = "ROC", maximize = TRUE
                    )
 train_knn
 fit_knn <- knn3(train_set[, -which(names(train_set) == "depressed")],
                 factor(train_set$depressed),  k = train_knn$bestTune$k)
 y_hat_knn <- predict(fit_knn, test_set[, -which(names(train_set) == "depressed")], type="class")
 
-cm <- confusionMatrix(as.factor(y_hat_knn), as.factor(test_set$depressed))
-cm$overall["Accuracy"]
-cm
+cm_knn <- confusionMatrix(as.factor(y_hat_knn), as.factor(test_set$depressed))
 
 roc.curve(test_set$depressed, y_hat_knn)
+
+results <- bind_rows(results, tibble(Method = "kNN", AUC = as.numeric(auc(roc(as.numeric(test_set$depressed), as.numeric(y_hat_knn)))),
+                      F1 = cm_knn$byClass["F1"], Specificity = cm_knn$byClass["Specificity"],
+                      Balanced_Accuracy = cm_knn$byClass["Balanced Accuracy"]))
 ```
 
 
@@ -152,8 +158,11 @@ fit_rf <- randomForest(depressed~., data=train_set, mtry = train_rf$bestTune$mtr
 y_hat_rf <- predict(fit_rf, test_set)
 y_hat_rf <- as.integer(y_hat_rf>0.18)
 roc.curve(test_set$depressed, y_hat_rf)
-cm <- confusionMatrix(factor(y_hat_rf), factor(test_set$depressed))
-cm$byClass["F1"]
+cm_rf <- confusionMatrix(factor(y_hat_rf), factor(test_set$depressed))
+
+results <- bind_rows(results, tibble(Method = "Random Forest", AUC = as.numeric(auc(roc(test_set$depressed, y_hat_rf))),
+                      F1 = cm_rf$byClass["F1"], Specificity = cm_rf$byClass["Specificity"],
+                      Balanced_Accuracy = cm_rf$byClass["Balanced Accuracy"]))
 ```
 
 
@@ -162,14 +171,30 @@ cm$byClass["F1"]
 ```{r}
 library(gbm)
 
-fit_gbm <- gbm(as.factor(depressed) ~., data=train_set, distribution = "bernoulli")
+grid_gbm <- expand.grid(n.trees = c(50, 100, 200), interaction.depth = c(1,2,3), 
+                        shrinkage = c(0.1, 0.5, 0.8), n.minobsinnode = c(5, 10, 15))
+train_gbm <- train(depressed ~ ., data = train_set, method = "gbm", trControl = control,
+                   verbose = FALSE, tuneGrid = grid_gbm, metric = "F1", maximize = TRUE)
+train_gbm$bestTune
+
+
+fit_gbm <- gbm(depressed ~., data=train_set, distribution = "bernoulli")
 y_hat_gbm <- predict(fit_gbm, test_set)
+y_hat_gbm <- as.integer(y_hat_gbm>-1.55)
 roc.curve(test_set$depressed, y_hat_gbm)
 
-cm <- confusionMatrix(as.factor(y_hat_gbm), as.factor(test_set$depressed))
-cm$overall["Accuracy"]
-cm
+cm_gbm <- confusionMatrix(as.factor(y_hat_gbm), as.factor(test_set$depressed))
+
+results <- bind_rows(results, tibble(Method = "Gradient Boosted Machine", AUC = as.numeric(auc(roc(test_set$depressed, y_hat_gbm))),
+                      F1 = cm_gbm$byClass["F1"], Specificity = cm_gbm$byClass["Specificity"],
+                      Balanced_Accuracy = cm_gbm$byClass["Balanced Accuracy"]))
 ```
+
+Attempt to change to ROSE data
+```{r}
+
+```
+
 
 
 
