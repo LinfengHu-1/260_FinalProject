@@ -71,7 +71,21 @@ library(rpart)
 #build decision tree models on training set
 tree.rose <- rpart(depressed~ ., data = train_set)
 pred.tree.rose <- predict(tree.rose, newdata = test_set)
+table(pred.tree.rose, test_set$depressed)
 roc.curve(test_set$depressed, pred.tree.rose)
+```
+
+### Bagging CART
+
+Bootstrapped Aggregation (Bagging) is an ensemble method that creates multiple models of the same type from different sub-samples of the same dataset. The predictions from each separate model are combined together to provide a superior result. This approach has shown participially effective for high-variance methods such as decision trees.
+
+Here is bagging applied to the recursive partitioning decision tree for our depression dataset.
+```{r}
+library(ipred)
+fit_ipred <- bagging(depressed~., data=train_set)
+pred.ipred <- predict(fit_ipred, newdata = test_set)
+
+roc.curve(test_set$depressed, pred.ipred)
 ```
 
 
@@ -82,7 +96,7 @@ control <- trainControl(method = "cv",number = 5, p = .8, classProbs = TRUE)
 train_knn <- train(train_set[, -which(names(train_set) == "depressed")],
                    make.names(train_set$depressed), method = "knn",
                    tuneGrid = data.frame(k = seq(3,10, 2)), trControl = control,
-                   metric = "ROC", maximize = TRUE
+                   metric = "F1", maximize = TRUE
                    )
 train_knn
 fit_knn <- knn3(train_set[, -which(names(train_set) == "depressed")],
@@ -99,28 +113,34 @@ roc.curve(test_set$depressed, y_hat_knn)
 ### Random Forest
 
 ```{r}
-control <- trainControl(method = "cv",number = 5, p = .9)
-grid <- data.frame(mtry=c(1, 5, sqrt(ncol(d))))
-train_rf <- train(train_set[, -which(names(train_set) == "depressed")], 
-                   train_set$depressed, method = "rf", 
-                   tuneGrid = grid, trControl = control)
-train_rf
+# control <- trainControl(method = "cv",number = 5, p = .9)
+# grid <- data.frame(mtry=c(1, 5, sqrt(ncol(d))))
+# train_rf <- train(train_set[, -which(names(train_set) == "depressed")], 
+#                    train_set$depressed, method = "rf", 
+#                    tuneGrid = grid, trControl = control)
+# train_rf
 
 library(randomForest)
-fit_rf <- randomForest(train_set[, -which(names(train_set) == "depressed")], 
-                factor(train_set$depressed),  minNode = 1, importance = TRUE, nodesize=100)
+# fit_rf <- randomForest(train_set[, -which(names(train_set) == "depressed")], 
+#                 factor(train_set$depressed),  minNode = 1, importance = TRUE, nodesize=100)
+# 
+# 
+# y_hat_rf <- predict(fit_rf, test_set[, -which(names(train_set) == "depressed")], type="class")
+# cm <- confusionMatrix(factor(y_hat_rf), factor(test_set$depressed))
+# cm$overall["Accuracy"]
+# cm
 
-
-y_hat_rf <- predict(fit_rf, test_set[, -which(names(train_set) == "depressed")], type="class")
-cm <- confusionMatrix(factor(y_hat_rf), factor(test_set$depressed))
-cm$overall["Accuracy"]
-cm
-
+fit_rf <- randomForest(depressed~., data=train_set)
+y_hat_rf <- predict(fit_rf, test_set)
 roc.curve(test_set$depressed, y_hat_rf)
 ```
 
 
+### Gradient Boosted Machine
 
+```{r}
+
+```
 
 
 
