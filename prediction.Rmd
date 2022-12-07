@@ -52,31 +52,50 @@ table(d$depressed)
 ```
 
 
-### Logistic Regression with tune parameter
+### Logistic Regression with tuned parameter
 ```{r}
 glm_train <- glm(depressed ~ ., data = train_set, family = "binomial")
-#summary(glm_train)
+summary(glm_train)
 pred <- predict(glm_train, test_set, type="response")
 pred <- as.integer(pred>0.18)
 cm <- confusionMatrix(as.factor(pred), as.factor(test_set$depressed))
-cm$overall["Accuracy"]
-cm
+
+
 
 library(verification)
 roc.curve(test_set$depressed, pred)
+auc_log <- as.numeric(auc(roc(test_set$depressed, pred)))
+
+
+results <- tibble(Method = "Logistic Regression", AUC = auc_log,
+                     F1 = cm$byClass["F1"], Specificity = cm$byClass["Specificity"], 
+                     Balanced_Accuracy = cm$byClass["Balanced Accuracy"])
+results
 ```
 
 
+### Classification Tree
 ```{r}
 library(rpart)
+library(rpart.plot)
 #build decision tree models on training set
 
-tree.rose <- rpart(depressed~ ., data = train_set)
-pred.tree.rose <- predict(tree.rose, newdata = test_set)
-pred.tree.rose <- as.integer(pred.tree.rose>0.16)
+tree.rose <- rpart(depressed~ ., data = train_set, method = 'class')
+rpart.plot(tree.rose)
+printcp(tree.rose)
 
-confusionMatrix(as.factor(pred.tree.rose), as.factor(test_set$depressed))
+pred.tree.rose <- predict(tree.rose, newdata = test_set, type = "prob")
+pred.tree.rose <- as.integer(pred.tree.rose[,2]>0.2)
 roc.curve(test_set$depressed, pred.tree.rose)
+
+cm_tree <- confusionMatrix(as.factor(pred.tree.rose), as.factor(test_set$depressed))
+auc_tree <- as.numeric(auc(roc(test_set$depressed, pred.tree.rose)))
+result_tree <- tibble(Method = "Classification Tree", 
+                                     AUC = auc_tree,
+                                     F1 = cm_tree$byClass["F1"], 
+                                     Specificity = cm_tree$byClass["Specificity"], 
+                                     Balanced_Accuracy = cm_tree$byClass["Balanced Accuracy"])
+results <- bind_rows(results, result_tree)
 ```
 
 ### Bagging CART
@@ -88,8 +107,10 @@ Here is bagging applied to the recursive partitioning decision tree for our depr
 library(ipred)
 fit_ipred <- bagging(depressed~., data=train_set)
 pred.ipred <- predict(fit_ipred, newdata = test_set)
+pred.ipred <- as.integer(pred.ipred>0.2)
 
 roc.curve(test_set$depressed, pred.ipred)
+confusionMatrix(as.factor(pred.ipred), as.factor(test_set$depressed))
 ```
 
 
@@ -106,7 +127,8 @@ train_knn
 fit_knn <- knn3(train_set[, -which(names(train_set) == "depressed")],
                 factor(train_set$depressed),  k = train_knn$bestTune$k)
 y_hat_knn <- predict(fit_knn, test_set[, -which(names(train_set) == "depressed")], type="class")
-cm <- confusionMatrix(factor(y_hat_knn), factor(test_set$depressed))
+
+cm <- confusionMatrix(as.factor(y_hat_knn), as.factor(test_set$depressed))
 cm$overall["Accuracy"]
 cm
 
@@ -117,26 +139,21 @@ roc.curve(test_set$depressed, y_hat_knn)
 ### Random Forest
 
 ```{r}
-# control <- trainControl(method = "cv",number = 5, p = .9)
-# grid <- data.frame(mtry=c(1, 5, sqrt(ncol(d))))
-# train_rf <- train(train_set[, -which(names(train_set) == "depressed")], 
-#                    train_set$depressed, method = "rf", 
-#                    tuneGrid = grid, trControl = control)
-# train_rf
+control <- trainControl(method = "cv",number = 5, p = .8)
+grid <- data.frame(mtry=c(1, 5, sqrt(ncol(d))))
+train_rf <- train(train_set[, -which(names(train_set) == "depressed")],
+                   train_set$depressed, method = "rf",
+                   tuneGrid = grid, trControl = control,
+                  metric = "F1", maximize = TRUE)
+train_rf$bestTune
 
 library(randomForest)
-# fit_rf <- randomForest(train_set[, -which(names(train_set) == "depressed")], 
-#                 factor(train_set$depressed),  minNode = 1, importance = TRUE, nodesize=100)
-# 
-# 
-# y_hat_rf <- predict(fit_rf, test_set[, -which(names(train_set) == "depressed")], type="class")
-# cm <- confusionMatrix(factor(y_hat_rf), factor(test_set$depressed))
-# cm$overall["Accuracy"]
-# cm
-
-fit_rf <- randomForest(depressed~., data=train_set)
+fit_rf <- randomForest(depressed~., data=train_set, mtry = train_rf$bestTune$mtry)
 y_hat_rf <- predict(fit_rf, test_set)
+y_hat_rf <- as.integer(y_hat_rf>0.18)
 roc.curve(test_set$depressed, y_hat_rf)
+cm <- confusionMatrix(factor(y_hat_rf), factor(test_set$depressed))
+cm$byClass["F1"]
 ```
 
 
