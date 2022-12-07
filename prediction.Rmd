@@ -36,6 +36,7 @@ library(ROSE)
 drose <- ROSE(depressed ~ ., N = 500, data = d, seed = 260)$data
 table(drose$depressed)
 #d<- d[,-48]
+
 #Data partition
 set.seed(260)
 test_index <- createDataPartition(d$depressed, times = 1, p = 0.2, list = FALSE)
@@ -69,9 +70,12 @@ roc.curve(test_set$depressed, pred)
 ```{r}
 library(rpart)
 #build decision tree models on training set
+
 tree.rose <- rpart(depressed~ ., data = train_set)
 pred.tree.rose <- predict(tree.rose, newdata = test_set)
-table(pred.tree.rose, test_set$depressed)
+pred.tree.rose <- as.integer(pred.tree.rose>0.16)
+
+confusionMatrix(as.factor(pred.tree.rose), as.factor(test_set$depressed))
 roc.curve(test_set$depressed, pred.tree.rose)
 ```
 
@@ -139,7 +143,15 @@ roc.curve(test_set$depressed, y_hat_rf)
 ### Gradient Boosted Machine
 
 ```{r}
+library(gbm)
 
+fit_gbm <- gbm(as.factor(depressed) ~., data=train_set, distribution = "bernoulli")
+y_hat_gbm <- predict(fit_gbm, test_set)
+roc.curve(test_set$depressed, y_hat_gbm)
+
+cm <- confusionMatrix(as.factor(y_hat_gbm), as.factor(test_set$depressed))
+cm$overall["Accuracy"]
+cm
 ```
 
 

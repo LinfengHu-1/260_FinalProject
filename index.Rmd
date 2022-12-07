@@ -167,6 +167,7 @@ influenceIndexPlot(mod_log)
 ```{r}
 library(corrplot)
 correlations <- cor(dat[, -12], use = "pairwise.complete.obs")
+corrplot(correlations, method='number')
 corrplot.mixed(correlations,upper = "circle", lower = "number", tl.col = "black", tl.pos = "lt") 
 ```
 
