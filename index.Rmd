@@ -30,6 +30,12 @@ dat <- read_csv('./data/train.csv')
 var_explain <- read_csv('./data/var_explain.csv')
 var_explain
 glimpse(dat)
+
+
+dat$Class<-as.factor(dat$depressed) # convert class to factor
+levels(dat$Class) <- c('not_depressed', 'depressed') # names of factors
+summary(dat$Class)
+
 ```
 
 
@@ -44,6 +50,8 @@ depressed_percent <- nrow(depressed_sub)/nrow(dat)
 depressed_percent
 
 prop.table(table(dat$depressed))
+# EDA
+ggplot(data = dat, aes(fill = Class)) +geom_bar(aes(x = Class))
 ```
 ```{r}
 dat_depressed <- dat %>% filter(depressed == 1)
@@ -155,6 +163,14 @@ summary(mod_log)
 
 influenceIndexPlot(mod_log)
 ```
+
+```{r}
+library(corrplot)
+correlations <- cor(dat[, -12], use = "pairwise.complete.obs")
+corrplot.mixed(correlations,upper = "circle", lower = "number", tl.col = "black", tl.pos = "lt") 
+```
+
+
 
 ```{r}
 summary(mod_log)$coefficients

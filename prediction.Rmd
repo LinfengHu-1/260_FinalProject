@@ -26,17 +26,28 @@ d <- d[, !(names(d) %in% c("surveyid", "village", "survey_date"))]
 na_cols <- names(which(colSums(is.na(d))>0))
 d <- d[ , !(names(d) %in% na_cols)]
 
+# d$Class<-as.factor(d$depressed) # convert class to factor
+# levels(d$Class) <- c('not_depressed', 'depressed') # names of factors
+# summary(d$Class)
+
 # Correct imbalance in data
 #ROSE algorithm
 library(ROSE)
 drose <- ROSE(depressed ~ ., N = 500, data = d, seed = 260)$data
 table(drose$depressed)
-
+#d<- d[,-48]
 #Data partition
 set.seed(260)
 test_index <- createDataPartition(d$depressed, times = 1, p = 0.2, list = FALSE)
 test_set <- d[test_index, ]
 train_set <- d[-test_index, ]
+
+#predictor / response definition
+predictor_variables <- d[,-48]
+response_variable <- d$depressed
+#swap to have minority class coded as 1
+levels(response_variable) <- c('0', '1') 
+table(d$depressed)
 ```
 
 
@@ -58,7 +69,7 @@ roc.curve(test_set$depressed, pred)
 ```{r}
 library(rpart)
 #build decision tree models on training set
-tree.rose <- rpart(depressed ~ ., data = train_set)
+tree.rose <- rpart(depressed~ ., data = train_set)
 pred.tree.rose <- predict(tree.rose, newdata = test_set)
 roc.curve(test_set$depressed, pred.tree.rose)
 ```
@@ -67,13 +78,15 @@ roc.curve(test_set$depressed, pred.tree.rose)
 ### kNN
 
 ```{r}
-control <- trainControl(method = "cv",number = 5, p = .9)
-train_knn <- train(train_set[, -which(names(train_set) == "depressed")], 
-                   train_set$depressed, method = "knn", 
-                   tuneGrid = data.frame(k = seq(3,10, 2)), trControl = control)
+control <- trainControl(method = "cv",number = 5, p = .8, classProbs = TRUE)
+train_knn <- train(train_set[, -which(names(train_set) == "depressed")],
+                   make.names(train_set$depressed), method = "knn",
+                   tuneGrid = data.frame(k = seq(3,10, 2)), trControl = control,
+                   metric = "ROC", maximize = TRUE
+                   )
 train_knn
-fit_knn <- knn3(train_set[, -which(names(train_set) == "depressed")], 
-                factor(train_set$depressed),  k = 3)
+fit_knn <- knn3(train_set[, -which(names(train_set) == "depressed")],
+                factor(train_set$depressed),  k = train_knn$bestTune$k)
 y_hat_knn <- predict(fit_knn, test_set[, -which(names(train_set) == "depressed")], type="class")
 cm <- confusionMatrix(factor(y_hat_knn), factor(test_set$depressed))
 cm$overall["Accuracy"]
