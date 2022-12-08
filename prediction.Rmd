@@ -190,6 +190,18 @@ results <- bind_rows(results, tibble(Method = "Gradient Boosted Machine", AUC = 
                       Balanced_Accuracy = cm_gbm$byClass["Balanced Accuracy"]))
 ```
 
+### SVM
+```{r}
+library(e1071)
+train_svm <- train(depressed ~ ., data = train_set, method = "svmRadial", trControl = control,
+                   verbose = FALSE, metric = "F1", maximize = TRUE)
+
+fit_svm <- svm(depressed ~ ., data=train_set, type = "C-classification", kernel = "radial")
+y_hat_svm <- predict(fit_svm, newdata = test_set, type = "decision")
+table(y_hat_svm)
+```
+
+
 
 ## ROSE data
 
