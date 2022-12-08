@@ -146,12 +146,14 @@ results <- bind_rows(results, tibble(Method = "kNN", AUC = as.numeric(auc(roc(as
 
 ```{r}
 control <- trainControl(method = "cv",number = 5, p = .8)
-grid <- data.frame(mtry=c(1, 5, sqrt(ncol(d))))
+grid <- data.frame(mtry=c(1, 5, sqrt(ncol(d)), 10))
 train_rf <- train(train_set[, -which(names(train_set) == "depressed")],
                    train_set$depressed, method = "rf",
                    tuneGrid = grid, trControl = control,
                   metric = "F1", maximize = TRUE)
 train_rf$bestTune
+ggplot(data = NULL, aes(x = train_rf$results$mtry, 
+                        y = train_rf$results$RMSE)) + geom_line()
 
 
 library(randomForest)
