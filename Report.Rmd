@@ -38,11 +38,12 @@ Therefore we can conclude that this general linear model is not sufficient to de
 We first drop unnecessary features for our analysis such as village identifier, personal identification number and the survey date. We then create initial data partition for further examination.  
 
 
-### Logistic Regression with tuned parameters
+### Results table & ROC combined plot
+  Why specificty & AUC/balanced accuracy
+  
+### Shrinkage plot
 
-
-
-### kNN
+### mtry plot
 
 
 
