@@ -153,6 +153,7 @@ train_rf <- train(train_set[, -which(names(train_set) == "depressed")],
                   metric = "F1", maximize = TRUE)
 train_rf$bestTune
 
+
 library(randomForest)
 fit_rf <- randomForest(depressed~., data=train_set, mtry = train_rf$bestTune$mtry)
 y_hat_rf <- predict(fit_rf, test_set)
@@ -171,11 +172,14 @@ results <- bind_rows(results, tibble(Method = "Random Forest", AUC = as.numeric(
 ```{r}
 library(gbm)
 
-grid_gbm <- expand.grid(n.trees = c(50, 100, 200), interaction.depth = c(1,2,3), 
-                        shrinkage = c(0.1, 0.5, 0.8), n.minobsinnode = c(5, 10, 15))
+grid_gbm <- expand.grid(n.trees = 200, interaction.depth = 3, shrinkage = seq(0.1, 0.9, 0.05), 
+                        n.minobsinnode = 10)
+
 train_gbm <- train(depressed ~ ., data = train_set, method = "gbm", trControl = control,
                    verbose = FALSE, tuneGrid = grid_gbm, metric = "F1", maximize = TRUE)
 train_gbm$bestTune
+ggplot(data = NULL, aes(x = train_gbm$results$shrinkage, 
+                        y = train_gbm$results$RMSE)) + geom_point()
 
 
 fit_gbm <- gbm(depressed ~., data=train_set, distribution = "bernoulli")
@@ -263,9 +267,17 @@ results <- bind_rows(results, tibble(Method = "ROSE - Gradient Boosted Machine",
                                      Balanced_Accuracy = cm_gbm_rose$byClass["Balanced Accuracy"]))
 ```
 
+## Results
 ```{r}
 results
 ```
 
+```{r}
+thresh<-seq(0,1,0.001)
+roc.plot(x=test_set$depressed == "1", 
+         pred = cbind(pred, pred.tree.rose, pred.ipred, y_hat_gbm, y_hat_knn, y_hat_rf, y_hat_svm, y_rose_gbm, y_rose_rf), legend = T, thresholds = thresh, leg.text = 
+         c("Logistic","Classification Tree","Bagging CART", "Gradient Boosted Machine","kNN",
+           "Random Forest", "SVM", "ROSE - GBM", "ROSE - RF"))$roc.vol
+```
 
 
