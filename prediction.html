@@ -281,124 +281,356 @@ library(tidyr)</code></pre>
 <pre class="r"><code>d &lt;- read_csv(&#39;./data/train.csv&#39;)
 d &lt;- d[, !(names(d) %in% c(&quot;surveyid&quot;, &quot;village&quot;, &quot;survey_date&quot;))]
 
-#Data partition
+na_cols &lt;- names(which(colSums(is.na(d))&gt;0))
+d &lt;- d[ , !(names(d) %in% na_cols)]
+
+# d$Class&lt;-as.factor(d$depressed) # convert class to factor
+# levels(d$Class) &lt;- c(&#39;not_depressed&#39;, &#39;depressed&#39;) # names of factors
+# summary(d$Class)
+
+# Correct imbalance in data
+#ROSE algorithm
+library(ROSE)
+drose &lt;- ROSE(depressed ~ ., N = 1143, data = d, seed = 260)$data
+table(drose$depressed)</code></pre>
+<pre><code>## 
+##   0   1 
+## 534 609</code></pre>
+<pre class="r"><code>#Data partition
 set.seed(260)
 test_index &lt;- createDataPartition(d$depressed, times = 1, p = 0.2, list = FALSE)
 test_set &lt;- d[test_index, ]
 train_set &lt;- d[-test_index, ]
 
-#up sampling for imbalanced data
-set.seed(260)
-traindown &lt;- downSample(x=train_set[, -which(names(train_set) == &quot;depressed&quot;)], y=train_set$depressed)
-prop.table(table(traindown$y))</code></pre>
-<pre><code>## 
-##         0         1 
-## 0.8271335 0.1728665</code></pre>
-<pre class="r"><code>#ROSE algorithm
-library(ROSE)
-data.rose &lt;- ROSE(depressed ~ ., N = 1900, data = train_set, seed = 260)$data
-table(data.rose$depressed)</code></pre>
+#predictor / response definition
+predictor_variables &lt;- d[,-48]
+response_variable &lt;- d$depressed
+#swap to have minority class coded as 1
+levels(response_variable) &lt;- c(&#39;0&#39;, &#39;1&#39;) 
+table(d$depressed)</code></pre>
 <pre><code>## 
 ##   0   1 
-## 919 981</code></pre>
-<div id="logistic-regression-with-tune-parameter"
+## 950 193</code></pre>
+<div id="logistic-regression-with-tuned-parameter"
 class="section level3">
-<h3>Logistic Regression with tune parameter</h3>
-<pre class="r"><code>glm_train &lt;- glm(depressed ~ ., data = data.rose, family = &quot;binomial&quot;)
+<h3>Logistic Regression with tuned parameter</h3>
+<pre class="r"><code>glm_train &lt;- glm(depressed ~ ., data = train_set, family = &quot;binomial&quot;)
 summary(glm_train)</code></pre>
 <pre><code>## 
 ## Call:
-## glm(formula = depressed ~ ., family = &quot;binomial&quot;, data = data.rose)
+## glm(formula = depressed ~ ., family = &quot;binomial&quot;, data = train_set)
 ## 
 ## Deviance Residuals: 
-##        Min          1Q      Median          3Q         Max  
-## -4.520e-05  -2.100e-08   2.100e-08   2.100e-08   4.998e-05  
+##     Min       1Q   Median       3Q      Max  
+## -1.6634  -0.6411  -0.5339  -0.3522   2.5294  
 ## 
-## Coefficients: (9 not defined because of singularities)
-##                           Estimate Std. Error z value Pr(&gt;|z|)
-## (Intercept)             -1.149e+02  1.333e+05  -0.001    0.999
-## femaleres               -3.896e+00  1.532e+04   0.000    1.000
-## age                      1.247e-01  1.034e+03   0.000    1.000
-## married                         NA         NA      NA       NA
-## children                 3.405e+00  7.944e+03   0.000    1.000
-## hhsize                   2.709e-01  7.109e+03   0.000    1.000
-## edu                     -8.002e-01  6.281e+03   0.000    1.000
-## hh_children              3.764e+00  8.516e+03   0.000    1.000
-## hh_totalmembers         -9.105e-01  6.875e+03   0.000    1.000
-## cons_nondurable         -1.489e-02  7.206e+01   0.000    1.000
-## asset_livestock          6.741e-03  1.399e+02   0.000    1.000
-## asset_durable            1.078e-01  2.213e+02   0.000    1.000
-## asset_phone              7.888e-02  3.388e+02   0.000    1.000
-## asset_savings            8.658e-02  4.008e+02   0.000    1.000
-## asset_land_owned_total  -2.891e+00  8.993e+03   0.000    1.000
-## asset_niceroof                  NA         NA      NA       NA
-## cons_allfood             2.157e-02  1.503e+02   0.000    1.000
-## cons_ownfood             1.588e-01  1.382e+03   0.000    1.000
-## cons_alcohol             1.193e-01  4.076e+02   0.000    1.000
-## cons_tobacco            -1.823e+00  1.112e+04   0.000    1.000
-## cons_med_total          -2.160e-02  6.039e+02   0.000    1.000
-## cons_med_children       -2.311e-02  1.453e+03   0.000    1.000
-## cons_ed                 -3.028e-01  1.693e+03   0.000    1.000
-## cons_social             -5.205e-01  1.681e+03   0.000    1.000
-## cons_other              -1.700e-01  4.502e+02   0.000    1.000
-## ent_wagelabor           -1.060e+01  2.589e+04   0.000    1.000
-## ent_ownfarm             -2.325e+01  3.003e+04  -0.001    0.999
-## ent_business            -2.149e+01  3.758e+04  -0.001    1.000
-## ent_nonagbusiness        1.256e+01  2.125e+04   0.001    1.000
-## ent_employees                   NA         NA      NA       NA
-## ent_nonag_revenue        5.543e-03  2.066e+02   0.000    1.000
-## ent_nonag_flowcost       2.134e-02  8.071e+02   0.000    1.000
-## ent_farmrevenue          3.465e-02  1.497e+03   0.000    1.000
-## ent_farmexpenses         1.116e+00  3.206e+03   0.000    1.000
-## ent_animalstockrev       1.126e-01  3.715e+02   0.000    1.000
-## ent_total_cost           3.495e-01  1.029e+03   0.000    1.000
-## fs_adskipm_often         2.276e-01  8.306e+03   0.000    1.000
-## fs_adwholed_often        3.772e-01  5.126e+03   0.000    1.000
-## fs_chskipm_often        -5.016e+00  8.789e+03  -0.001    1.000
-## fs_chwholed_often               NA         NA      NA       NA
-## fs_meat                  7.297e-01  4.632e+03   0.000    1.000
-## fs_enoughtom             8.286e-01  1.822e+04   0.000    1.000
-## fs_sleephun              1.522e-01  1.958e+04   0.000    1.000
-## med_expenses_hh_ep      -5.698e-01  3.137e+03   0.000    1.000
-## med_expenses_sp_ep       2.053e-01  3.144e+03   0.000    1.000
-## med_expenses_child_ep   -5.287e-01  4.361e+03   0.000    1.000
-## med_portion_sickinjured  5.459e+00  2.605e+04   0.000    1.000
-## med_port_sick_child      4.877e+00  2.097e+04   0.000    1.000
-## med_afford_port         -2.124e+00  3.692e+04   0.000    1.000
-## med_sickdays_hhave       7.134e-01  5.085e+03   0.000    1.000
-## med_healthconsult       -5.802e+00  2.357e+04   0.000    1.000
-## med_vacc_newborns               NA         NA      NA       NA
-## med_child_check                 NA         NA      NA       NA
-## med_u5_deaths           -1.700e+01  8.523e+04   0.000    1.000
-## ed_expenses             -7.677e-02  1.074e+02  -0.001    0.999
-## ed_expenses_perkid      -9.027e-02  8.068e+02   0.000    1.000
-## ed_schoolattend          8.150e+00  3.410e+04   0.000    1.000
-## ed_sch_missedpc          1.973e-01  4.437e+03   0.000    1.000
-## ed_work_act_pc          -1.790e+00  1.211e+04   0.000    1.000
-## labor_primary           -4.113e+00  4.332e+04   0.000    1.000
-## wage_expenditures               NA         NA      NA       NA
-## durable_investment       7.712e-02  1.958e+02   0.000    1.000
-## nondurable_investment    3.667e-01  8.858e+02   0.000    1.000
-## given_mpesa                     NA         NA      NA       NA
-## amount_given_mpesa       8.114e-01  3.608e+03   0.000    1.000
-## received_mpesa           2.382e+00  2.111e+04   0.000    1.000
-## amount_received_mpesa    1.321e-01  9.085e+02   0.000    1.000
-## net_mpesa                2.752e-01  1.525e+03   0.000    1.000
-## saved_mpesa              3.806e-01  5.183e+04   0.000    1.000
-## amount_saved_mpesa              NA         NA      NA       NA
-## early_survey            -2.174e+00  3.278e+04   0.000    1.000
-## day_of_week              2.043e+00  5.878e+03   0.000    1.000
+## Coefficients: (2 not defined because of singularities)
+##                          Estimate Std. Error z value Pr(&gt;|z|)   
+## (Intercept)            -8.455e-01  6.845e-01  -1.235  0.21673   
+## femaleres              -1.741e-02  3.534e-01  -0.049  0.96070   
+## age                     5.845e-03  8.298e-03   0.704  0.48117   
+## married                -3.380e-01  2.629e-01  -1.286  0.19848   
+## children                3.652e-02  1.603e-01   0.228  0.81977   
+## hhsize                  7.128e-03  1.347e-01   0.053  0.95781   
+## edu                    -7.592e-02  3.634e-02  -2.089  0.03669 * 
+## hh_children             3.761e-02  8.980e-02   0.419  0.67537   
+## cons_nondurable         1.376e-02  1.299e-02   1.059  0.28943   
+## asset_livestock         1.305e-03  3.610e-03   0.362  0.71765   
+## asset_durable          -7.700e-04  4.242e-03  -0.182  0.85596   
+## asset_phone             4.752e-03  4.785e-03   0.993  0.32065   
+## asset_savings          -5.852e+04  4.158e+04  -1.407  0.15933   
+## asset_land_owned_total  3.077e-02  6.891e-02   0.447  0.65518   
+## asset_niceroof         -1.092e+01  8.828e+02  -0.012  0.99013   
+## cons_allfood           -1.461e-02  1.351e-02  -1.082  0.27939   
+## cons_ownfood           -4.990e-03  1.592e-02  -0.313  0.75401   
+## cons_med_total         -4.014e-03  1.514e-02  -0.265  0.79092   
+## cons_ed                -5.852e+04  4.158e+04  -1.407  0.15933   
+## cons_social            -1.138e-02  2.177e-02  -0.523  0.60096   
+## cons_other             -1.128e-02  1.411e-02  -0.800  0.42394   
+## ent_wagelabor           1.189e-01  5.856e-01   0.203  0.83916   
+## ent_ownfarm            -6.059e-01  3.145e-01  -1.927  0.05400 . 
+## ent_business           -4.201e-01  4.240e-01  -0.991  0.32186   
+## ent_nonagbusiness       3.415e-02  2.942e-01   0.116  0.90759   
+## ent_employees          -4.400e-01  7.189e-01  -0.612  0.54048   
+## ent_nonag_revenue       2.464e-03  1.313e-03   1.877  0.06058 . 
+## ent_nonag_flowcost      8.070e-02  3.242e-02   2.489  0.01281 * 
+## ent_farmrevenue        -3.388e-02  2.501e-02  -1.355  0.17554   
+## ent_farmexpenses        1.794e-01  5.590e-02   3.210  0.00133 **
+## ent_animalstockrev      1.115e-02  1.218e-02   0.916  0.35989   
+## ent_total_cost         -5.852e+04  4.158e+04  -1.407  0.15933   
+## fs_adskipm_often       -1.921e-02  1.754e-02  -1.095  0.27334   
+## fs_adwholed_often       1.090e-01  3.355e-02   3.247  0.00117 **
+## med_vacc_newborns              NA         NA      NA       NA   
+## med_child_check                NA         NA      NA       NA   
+## labor_primary          -2.661e-01  5.883e-01  -0.452  0.65105   
+## wage_expenditures      -4.160e-04  3.269e-02  -0.013  0.98985   
+## durable_investment     -1.345e-04  3.543e-03  -0.038  0.96970   
+## nondurable_investment   5.852e+04  4.158e+04   1.407  0.15933   
+## given_mpesa            -1.738e-01  9.240e-01  -0.188  0.85076   
+## amount_given_mpesa      3.685e+05  9.687e+05   0.380  0.70368   
+## received_mpesa          3.938e-01  4.254e-01   0.926  0.35458   
+## amount_received_mpesa  -3.685e+05  9.687e+05  -0.380  0.70368   
+## net_mpesa               3.685e+05  9.687e+05   0.380  0.70368   
+## saved_mpesa            -1.758e-02  2.527e-01  -0.070  0.94455   
+## amount_saved_mpesa     -3.852e-03  7.636e-03  -0.504  0.61399   
+## early_survey            2.151e-01  3.168e-01   0.679  0.49708   
+## day_of_week            -3.722e-02  5.570e-02  -0.668  0.50399   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 2.6319e+03  on 1899  degrees of freedom
-## Residual deviance: 5.7442e-08  on 1837  degrees of freedom
-## AIC: 126
+##     Null deviance: 841.62  on 913  degrees of freedom
+## Residual deviance: 780.71  on 867  degrees of freedom
+## AIC: 874.71
 ## 
-## Number of Fisher Scoring iterations: 25</code></pre>
+## Number of Fisher Scoring iterations: 13</code></pre>
+<pre class="r"><code>pred &lt;- predict(glm_train, test_set, type=&quot;response&quot;)
+pred &lt;- as.integer(pred&gt;0.18)
+cm &lt;- confusionMatrix(as.factor(pred), as.factor(test_set$depressed))
+
+
+library(pROC)
+library(verification)
+roc.curve(test_set$depressed, pred)</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.639</code></pre>
+<pre class="r"><code>auc_log &lt;- as.numeric(auc(roc(test_set$depressed, pred)))
+
+
+results &lt;- tibble(Method = &quot;Logistic Regression&quot;, AUC = auc_log,
+                     F1 = cm$byClass[&quot;F1&quot;], Specificity = cm$byClass[&quot;Specificity&quot;], 
+                     Balanced_Accuracy = cm$byClass[&quot;Balanced Accuracy&quot;])
+results</code></pre>
+<pre><code>## # A tibble: 1 × 5
+##   Method                AUC    F1 Specificity Balanced_Accuracy
+##   &lt;chr&gt;               &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;             &lt;dbl&gt;
+## 1 Logistic Regression 0.639 0.792       0.571             0.639</code></pre>
+</div>
+<div id="classification-tree" class="section level3">
+<h3>Classification Tree</h3>
+<pre class="r"><code>library(rpart)
+library(rpart.plot)
+#build decision tree models on training set
+
+tree.rose &lt;- rpart(depressed~ ., data = train_set, method = &#39;class&#39;)
+rpart.plot(tree.rose)</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>printcp(tree.rose)</code></pre>
+<pre><code>## 
+## Classification tree:
+## rpart(formula = depressed ~ ., data = train_set, method = &quot;class&quot;)
+## 
+## Variables actually used in tree construction:
+## [1] cons_ed           cons_other        ent_farmexpenses  ent_ownfarm      
+## [5] ent_total_cost    fs_adskipm_often  fs_adwholed_often
+## 
+## Root node error: 158/914 = 0.17287
+## 
+## n= 914 
+## 
+##         CP nsplit rel error xerror     xstd
+## 1 0.010549      0   1.00000 1.0000 0.072353
+## 2 0.010000      7   0.92405 1.1962 0.077494</code></pre>
+<pre class="r"><code>pred.tree.rose &lt;- predict(tree.rose, newdata = test_set, type = &quot;prob&quot;)
+pred.tree.rose &lt;- as.integer(pred.tree.rose[,2]&gt;0.2)
+roc.curve(test_set$depressed, pred.tree.rose)</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.566</code></pre>
+<pre class="r"><code>cm_tree &lt;- confusionMatrix(as.factor(pred.tree.rose), as.factor(test_set$depressed))
+auc_tree &lt;- as.numeric(auc(roc(test_set$depressed, pred.tree.rose)))
+result_tree &lt;- tibble(Method = &quot;Classification Tree&quot;, 
+                                     AUC = auc_tree,
+                                     F1 = cm_tree$byClass[&quot;F1&quot;], 
+                                     Specificity = cm_tree$byClass[&quot;Specificity&quot;], 
+                                     Balanced_Accuracy = cm_tree$byClass[&quot;Balanced Accuracy&quot;])
+results &lt;- bind_rows(results, result_tree)</code></pre>
+</div>
+<div id="bagging-cart" class="section level3">
+<h3>Bagging CART</h3>
+<p>Bootstrapped Aggregation (Bagging) is an ensemble method that creates
+multiple models of the same type from different sub-samples of the same
+dataset. The predictions from each separate model are combined together
+to provide a superior result. This approach has shown participially
+effective for high-variance methods such as decision trees.</p>
+<p>Here is bagging applied to the recursive partitioning decision tree
+for our depression dataset.</p>
+<pre class="r"><code>library(ipred)
+fit_ipred &lt;- bagging(depressed~., data=train_set)
+pred.ipred &lt;- predict(fit_ipred, newdata = test_set)
+pred.ipred &lt;- as.integer(pred.ipred&gt;0.2)
+
+roc.curve(test_set$depressed, pred.ipred)</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.667</code></pre>
+<pre class="r"><code>cm_ipred &lt;- confusionMatrix(as.factor(pred.ipred), as.factor(test_set$depressed))
+
+results &lt;- bind_rows(results, tibble(Method = &quot;Bagging&quot;, 
+                      AUC = as.numeric(auc(roc(test_set$depressed, pred.ipred))),
+                      F1 = cm_ipred$byClass[&quot;F1&quot;], Specificity = cm_ipred$byClass[&quot;Specificity&quot;],
+                      Balanced_Accuracy = cm_ipred$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
 </div>
 <div id="knn" class="section level3">
 <h3>kNN</h3>
+<pre class="r"><code>control &lt;- trainControl(method = &quot;cv&quot;,number = 5, p = .8, classProbs = TRUE)
+train_knn &lt;- train(train_set[, -which(names(train_set) == &quot;depressed&quot;)],
+                   make.names(train_set$depressed), method = &quot;knn&quot;,
+                   tuneGrid = data.frame(k = seq(3,10, 2)), trControl = control,
+                   metric = &quot;ROC&quot;, maximize = TRUE
+                   )
+train_knn</code></pre>
+<pre><code>## k-Nearest Neighbors 
+## 
+## 914 samples
+##  48 predictor
+##   2 classes: &#39;X0&#39;, &#39;X1&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 732, 730, 731, 732, 731 
+## Resampling results across tuning parameters:
+## 
+##   k  Accuracy   Kappa      
+##   3  0.7867680  0.031216399
+##   5  0.8064105  0.008498618
+##   7  0.8227744  0.015016266
+##   9  0.8271402  0.000000000
+## 
+## Accuracy was used to select the optimal model using the largest value.
+## The final value used for the model was k = 9.</code></pre>
+<pre class="r"><code>fit_knn &lt;- knn3(train_set[, -which(names(train_set) == &quot;depressed&quot;)],
+                factor(train_set$depressed),  k = train_knn$bestTune$k)
+y_hat_knn &lt;- predict(fit_knn, test_set[, -which(names(train_set) == &quot;depressed&quot;)], type=&quot;class&quot;)
+
+cm_knn &lt;- confusionMatrix(as.factor(y_hat_knn), as.factor(test_set$depressed))
+
+roc.curve(test_set$depressed, y_hat_knn)</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.512</code></pre>
+<pre class="r"><code>results &lt;- bind_rows(results, tibble(Method = &quot;kNN&quot;, AUC = as.numeric(auc(roc(as.numeric(test_set$depressed), as.numeric(y_hat_knn)))),
+                      F1 = cm_knn$byClass[&quot;F1&quot;], Specificity = cm_knn$byClass[&quot;Specificity&quot;],
+                      Balanced_Accuracy = cm_knn$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
+</div>
+<div id="random-forest" class="section level3">
+<h3>Random Forest</h3>
+<pre class="r"><code>control &lt;- trainControl(method = &quot;cv&quot;,number = 5, p = .8)
+grid &lt;- data.frame(mtry=c(1, 5, sqrt(ncol(d))))
+train_rf &lt;- train(train_set[, -which(names(train_set) == &quot;depressed&quot;)],
+                   train_set$depressed, method = &quot;rf&quot;,
+                   tuneGrid = grid, trControl = control,
+                  metric = &quot;F1&quot;, maximize = TRUE)
+train_rf$bestTune</code></pre>
+<pre><code>##   mtry
+## 3    7</code></pre>
+<pre class="r"><code>library(randomForest)
+fit_rf &lt;- randomForest(depressed~., data=train_set, mtry = train_rf$bestTune$mtry)
+y_hat_rf &lt;- predict(fit_rf, test_set)
+y_hat_rf &lt;- as.integer(y_hat_rf&gt;0.18)
+roc.curve(test_set$depressed, y_hat_rf)</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.683</code></pre>
+<pre class="r"><code>cm_rf &lt;- confusionMatrix(factor(y_hat_rf), factor(test_set$depressed))
+
+results &lt;- bind_rows(results, tibble(Method = &quot;Random Forest&quot;, AUC = as.numeric(auc(roc(test_set$depressed, y_hat_rf))),
+                      F1 = cm_rf$byClass[&quot;F1&quot;], Specificity = cm_rf$byClass[&quot;Specificity&quot;],
+                      Balanced_Accuracy = cm_rf$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
+</div>
+<div id="gradient-boosted-machine" class="section level3">
+<h3>Gradient Boosted Machine</h3>
+<pre class="r"><code>library(gbm)
+
+grid_gbm &lt;- expand.grid(n.trees = c(50, 100, 200), interaction.depth = c(1,2,3), 
+                        shrinkage = c(0.1, 0.5, 0.8), n.minobsinnode = c(5, 10, 15))
+train_gbm &lt;- train(depressed ~ ., data = train_set, method = &quot;gbm&quot;, trControl = control,
+                   verbose = FALSE, tuneGrid = grid_gbm, metric = &quot;F1&quot;, maximize = TRUE)
+train_gbm$bestTune</code></pre>
+<pre><code>##    n.trees interaction.depth shrinkage n.minobsinnode
+## 78     200                 3       0.8             10</code></pre>
+<pre class="r"><code>fit_gbm &lt;- gbm(depressed ~., data=train_set, distribution = &quot;bernoulli&quot;)
+y_hat_gbm &lt;- predict(fit_gbm, test_set)
+y_hat_gbm &lt;- as.integer(y_hat_gbm&gt;-1.55)
+roc.curve(test_set$depressed, y_hat_gbm)</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.694</code></pre>
+<pre class="r"><code>cm_gbm &lt;- confusionMatrix(as.factor(y_hat_gbm), as.factor(test_set$depressed))
+
+results &lt;- bind_rows(results, tibble(Method = &quot;Gradient Boosted Machine&quot;, AUC = as.numeric(auc(roc(test_set$depressed, y_hat_gbm))),
+                      F1 = cm_gbm$byClass[&quot;F1&quot;], Specificity = cm_gbm$byClass[&quot;Specificity&quot;],
+                      Balanced_Accuracy = cm_gbm$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
+</div>
+<div id="rose-data" class="section level2">
+<h2>ROSE data</h2>
+<p>From results before, Random Forest and Gradient Boosted Machine seem
+to perform the best in terms of balanced accuracy and specificity
+measure. Here we attempt these 2 models with resampled balanced
+data.</p>
+<pre class="r"><code>table(drose$depressed)</code></pre>
+<pre><code>## 
+##   0   1 
+## 534 609</code></pre>
+<pre class="r"><code>#Data partition
+set.seed(260)
+test_index &lt;- createDataPartition(drose$depressed, times = 1, p = 0.2, list = FALSE)
+test_rose &lt;- d[test_index, ]
+train_rose &lt;- d[-test_index, ] </code></pre>
+<div id="random-forest-1" class="section level4">
+<h4>Random Forest</h4>
+<pre class="r"><code>control &lt;- trainControl(method = &quot;cv&quot;,number = 5, p = .8)
+grid &lt;- data.frame(mtry=c(1, 5, sqrt(ncol(drose))))
+train_rf_rose &lt;- train(train_rose[, -which(names(train_rose) == &quot;depressed&quot;)],
+                  train_rose$depressed, method = &quot;rf&quot;, tuneGrid = grid, trControl = control,
+                  metric = &quot;F1&quot;, maximize = TRUE)
+train_rf_rose$bestTune</code></pre>
+<pre><code>##   mtry
+## 3    7</code></pre>
+<pre class="r"><code>fit_rf_rose &lt;- randomForest(depressed~., data=train_rose, mtry = train_rf_rose$bestTune$mtry)
+y_rose_rf &lt;- predict(fit_rf_rose, test_rose)
+y_rose_rf &lt;- as.integer(y_hat_rf&gt;0.18)
+roc.curve(test_rose$depressed, y_rose_rf)</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.683</code></pre>
+<pre class="r"><code>cm_rf_rose &lt;- confusionMatrix(factor(y_rose_rf), factor(test_rose$depressed))
+
+results &lt;- bind_rows(results, tibble(Method = &quot;ROSE - Random Forest&quot;, 
+                       AUC = as.numeric(auc(roc(test_rose$depressed, y_rose_rf))),
+                       F1 = cm_rf_rose$byClass[&quot;F1&quot;], 
+                       Specificity = cm_rf_rose$byClass[&quot;Specificity&quot;],
+                       Balanced_Accuracy = cm_rf_rose$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
+</div>
+<div id="gradient-boosted-machine-1" class="section level3">
+<h3>Gradient Boosted Machine</h3>
+<pre class="r"><code>library(gbm)
+train_gbm_rose &lt;- train(depressed ~ ., data = train_rose, method = &quot;gbm&quot;, trControl = control,
+                   verbose = FALSE, tuneGrid = grid_gbm, metric = &quot;F1&quot;, maximize = TRUE)
+#train_gbm_rose$bestTune
+
+
+fit_gbm_rose &lt;- gbm(depressed ~., data=train_rose, distribution = &quot;bernoulli&quot;)
+y_rose_gbm &lt;- predict(fit_gbm_rose, test_rose)
+y_rose_gbm &lt;- as.integer(y_rose_gbm&gt;-1.55)
+roc.curve(test_rose$depressed, y_rose_gbm)</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.665</code></pre>
+<pre class="r"><code>cm_gbm_rose &lt;- confusionMatrix(as.factor(y_rose_gbm), as.factor(test_rose$depressed))
+
+results &lt;- bind_rows(results, tibble(Method = &quot;ROSE - Gradient Boosted Machine&quot;, 
+                                     AUC = as.numeric(auc(roc(test_rose$depressed, y_rose_gbm))),
+                                     F1 = cm_gbm_rose$byClass[&quot;F1&quot;], 
+                                     Specificity = cm_gbm_rose$byClass[&quot;Specificity&quot;],
+                                     Balanced_Accuracy = cm_gbm_rose$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
+<pre class="r"><code>results</code></pre>
+<pre><code>## # A tibble: 8 × 5
+##   Method                            AUC    F1 Specificity Balanced_Accuracy
+##   &lt;chr&gt;                           &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;             &lt;dbl&gt;
+## 1 Logistic Regression             0.639 0.792      0.571              0.639
+## 2 Classification Tree             0.566 0.898      0.2                0.566
+## 3 Bagging                         0.667 0.829      0.571              0.667
+## 4 kNN                             0.512 0.917      0.0286             0.512
+## 5 Random Forest                   0.683 0.747      0.743              0.683
+## 6 Gradient Boosted Machine        0.694 0.724      0.8                0.694
+## 7 ROSE - Random Forest            0.683 0.747      0.743              0.683
+## 8 ROSE - Gradient Boosted Machine 0.665 0.793      0.629              0.665</code></pre>
+</div>
 </div>
 
 

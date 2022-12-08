@@ -33,7 +33,7 @@ d <- d[ , !(names(d) %in% na_cols)]
 # Correct imbalance in data
 #ROSE algorithm
 library(ROSE)
-drose <- ROSE(depressed ~ ., N = 500, data = d, seed = 260)$data
+drose <- ROSE(depressed ~ ., N = 1143, data = d, seed = 260)$data
 table(drose$depressed)
 
 #Data partition
@@ -190,14 +190,70 @@ results <- bind_rows(results, tibble(Method = "Gradient Boosted Machine", AUC = 
                       Balanced_Accuracy = cm_gbm$byClass["Balanced Accuracy"]))
 ```
 
-Attempt to change to ROSE data
-```{r}
 
+## ROSE data
+
+From results before, Random Forest and Gradient Boosted Machine seem to perform the best in terms of balanced accuracy and specificity measure. Here we attempt these 2 models with resampled balanced data.
+
+```{r}
+table(drose$depressed)
+
+#Data partition
+set.seed(260)
+test_index <- createDataPartition(drose$depressed, times = 1, p = 0.2, list = FALSE)
+test_rose <- d[test_index, ]
+train_rose <- d[-test_index, ] 
+```
+
+#### Random Forest
+```{r}
+control <- trainControl(method = "cv",number = 5, p = .8)
+grid <- data.frame(mtry=c(1, 5, sqrt(ncol(drose))))
+train_rf_rose <- train(train_rose[, -which(names(train_rose) == "depressed")],
+                  train_rose$depressed, method = "rf", tuneGrid = grid, trControl = control,
+                  metric = "F1", maximize = TRUE)
+train_rf_rose$bestTune
+
+
+fit_rf_rose <- randomForest(depressed~., data=train_rose, mtry = train_rf_rose$bestTune$mtry)
+y_rose_rf <- predict(fit_rf_rose, test_rose)
+y_rose_rf <- as.integer(y_hat_rf>0.18)
+roc.curve(test_rose$depressed, y_rose_rf)
+cm_rf_rose <- confusionMatrix(factor(y_rose_rf), factor(test_rose$depressed))
+
+results <- bind_rows(results, tibble(Method = "ROSE - Random Forest", 
+                       AUC = as.numeric(auc(roc(test_rose$depressed, y_rose_rf))),
+                       F1 = cm_rf_rose$byClass["F1"], 
+                       Specificity = cm_rf_rose$byClass["Specificity"],
+                       Balanced_Accuracy = cm_rf_rose$byClass["Balanced Accuracy"]))
 ```
 
 
+### Gradient Boosted Machine
+```{r}
+library(gbm)
+train_gbm_rose <- train(depressed ~ ., data = train_rose, method = "gbm", trControl = control,
+                   verbose = FALSE, tuneGrid = grid_gbm, metric = "F1", maximize = TRUE)
+#train_gbm_rose$bestTune
 
 
+fit_gbm_rose <- gbm(depressed ~., data=train_rose, distribution = "bernoulli")
+y_rose_gbm <- predict(fit_gbm_rose, test_rose)
+y_rose_gbm <- as.integer(y_rose_gbm>-1.55)
+roc.curve(test_rose$depressed, y_rose_gbm)
+
+cm_gbm_rose <- confusionMatrix(as.factor(y_rose_gbm), as.factor(test_rose$depressed))
+
+results <- bind_rows(results, tibble(Method = "ROSE - Gradient Boosted Machine", 
+                                     AUC = as.numeric(auc(roc(test_rose$depressed, y_rose_gbm))),
+                                     F1 = cm_gbm_rose$byClass["F1"], 
+                                     Specificity = cm_gbm_rose$byClass["Specificity"],
+                                     Balanced_Accuracy = cm_gbm_rose$byClass["Balanced Accuracy"]))
+```
+
+```{r}
+results
+```
 
 
 
