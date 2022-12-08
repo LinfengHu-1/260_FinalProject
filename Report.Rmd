@@ -40,6 +40,8 @@ We first drop unnecessary features for our analysis such as village identifier, 
 
 ### Results table & ROC combined plot
   Why specificty & AUC/balanced accuracy
+#### ROSE 
+  Not much change
   
 ### Shrinkage plot
 

@@ -152,8 +152,10 @@ train_rf <- train(train_set[, -which(names(train_set) == "depressed")],
                    tuneGrid = grid, trControl = control,
                   metric = "F1", maximize = TRUE)
 train_rf$bestTune
-ggplot(data = NULL, aes(x = train_rf$results$mtry, 
-                        y = train_rf$results$RMSE)) + geom_line()
+ggplot(data = NULL, aes(x = train_rf$results$mtry, y = train_rf$results$RMSE)) + 
+  geom_line(colour = 'red') + geom_point() + labs(title = "mtry vs. RMSE") + xlab("mtry") + 
+  ylab("RMSE")
+  
 
 
 library(randomForest)
@@ -181,7 +183,8 @@ train_gbm <- train(depressed ~ ., data = train_set, method = "gbm", trControl = 
                    verbose = FALSE, tuneGrid = grid_gbm, metric = "F1", maximize = TRUE)
 train_gbm$bestTune
 ggplot(data = NULL, aes(x = train_gbm$results$shrinkage, 
-                        y = train_gbm$results$RMSE)) + geom_point()
+                        y = train_gbm$results$RMSE)) + geom_point()+ geom_line(colour = 'red') +
+  geom_point() + labs(title = "shrinkage vs. RMSE") + xlab("shrinkage") + ylab("RMSE")
 
 
 fit_gbm <- gbm(depressed ~., data=train_set, distribution = "bernoulli")
@@ -204,7 +207,14 @@ train_svm <- train(depressed ~ ., data = train_set, method = "svmRadial", trCont
 
 fit_svm <- svm(depressed ~ ., data=train_set, type = "C-classification", kernel = "radial")
 y_hat_svm <- predict(fit_svm, newdata = test_set, type = "decision")
-table(y_hat_svm)
+
+cm_svm <- confusionMatrix(as.factor(y_hat_svm), as.factor(test_set$depressed))
+
+roc.curve(test_set$depressed, y_hat_svm)
+
+results <- bind_rows(results, tibble(Method = "SVM", AUC = as.numeric(auc(roc(as.numeric(test_set$depressed), as.numeric(y_hat_svm)))),
+                      F1 = cm_svm$byClass["F1"], Specificity = cm_svm$byClass["Specificity"],
+                      Balanced_Accuracy = cm_svm$byClass["Balanced Accuracy"])) 
 ```
 
 
