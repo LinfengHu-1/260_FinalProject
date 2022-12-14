@@ -277,6 +277,12 @@ results <- bind_rows(results, tibble(Method = "ROSE - Gradient Boosted Machine",
                                      F1 = cm_gbm_rose$byClass["F1"], 
                                      Specificity = cm_gbm_rose$byClass["Specificity"],
                                      Balanced_Accuracy = cm_gbm_rose$byClass["Balanced Accuracy"]))
+
+ggplot(data = NULL, aes(x = train_gbm_rose$results$shrinkage, 
+                        y = train_gbm_rose$results$RMSE)) + 
+  geom_point()+ geom_line(colour = 'red') +
+  geom_point() + labs(title = "shrinkage vs. RMSE") + xlab("shrinkage") + ylab("RMSE")
+
 ```
 
 ## Results
@@ -290,6 +296,13 @@ roc.plot(x=test_set$depressed == "1",
          pred = cbind(pred, pred.tree.rose, pred.ipred, y_hat_gbm, y_hat_knn, y_hat_rf, y_hat_svm, y_rose_gbm, y_rose_rf), legend = T, thresholds = thresh, leg.text = 
          c("Logistic","Classification Tree","Bagging CART", "Gradient Boosted Machine","kNN",
            "Random Forest", "SVM", "ROSE - GBM", "ROSE - RF"))$roc.vol
+```
+
+```{r}
+ggplot(data = NULL, aes(x=y_rose_gbm, y=test_rose$depressed )) +
+  geom_bar() +
+  geom_abline(intercept=0, slope=1) +
+  labs(x='Predicted Values', y='Actual Values', title='Predicted vs. Actual Values')
 ```
 
 

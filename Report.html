@@ -286,18 +286,17 @@ the association, and use machine learning methods in predicting
 individual level depression.</p>
 <div id="eda" class="section level3">
 <h3>EDA</h3>
-<p>First, we check for missing data included in our dataset. There are
-in total 23 out of 75 features that includes missing NAs. Since we have
-huge number of features included, it is understandable that there are
-very few observations with no missing values at all. We proceed with a
-naive approach by replacing the missing values with the mean for each
-feature.</p>
+<p>First, I checked for missing data included in our dataset. There are
+in total 23 out of 75 features that includes missing NAs. Since there
+are a huge number of features included, it is understandable that there
+are very few observations with no missing values at all. I proceeded
+with a naive approach by replacing the missing values with the mean for
+each feature.</p>
 <p>I then chose to examine the covariates that I have a clear
-understanding for, since we need to identify potential confounding in
-the model and one cannot refer to the classical/epidemiological
-definition of confounding if they do not fully understand the nature of
-that factor. So we only have 20 features left for modeling the
-association.</p>
+understanding for, since we need to understand potential correlations in
+the model and one cannot refer to epidemiological terminologies if they
+do not fully understand the nature of that factor. So we only have 20
+features left for modeling the association.</p>
 <p>I proceeded with using an influence plot which graphs the studentized
 residuals against hat values —- fitted values made by my logistic model,
 and the sizes and fill color of the red circles are proportional to
@@ -306,14 +305,23 @@ studentized residuals with their Cook’s distances labeled. We can see
 that although these 4 points are labeled because of their large residual
 values, none of the points have an absolute value larger than 3.
 Therefore we temporarily conclude that there is no obvious outlier in
-our dataset. <img src="influencePlot.png" alt="Influence Plot" /></p>
+our data set. <img src="influencePlot.png" alt="Influence Plot" /></p>
 <p>From the correlation matrix of all our covariates, we can observe
 that factors that are highly correlated (correlation &gt; 0.6) include
 hhsize &amp; children &amp; hh_totalmembers &amp; hhchildren,
 cons_nondurable and cons_allfood and cons_med_total. Therefore, we
 proceed to eliminate covariates that are highly correlated in our model.
-After further cleaning, we have the influenceIndexPlot below. <img
-src="influenceIndexPlot.png" alt="Diagnostic Plot" /></p>
+After further cleaning, we can obtain the VIP scores for most
+influential factors below. <img src="vipScore.png"
+alt="Vip Score Plot" /> A VIP score is the measure of a variable’s
+importance for the overall model. From the plot, we can observe that the
+factors that seem to be contributing the most to the outcome depression
+are the size of household, proportion of household sick or injured in
+the last month, marital status and years of education completed. These
+covariates mentioned seem to point to common sources of stress and
+emotional turbulence that may be introduced in one’s life. From this
+data set, these factors seem to have high importance in explaining the
+variance of the dependent variable depression.</p>
 </div>
 <div id="description-justification-of-methodology"
 class="section level3">
@@ -325,7 +333,7 @@ a sample of synthetic data by Randomly Over Sampling Examples (ROSE)
 which resulted in a roughly balanced data set to combat this problem.
 However, the degree of imbalance was still severe and generating
 synthetic data seem to worsen the prediction accuracy. Therefore, we
-moved forward with changing the cutoff for prediction.</p>
+moved forward with changing the cutoff threshold for prediction.</p>
 <p>From the ROC curve of a general logistic regression fitted for this
 dataset, we can see that it comes quite closer to the diagonal line,
 indicating low accuracy. From the general model summary, we can also see
@@ -343,13 +351,2636 @@ learning approaches.</p>
 <p>We first drop unnecessary features for our analysis such as village
 identifier, personal identification number and the survey date. We then
 create initial data partition for further examination.</p>
-<div id="logistic-regression-with-tuned-parameters"
+<div id="roc-combined-plot" class="section level3">
+<h3>ROC combined plot</h3>
+<p>Why ROC – ONLY preliminary here.</p>
+<div id="rose" class="section level4">
+<h4>ROSE</h4>
+<p>Not much change</p>
+</div>
+</div>
+<div id="shrinkage-plot" class="section level3">
+<h3>Shrinkage plot</h3>
+<p><img src="shrinkage.png" alt="shrinkage plot" /> ### mtry plot <img
+src="mtry.png" alt="mtry Plot" /> ### Final Results Why specificty
+&amp; AUC/balanced accuracy <img src="resultTable.png"
+alt="Results Table" /></p>
+</div>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+</div>
+<div id="appendix" class="section level2">
+<h2>Appendix</h2>
+<pre class="r"><code>library(tidyverse) </code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+## ✔ ggplot2 3.4.0      ✔ purrr   0.3.5 
+## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
+## ✔ tidyr   1.2.1      ✔ stringr 1.4.1 
+## ✔ readr   2.1.3      ✔ forcats 0.5.2 
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(dplyr)
+library(dslabs)
+library(ggplot2)
+library(lubridate) </code></pre>
+<pre><code>## Loading required package: timechange
+## 
+## Attaching package: &#39;lubridate&#39;
+## 
+## The following objects are masked from &#39;package:base&#39;:
+## 
+##     date, intersect, setdiff, union</code></pre>
+<pre class="r"><code>library(caret)</code></pre>
+<pre><code>## Loading required package: lattice
+## 
+## Attaching package: &#39;caret&#39;
+## 
+## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     lift</code></pre>
+<pre class="r"><code>library(HistData)
+library(Lahman)
+library(purrr)
+library(pdftools)</code></pre>
+<pre><code>## Using poppler version 22.02.0</code></pre>
+<pre class="r"><code>library(broom)
+library(stringr)
+library(tidyr)
+library(readr)</code></pre>
+</div>
+<div id="exploratory-data-analysis" class="section level2">
+<h2>Exploratory Data Analysis</h2>
+<pre class="r"><code>dat &lt;- read_csv(&#39;./data/train.csv&#39;)</code></pre>
+<pre><code>## Rows: 1143 Columns: 75
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (1): survey_date
+## dbl (74): surveyid, village, femaleres, age, married, children, hhsize, edu,...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>var_explain &lt;- read_csv(&#39;./data/var_explain.csv&#39;)</code></pre>
+<pre><code>## Rows: 75 Columns: 2
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (2): name, detail
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>var_explain</code></pre>
+<pre><code>## # A tibble: 75 × 2
+##    name        detail                                           
+##    &lt;chr&gt;       &lt;chr&gt;                                            
+##  1 surveyid    Individual Identifier                            
+##  2 village     Village Identifier                               
+##  3 survey_date Date of Interview (days since Jan1 of first year)
+##  4 femaleres   Female respondent                                
+##  5 age         Age (respondent)                                 
+##  6 married     Marital status (respondent)                      
+##  7 children    Number of children                               
+##  8 hhsize      Household size                                   
+##  9 edu         Years of education completed (respondent)        
+## 10 hh_children Number of children &lt;=18 or younger in Household  
+## # … with 65 more rows</code></pre>
+<pre class="r"><code>glimpse(dat)</code></pre>
+<pre><code>## Rows: 1,143
+## Columns: 75
+## $ surveyid                &lt;dbl&gt; 926, 747, 1190, 1065, 806, 483, 849, 1386, 930…
+## $ village                 &lt;dbl&gt; 91, 57, 115, 97, 42, 25, 130, 72, 195, 33, 52,…
+## $ survey_date             &lt;chr&gt; &quot;23-Nov-61&quot;, &quot;24-Oct-61&quot;, &quot;05-Oct-61&quot;, &quot;23-Sep…
+## $ femaleres               &lt;dbl&gt; 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+## $ age                     &lt;dbl&gt; 28.0, 23.0, 22.0, 27.0, 59.0, 35.0, 34.0, 21.0…
+## $ married                 &lt;dbl&gt; 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1…
+## $ children                &lt;dbl&gt; 4, 3, 3, 2, 4, 6, 1, 2, 7, 4, 0, 2, 4, 4, 0, 2…
+## $ hhsize                  &lt;dbl&gt; 6, 5, 5, 4, 6, 8, 3, 4, 9, 6, 1, 3, 6, 6, 2, 5…
+## $ edu                     &lt;dbl&gt; 10, 8, 9, 10, 10, 10, 9, 10, 9, 10, 1, 9, 10, …
+## $ hh_children             &lt;dbl&gt; 0, 0, 0, 2, 4, 6, 1, 2, 7, 0, 0, 2, 4, 4, 0, 2…
+## $ hh_totalmembers         &lt;dbl&gt; NA, NA, NA, 4, 6, 8, 3, 4, 9, NA, NA, 3, 6, 6,…
+## $ cons_nondurable         &lt;dbl&gt; 0.00000, 0.00000, 0.00000, 378.83292, 258.6718…
+## $ asset_livestock         &lt;dbl&gt; 0.000000, 0.000000, 0.000000, 526.671080, 8.26…
+## $ asset_durable           &lt;dbl&gt; 0.00000, 0.00000, 0.00000, 196.98904, 173.5265…
+## $ asset_phone             &lt;dbl&gt; 0.00000, 0.00000, 0.00000, 24.02305, 19.21844,…
+## $ asset_savings           &lt;dbl&gt; 0.000000, 0.000000, 0.000000, 49.647648, 0.000…
+## $ asset_land_owned_total  &lt;dbl&gt; 0.00, 0.00, 0.00, 0.00, 0.50, 1.70, 1.00, 0.00…
+## $ asset_niceroof          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+## $ cons_allfood            &lt;dbl&gt; 0.00000, 0.00000, 0.00000, 289.17352, 173.0109…
+## $ cons_ownfood            &lt;dbl&gt; 0.0000000, 0.0000000, 0.0000000, 36.4349670, 0…
+## $ cons_alcohol            &lt;dbl&gt; 0, 0, 0, 0, 0, NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ cons_tobacco            &lt;dbl&gt; 0.000000, 0.000000, 0.000000, 0.000000, 0.0000…
+## $ cons_med_total          &lt;dbl&gt; 0.0000000, 0.0000000, 0.0000000, 4.1639962, 0.…
+## $ cons_med_children       &lt;dbl&gt; NA, NA, NA, 0.9609222, 0.8007685, 0.0000000, 0…
+## $ cons_ed                 &lt;dbl&gt; 0.0000000, 0.0000000, 0.0000000, 1.6816138, 2.…
+## $ cons_social             &lt;dbl&gt; 0.00000000, 0.00000000, 0.00000000, 39.7715000…
+## $ cons_other              &lt;dbl&gt; 0.000000, 0.000000, 0.000000, 44.042267, 74.50…
+## $ ent_wagelabor           &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0…
+## $ ent_ownfarm             &lt;dbl&gt; 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1…
+## $ ent_business            &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0…
+## $ ent_nonagbusiness       &lt;dbl&gt; 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+## $ ent_employees           &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+## $ ent_nonag_revenue       &lt;dbl&gt; 0.000000, 0.000000, 0.000000, 32.030739, 0.000…
+## $ ent_nonag_flowcost      &lt;dbl&gt; 0.000000, 0.000000, 0.000000, 0.000000, 0.0000…
+## $ ent_farmrevenue         &lt;dbl&gt; 0.0000000, 0.0000000, 0.0000000, 22.2880550, 0…
+## $ ent_farmexpenses        &lt;dbl&gt; 0.00000000, 0.00000000, 0.00000000, 1.87513290…
+## $ ent_animalstockrev      &lt;dbl&gt; 0.000000, 0.000000, 0.000000, 16.282293, 0.000…
+## $ ent_total_cost          &lt;dbl&gt; 0.00000000, 0.00000000, 0.00000000, 17.8905030…
+## $ fs_adskipm_often        &lt;dbl&gt; 0.0, 0.0, 0.0, 0.0, 0.0, 7.5, 20.0, 0.0, 3.0, …
+## $ fs_adwholed_often       &lt;dbl&gt; 0.0, 0.0, 0.0, 0.0, 0.0, 3.0, 3.0, 0.0, 0.0, 0…
+## $ fs_chskipm_often        &lt;dbl&gt; NA, NA, NA, 0.0, 0.0, 7.5, 20.0, 0.0, 3.0, NA,…
+## $ fs_chwholed_often       &lt;dbl&gt; NA, NA, NA, 0, 0, 0, 0, 0, 0, NA, NA, 0, 0, 0,…
+## $ fs_meat                 &lt;dbl&gt; NA, NA, NA, 3, 2, 1, 1, 4, 4, NA, NA, 3, 4, 4,…
+## $ fs_enoughtom            &lt;dbl&gt; NA, NA, NA, 1, 0, 1, 0, 1, 1, NA, NA, 0, 0, 1,…
+## $ fs_sleephun             &lt;dbl&gt; NA, NA, NA, 1, 0, 1, 1, 0, 0, NA, NA, 0, 1, 0,…
+## $ med_expenses_hh_ep      &lt;dbl&gt; NA, NA, NA, NA, NA, 1.60153700, 0.05338457, 0.…
+## $ med_expenses_sp_ep      &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ med_expenses_child_ep   &lt;dbl&gt; NA, NA, NA, NA, 1.2331835, NA, 0.1601537, 0.80…
+## $ med_portion_sickinjured &lt;dbl&gt; NA, NA, NA, 0.0000000, 0.3333333, 0.1250000, 1…
+## $ med_port_sick_child     &lt;dbl&gt; NA, NA, NA, 0.0000000, 0.2500000, 0.0000000, 1…
+## $ med_afford_port         &lt;dbl&gt; NA, NA, NA, NA, 0.5000000, 1.0000000, 0.333333…
+## $ med_sickdays_hhave      &lt;dbl&gt; NA, NA, NA, 0.0000000, 1.1666666, 0.8750000, 0…
+## $ med_healthconsult       &lt;dbl&gt; NA, NA, NA, NA, 1.0000000, 0.0000000, 0.000000…
+## $ med_vacc_newborns       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+## $ med_child_check         &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+## $ med_u5_deaths           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ ed_expenses             &lt;dbl&gt; NA, NA, NA, 20.179367, 27.226130, 32.030739, 6…
+## $ ed_expenses_perkid      &lt;dbl&gt; NA, NA, NA, 10.089684, 6.806532, 6.406148, 6.4…
+## $ ed_schoolattend         &lt;dbl&gt; NA, NA, NA, 0.5000000, 0.7500000, 0.8000000, 1…
+## $ ed_sch_missedpc         &lt;dbl&gt; NA, NA, NA, 1.5000000, 1.7500000, 0.0000000, 0…
+## $ ed_work_act_pc          &lt;dbl&gt; NA, NA, NA, 0.0000000, 1.2500000, 1.5000000, 1…
+## $ labor_primary           &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0…
+## $ wage_expenditures       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+## $ durable_investment      &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 778.1123, 201.0056, 44…
+## $ nondurable_investment   &lt;dbl&gt; 0.0000000, 0.0000000, 0.0000000, 69.2197650, 4…
+## $ given_mpesa             &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+## $ amount_given_mpesa      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+## $ received_mpesa          &lt;dbl&gt; 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+## $ amount_received_mpesa   &lt;dbl&gt; 0.000000, 4.804611, 8.007685, 0.000000, 0.0000…
+## $ net_mpesa               &lt;dbl&gt; 0.000000, 4.804611, 8.007685, 0.000000, 0.0000…
+## $ saved_mpesa             &lt;dbl&gt; 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0…
+## $ amount_saved_mpesa      &lt;dbl&gt; 0.000000, 0.000000, 0.000000, 1.249199, 0.0000…
+## $ early_survey            &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0…
+## $ depressed               &lt;dbl&gt; 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0…
+## $ day_of_week             &lt;dbl&gt; 5, 3, 5, 0, 3, 6, 3, 1, 1, 3, 5, 5, 6, 2, 4, 4…</code></pre>
+<pre class="r"><code>dat$Class&lt;-as.factor(dat$depressed) # convert class to factor
+levels(dat$Class) &lt;- c(&#39;not_depressed&#39;, &#39;depressed&#39;) # names of factors
+summary(dat$Class)</code></pre>
+<pre><code>## not_depressed     depressed 
+##           950           193</code></pre>
+<pre class="r"><code>head(summary(dat))</code></pre>
+<pre><code>##     surveyid         village       survey_date          femaleres     
+##  Min.   :   1.0   Min.   :  1.00   Length:1143        Min.   :0.0000  
+##  1st Qu.: 351.5   1st Qu.: 23.00   Class :character   1st Qu.:1.0000  
+##  Median : 717.0   Median : 57.00   Mode  :character   Median :1.0000  
+##  Mean   : 715.9   Mean   : 76.41                      Mean   :0.9169  
+##  3rd Qu.:1078.5   3rd Qu.:105.50                      3rd Qu.:1.0000  
+##  Max.   :1429.0   Max.   :292.00                      Max.   :1.0000  
+##       age           married          children         hhsize     
+##  Min.   :17.00   Min.   :0.0000   Min.   : 0.00   Min.   : 1.00  
+##  1st Qu.:24.00   1st Qu.:1.0000   1st Qu.: 2.00   1st Qu.: 3.00  
+##  Median :30.00   Median :1.0000   Median : 3.00   Median : 5.00  
+##  Mean   :34.54   Mean   :0.7725   Mean   : 2.86   Mean   : 4.87  
+##  3rd Qu.:41.00   3rd Qu.:1.0000   3rd Qu.: 4.00   3rd Qu.: 6.00  
+##  Max.   :91.00   Max.   :1.0000   Max.   :10.00   Max.   :12.00  
+##       edu          hh_children     hh_totalmembers  cons_nondurable 
+##  Min.   : 1.000   Min.   : 0.000   Min.   : 1.000   Min.   :   0.0  
+##  1st Qu.: 8.000   1st Qu.: 0.000   1st Qu.: 3.000   1st Qu.:   0.0  
+##  Median : 9.000   Median : 2.000   Median : 5.000   Median : 107.4  
+##  Mean   : 8.736   Mean   : 2.018   Mean   : 4.906   Mean   : 128.4  
+##  3rd Qu.:10.000   3rd Qu.: 3.000   3rd Qu.: 6.000   3rd Qu.: 188.5  
+##  Max.   :19.000   Max.   :10.000   Max.   :12.000   Max.   :1431.6  
+##  asset_livestock   asset_durable     asset_phone     asset_savings    
+##  Min.   :   0.00   Min.   :   0.0   Min.   :  0.00   Min.   :   0.00  
+##  1st Qu.:   0.00   1st Qu.:   0.0   1st Qu.:  0.00   1st Qu.:   0.00  
+##  Median :  16.52   Median : 121.7   Median :  0.00   Median :   0.00  
+##  Mean   : 113.70   Mean   : 148.6   Mean   : 19.66   Mean   :  10.25  
+##  3rd Qu.: 102.57   3rd Qu.: 221.9   3rd Qu.: 32.03   3rd Qu.:   0.00  
+##  Max.   :2754.53   Max.   :3720.4   Max.   :192.18   Max.   :2242.15  
+##  asset_land_owned_total asset_niceroof       cons_allfood      cons_ownfood    
+##  Min.   : 0.0000        Min.   :0.0000000   Min.   :   0.00   Min.   :  0.000  
+##  1st Qu.: 0.0000        1st Qu.:0.0000000   1st Qu.:   0.00   1st Qu.:  0.000  
+##  Median : 0.0000        Median :0.0000000   Median :  77.11   Median :  3.203  
+##  Mean   : 0.9269        Mean   :0.0008749   Mean   :  95.81   Mean   :  8.324  
+##  3rd Qu.: 1.5000        3rd Qu.:0.0000000   3rd Qu.: 136.84   3rd Qu.:  9.823  
+##  Max.   :27.0000        Max.   :1.0000000   Max.   :1386.97   Max.   :181.574  
+##   cons_alcohol      cons_tobacco     cons_med_total   cons_med_children
+##  Min.   :  0.000   Min.   : 0.0000   Min.   :  0.00   Min.   :  0.00   
+##  1st Qu.:  0.000   1st Qu.: 0.0000   1st Qu.:  0.00   1st Qu.:  0.00   
+##  Median :  0.000   Median : 0.0000   Median :  0.00   Median :  0.00   
+##  Mean   :  1.178   Mean   : 0.6348   Mean   :  2.69   Mean   :  1.83   
+##  3rd Qu.:  0.000   3rd Qu.: 0.0000   3rd Qu.:  0.00   3rd Qu.:  0.00   
+##  Max.   :104.672   Max.   :41.8687   Max.   :206.60   Max.   :206.60   
+##     cons_ed          cons_social        cons_other     ent_wagelabor   
+##  Min.   :  0.0000   Min.   :  0.000   Min.   :  0.00   Min.   :0.0000  
+##  1st Qu.:  0.0000   1st Qu.:  0.000   1st Qu.:  0.00   1st Qu.:0.0000  
+##  Median :  0.4671   Median :  1.281   Median : 13.77   Median :0.0000  
+##  Mean   :  2.7948   Mean   :  3.648   Mean   : 21.71   Mean   :0.1864  
+##  3rd Qu.:  2.4023   3rd Qu.:  3.817   3rd Qu.: 30.91   3rd Qu.:0.0000  
+##  Max.   :133.4614   Max.   :140.134   Max.   :289.09   Max.   :1.0000  
+##   ent_ownfarm      ent_business    ent_nonagbusiness ent_employees     
+##  Min.   :0.0000   Min.   :0.0000   Min.   :0.0000    Min.   : 0.00000  
+##  1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000    1st Qu.: 0.00000  
+##  Median :0.0000   Median :0.0000   Median :0.0000    Median : 0.00000  
+##  Mean   :0.2476   Mean   :0.1076   Mean   :0.2695    Mean   : 0.03237  
+##  3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:1.0000    3rd Qu.: 0.00000  
+##  Max.   :1.0000   Max.   :1.0000   Max.   :1.0000    Max.   :11.00000  
+##  ent_nonag_revenue ent_nonag_flowcost ent_farmrevenue   ent_farmexpenses 
+##  Min.   :   0.00   Min.   :   0.00    Min.   :  0.000   Min.   : 0.0000  
+##  1st Qu.:   0.00   1st Qu.:   0.00    1st Qu.:  0.000   1st Qu.: 0.0000  
+##  Median :   0.00   Median :   0.00    Median :  2.135   Median : 0.4883  
+##  Mean   :  34.85   Mean   :  17.32    Mean   :  4.516   Mean   : 1.8667  
+##  3rd Qu.:   0.00   3rd Qu.:   0.00    3rd Qu.:  5.752   3rd Qu.: 2.1551  
+##  Max.   :7687.38   Max.   :2067.58    Max.   :161.355   Max.   :38.0588  
+##  ent_animalstockrev ent_total_cost    fs_adskipm_often fs_adwholed_often
+##  Min.   :  0.000    Min.   :   0.00   Min.   : 0.000   Min.   : 0.0000  
+##  1st Qu.:  0.000    1st Qu.:   0.00   1st Qu.: 0.000   1st Qu.: 0.0000  
+##  Median :  0.000    Median :   1.24   Median : 1.000   Median : 0.0000  
+##  Mean   :  3.932    Mean   :  21.41   Mean   : 4.043   Mean   : 0.9103  
+##  3rd Qu.:  2.736    3rd Qu.:  10.22   3rd Qu.: 5.250   3rd Qu.: 0.0000  
+##  Max.   :176.169    Max.   :2067.58   Max.   :20.000   Max.   :20.0000  
+##  fs_chskipm_often fs_chwholed_often    fs_meat       fs_enoughtom   
+##  Min.   : 0.0     Min.   : 0.0000   Min.   : 0.00   Min.   :0.0000  
+##  1st Qu.: 0.0     1st Qu.: 0.0000   1st Qu.: 2.00   1st Qu.:0.0000  
+##  Median : 0.0     Median : 0.0000   Median : 3.00   Median :0.0000  
+##  Mean   : 2.9     Mean   : 0.4409   Mean   : 3.07   Mean   :0.2744  
+##  3rd Qu.: 3.0     3rd Qu.: 0.0000   3rd Qu.: 4.00   3rd Qu.:1.0000  
+##  Max.   :20.0     Max.   :20.0000   Max.   :22.00   Max.   :1.0000  
+##   fs_sleephun     med_expenses_hh_ep med_expenses_sp_ep med_expenses_child_ep
+##  Min.   :0.0000   Min.   :  0.0000   Min.   :  0.0000   Min.   :  0.0000     
+##  1st Qu.:0.0000   1st Qu.:  0.9209   1st Qu.:  0.7207   1st Qu.:  0.5392     
+##  Median :0.0000   Median :  2.6085   Median :  3.2031   Median :  1.4414     
+##  Mean   :0.3671   Mean   :  5.6260   Mean   :  8.0519   Mean   :  3.7224     
+##  3rd Qu.:1.0000   3rd Qu.:  5.8656   3rd Qu.:  8.0077   3rd Qu.:  4.0038     
+##  Max.   :1.0000   Max.   :124.1725   Max.   :184.1768   Max.   :320.3074     
+##  med_portion_sickinjured med_port_sick_child med_afford_port 
+##  Min.   :0.0000          Min.   :0.0000      Min.   :0.0000  
+##  1st Qu.:0.2500          1st Qu.:0.1667      1st Qu.:0.6667  
+##  Median :0.5000          Median :0.5000      Median :1.0000  
+##  Mean   :0.5198          Mean   :0.4964      Mean   :0.7974  
+##  3rd Qu.:0.7500          3rd Qu.:1.0000      3rd Qu.:1.0000  
+##  Max.   :2.0000          Max.   :1.0000      Max.   :1.0000  
+##  med_sickdays_hhave med_healthconsult med_vacc_newborns med_child_check
+##  Min.   : 0.000     Min.   :0.0000    Min.   :1         Min.   :1      
+##  1st Qu.: 0.000     1st Qu.:0.5000    1st Qu.:1         1st Qu.:1      
+##  Median : 1.000     Median :1.0000    Median :1         Median :1      
+##  Mean   : 1.956     Mean   :0.6954    Mean   :1         Mean   :1      
+##  3rd Qu.: 2.400     3rd Qu.:1.0000    3rd Qu.:1         3rd Qu.:1      
+##  Max.   :31.000     Max.   :1.0000    Max.   :1         Max.   :1      
+##  med_u5_deaths     ed_expenses       ed_expenses_perkid ed_schoolattend 
+##  Min.   :0.2000   Min.   :   0.000   Min.   :  0.000    Min.   :0.0000  
+##  1st Qu.:0.3333   1st Qu.:   9.609   1st Qu.:  3.844    1st Qu.:0.5000  
+##  Median :0.5000   Median :  22.422   Median :  9.042    Median :0.7889  
+##  Mean   :0.5105   Mean   :  52.935   Mean   : 18.612    Mean   :0.7047  
+##  3rd Qu.:0.5000   3rd Qu.:  44.082   3rd Qu.: 19.218    3rd Qu.:1.0000  
+##  Max.   :1.0000   Max.   :1601.537   Max.   :186.846    Max.   :1.5000  
+##  ed_sch_missedpc   ed_work_act_pc  labor_primary    wage_expenditures 
+##  Min.   : 0.0000   Min.   :0.000   Min.   :0.0000   Min.   :    0.00  
+##  1st Qu.: 0.0000   1st Qu.:0.000   1st Qu.:0.0000   1st Qu.:    0.00  
+##  Median : 0.3333   Median :0.500   Median :0.0000   Median :    0.00  
+##  Mean   : 1.3556   Mean   :0.745   Mean   :0.2213   Mean   :   24.36  
+##  3rd Qu.: 1.6875   3rd Qu.:1.000   3rd Qu.:0.0000   3rd Qu.:    0.00  
+##  Max.   :30.0000   Max.   :5.000   Max.   :1.0000   Max.   :27000.00  
+##  durable_investment nondurable_investment  given_mpesa      amount_given_mpesa
+##  Min.   :   0.0     Min.   :   0.000      Min.   :0.00000   Min.   :  0.0000  
+##  1st Qu.:   0.0     1st Qu.:   0.000      1st Qu.:0.00000   1st Qu.:  0.0000  
+##  Median : 188.8     Median :   4.582      Median :0.00000   Median :  0.0000  
+##  Mean   : 288.5     Mean   :  34.464      Mean   :0.01575   Mean   :  0.5535  
+##  3rd Qu.: 399.1     3rd Qu.:  21.917      3rd Qu.:0.00000   3rd Qu.:  0.0000  
+##  Max.   :3782.3     Max.   :2275.473      Max.   :1.00000   Max.   :160.1537  
+##  received_mpesa    amount_received_mpesa   net_mpesa         saved_mpesa   
+##  Min.   :0.00000   Min.   :  0.000       Min.   :-160.154   Min.   :0.000  
+##  1st Qu.:0.00000   1st Qu.:  0.000       1st Qu.:   0.000   1st Qu.:0.000  
+##  Median :0.00000   Median :  0.000       Median :   0.000   Median :0.000  
+##  Mean   :0.06649   Mean   :  3.565       Mean   :   3.011   Mean   :0.189  
+##  3rd Qu.:0.00000   3rd Qu.:  0.000       3rd Qu.:   0.000   3rd Qu.:0.000  
+##  Max.   :1.00000   Max.   :352.338       Max.   : 352.338   Max.   :1.000  
+##  amount_saved_mpesa  early_survey       depressed       day_of_week   
+##  Min.   :  0.000    Min.   :0.00000   Min.   :0.0000   Min.   :0.000  
+##  1st Qu.:  0.000    1st Qu.:0.00000   1st Qu.:0.0000   1st Qu.:2.000  
+##  Median :  0.000    Median :0.00000   Median :0.0000   Median :3.000  
+##  Mean   :  2.269    Mean   :0.09799   Mean   :0.1689   Mean   :3.296  
+##  3rd Qu.:  0.000    3rd Qu.:0.00000   3rd Qu.:0.0000   3rd Qu.:5.000  
+##  Max.   :488.469    Max.   :1.00000   Max.   :1.0000   Max.   :6.000  
+##            Class    
+##  not_depressed:950  
+##  depressed    :193  
+##                     
+##                     
+##                     
+## </code></pre>
+<pre class="r"><code>depressed_sub &lt;- dat %&gt;% filter(depressed == 1)
+nrow(depressed_sub)</code></pre>
+<pre><code>## [1] 193</code></pre>
+<pre class="r"><code>depressed_percent &lt;- nrow(depressed_sub)/nrow(dat)
+depressed_percent</code></pre>
+<pre><code>## [1] 0.1688539</code></pre>
+<pre class="r"><code>prop.table(table(dat$depressed))</code></pre>
+<pre><code>## 
+##         0         1 
+## 0.8311461 0.1688539</code></pre>
+<pre class="r"><code># EDA
+ggplot(data = dat, aes(fill = Class)) +geom_bar(aes(x = Class))</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>dat_depressed &lt;- dat %&gt;% filter(depressed == 1)
+dat_notDepressed &lt;- dat %&gt;% filter(depressed == 0)</code></pre>
+<div id="missing-data" class="section level4">
+<h4>Missing Data</h4>
+<pre class="r"><code>#check for missing data
+anyNA(dat)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>sum(is.na(dat))</code></pre>
+<pre><code>## [1] 10262</code></pre>
+<pre class="r"><code>col_NA &lt;- colnames(dat)[colSums(is.na(dat)) &gt; 0]
+col_NA</code></pre>
+<pre><code>##  [1] &quot;hh_totalmembers&quot;         &quot;cons_alcohol&quot;           
+##  [3] &quot;cons_tobacco&quot;            &quot;cons_med_children&quot;      
+##  [5] &quot;fs_chskipm_often&quot;        &quot;fs_chwholed_often&quot;      
+##  [7] &quot;fs_meat&quot;                 &quot;fs_enoughtom&quot;           
+##  [9] &quot;fs_sleephun&quot;             &quot;med_expenses_hh_ep&quot;     
+## [11] &quot;med_expenses_sp_ep&quot;      &quot;med_expenses_child_ep&quot;  
+## [13] &quot;med_portion_sickinjured&quot; &quot;med_port_sick_child&quot;    
+## [15] &quot;med_afford_port&quot;         &quot;med_sickdays_hhave&quot;     
+## [17] &quot;med_healthconsult&quot;       &quot;med_u5_deaths&quot;          
+## [19] &quot;ed_expenses&quot;             &quot;ed_expenses_perkid&quot;     
+## [21] &quot;ed_schoolattend&quot;         &quot;ed_sch_missedpc&quot;        
+## [23] &quot;ed_work_act_pc&quot;</code></pre>
+<pre class="r"><code>#look at rows with missing data
+dat_NA &lt;- dat[!complete.cases(dat), ]
+nrow(na.omit(dat))</code></pre>
+<pre><code>## [1] 12</code></pre>
+<pre class="r"><code>#look at missing pattern
+library(ggmice)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;ggmice&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:lattice&#39;:
+## 
+##     bwplot, densityplot, stripplot, xyplot</code></pre>
+<pre class="r"><code>plot_pattern(dat[, col_NA])</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>for(i in 1:length(col_NA)){
+  dat[col_NA[i]][is.na(dat[col_NA[i]])] &lt;- round(sum(dat[col_NA[i]], na.rm=TRUE)/nrow(dat))
+}
+anyNA(dat)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code>cols &lt;- colnames(dat)
+cols</code></pre>
+<pre><code>##  [1] &quot;surveyid&quot;                &quot;village&quot;                
+##  [3] &quot;survey_date&quot;             &quot;femaleres&quot;              
+##  [5] &quot;age&quot;                     &quot;married&quot;                
+##  [7] &quot;children&quot;                &quot;hhsize&quot;                 
+##  [9] &quot;edu&quot;                     &quot;hh_children&quot;            
+## [11] &quot;hh_totalmembers&quot;         &quot;cons_nondurable&quot;        
+## [13] &quot;asset_livestock&quot;         &quot;asset_durable&quot;          
+## [15] &quot;asset_phone&quot;             &quot;asset_savings&quot;          
+## [17] &quot;asset_land_owned_total&quot;  &quot;asset_niceroof&quot;         
+## [19] &quot;cons_allfood&quot;            &quot;cons_ownfood&quot;           
+## [21] &quot;cons_alcohol&quot;            &quot;cons_tobacco&quot;           
+## [23] &quot;cons_med_total&quot;          &quot;cons_med_children&quot;      
+## [25] &quot;cons_ed&quot;                 &quot;cons_social&quot;            
+## [27] &quot;cons_other&quot;              &quot;ent_wagelabor&quot;          
+## [29] &quot;ent_ownfarm&quot;             &quot;ent_business&quot;           
+## [31] &quot;ent_nonagbusiness&quot;       &quot;ent_employees&quot;          
+## [33] &quot;ent_nonag_revenue&quot;       &quot;ent_nonag_flowcost&quot;     
+## [35] &quot;ent_farmrevenue&quot;         &quot;ent_farmexpenses&quot;       
+## [37] &quot;ent_animalstockrev&quot;      &quot;ent_total_cost&quot;         
+## [39] &quot;fs_adskipm_often&quot;        &quot;fs_adwholed_often&quot;      
+## [41] &quot;fs_chskipm_often&quot;        &quot;fs_chwholed_often&quot;      
+## [43] &quot;fs_meat&quot;                 &quot;fs_enoughtom&quot;           
+## [45] &quot;fs_sleephun&quot;             &quot;med_expenses_hh_ep&quot;     
+## [47] &quot;med_expenses_sp_ep&quot;      &quot;med_expenses_child_ep&quot;  
+## [49] &quot;med_portion_sickinjured&quot; &quot;med_port_sick_child&quot;    
+## [51] &quot;med_afford_port&quot;         &quot;med_sickdays_hhave&quot;     
+## [53] &quot;med_healthconsult&quot;       &quot;med_vacc_newborns&quot;      
+## [55] &quot;med_child_check&quot;         &quot;med_u5_deaths&quot;          
+## [57] &quot;ed_expenses&quot;             &quot;ed_expenses_perkid&quot;     
+## [59] &quot;ed_schoolattend&quot;         &quot;ed_sch_missedpc&quot;        
+## [61] &quot;ed_work_act_pc&quot;          &quot;labor_primary&quot;          
+## [63] &quot;wage_expenditures&quot;       &quot;durable_investment&quot;     
+## [65] &quot;nondurable_investment&quot;   &quot;given_mpesa&quot;            
+## [67] &quot;amount_given_mpesa&quot;      &quot;received_mpesa&quot;         
+## [69] &quot;amount_received_mpesa&quot;   &quot;net_mpesa&quot;              
+## [71] &quot;saved_mpesa&quot;             &quot;amount_saved_mpesa&quot;     
+## [73] &quot;early_survey&quot;            &quot;depressed&quot;              
+## [75] &quot;day_of_week&quot;             &quot;Class&quot;</code></pre>
+<pre class="r"><code>library(Hmisc)</code></pre>
+<pre><code>## Loading required package: survival</code></pre>
+<pre><code>## 
+## Attaching package: &#39;survival&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:caret&#39;:
+## 
+##     cluster</code></pre>
+<pre><code>## Loading required package: Formula</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Hmisc&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:Lahman&#39;:
+## 
+##     Label</code></pre>
+<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
+## 
+##     src, summarize</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     format.pval, units</code></pre>
+<pre class="r"><code>hist.data.frame(dat)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-9-1.png" width="672" /><img src="Report_files/figure-html/unnamed-chunk-9-2.png" width="672" /><img src="Report_files/figure-html/unnamed-chunk-9-3.png" width="672" /></p>
+</div>
+<div id="examine-continuous-covariates" class="section level4">
+<h4>Examine continuous covariates</h4>
+<pre class="r"><code>#family factors
+pairs(depressed ~ age + children + hhsize + edu + hh_totalmembers + hh_children, dat)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>#socio-economic indicating factors
+pairs(depressed ~ cons_nondurable + asset_savings + cons_allfood + cons_med_total + cons_ed + cons_social + ent_total_cost, dat)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
+<pre class="r"><code># life-style/financial factors
+pairs(depressed ~ fs_adskipm_often + fs_meat + med_portion_sickinjured + ed_sch_missedpc + durable_investment, dat)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-10-3.png" width="672" /></p>
+<pre class="r"><code>dat_old &lt;- dat
+# Interested/understandable factors
+cov &lt;- c(&quot;age&quot;, &quot;children&quot;, &quot;hhsize&quot;, &quot;edu&quot; , &quot;hh_totalmembers&quot;, &quot;hh_children&quot;, &quot;cons_nondurable&quot;, &quot;asset_savings&quot;, &quot;cons_allfood&quot;, &quot;cons_med_total&quot;, &quot;cons_ed&quot;, &quot;cons_social&quot;, &quot;ent_total_cost&quot;, &quot;fs_adskipm_often&quot;, &quot;fs_meat&quot;, &quot;med_portion_sickinjured&quot;, &quot;ed_sch_missedpc&quot;, &quot;durable_investment&quot;, &quot;femaleres&quot;, &quot;married&quot;, &quot;depressed&quot;)
+
+dat &lt;- dat[, cov]
+
+hist.data.frame(dat)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code>library(glmnet)</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Matrix&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:tidyr&#39;:
+## 
+##     expand, pack, unpack</code></pre>
+<pre><code>## Loaded glmnet 4.1-4</code></pre>
+<pre class="r"><code>library(vip)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;vip&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:utils&#39;:
+## 
+##     vi</code></pre>
+<pre class="r"><code>#define outcome variable
+y &lt;- dat[,&quot;depressed&quot;] |&gt; as.matrix()
+#define matrix of predictor variables
+x &lt;- dat[, c(&quot;age&quot;, &quot;children&quot;, &quot;hhsize&quot;, &quot;edu&quot; , &quot;hh_totalmembers&quot;, &quot;hh_children&quot;, &quot;cons_nondurable&quot;, &quot;asset_savings&quot;, &quot;cons_allfood&quot;, &quot;cons_med_total&quot;, &quot;cons_ed&quot;, &quot;cons_social&quot;, &quot;ent_total_cost&quot;, &quot;fs_adskipm_often&quot;, &quot;fs_meat&quot;, &quot;med_portion_sickinjured&quot;, &quot;ed_sch_missedpc&quot;, &quot;durable_investment&quot;, &quot;femaleres&quot;, &quot;married&quot;)] |&gt; as.matrix()
+elasticnet.mod = glmnet(x,y,alpha=0.5,family=&quot;binomial&quot;)
+vip(elasticnet.mod, num_features=10, geom = &quot;point&quot;)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(dat, aes(age, depressed, color=factor(femaleres))) +
+  stat_smooth(method=&quot;loess&quot;, formula=y~x,
+              alpha=0.2, size=2, aes(fill=factor(femaleres))) +
+  geom_point(position=position_jitter(height=0.03, width=0)) +
+  xlab(&quot;Age&quot;) + ylab(&quot;depressed&quot;)</code></pre>
+<pre><code>## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## ℹ Please use `linewidth` instead.</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+</div>
+</div>
+<div id="regression---association" class="section level2">
+<h2>Regression - Association</h2>
+<pre class="r"><code>mod_log &lt;- glm(depressed ~ age + children + hhsize+edu + hh_totalmembers+ hh_children+ cons_nondurable+ asset_savings + cons_allfood+ cons_med_total+ cons_ed+ cons_social+ ent_total_cost+ fs_adskipm_often  + fs_meat + med_portion_sickinjured+ ed_sch_missedpc+ durable_investment+ femaleres + married, data = dat, family = &quot;binomial&quot;)
+summary(mod_log)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = depressed ~ age + children + hhsize + edu + hh_totalmembers + 
+##     hh_children + cons_nondurable + asset_savings + cons_allfood + 
+##     cons_med_total + cons_ed + cons_social + ent_total_cost + 
+##     fs_adskipm_often + fs_meat + med_portion_sickinjured + ed_sch_missedpc + 
+##     durable_investment + femaleres + married, family = &quot;binomial&quot;, 
+##     data = dat)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.2551  -0.6223  -0.5343  -0.4313   2.3410  
+## 
+## Coefficients:
+##                           Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)             -2.1097777  0.6476917  -3.257 0.001124 ** 
+## age                      0.0050543  0.0068460   0.738 0.460338    
+## children                 0.4773323  0.1574719   3.031 0.002436 ** 
+## hhsize                  -0.4544707  0.1557566  -2.918 0.003525 ** 
+## edu                     -0.0939509  0.0316226  -2.971 0.002968 ** 
+## hh_totalmembers          0.7167775  0.1788150   4.008 6.11e-05 ***
+## hh_children             -0.6235396  0.1685345  -3.700 0.000216 ***
+## cons_nondurable         -0.0006877  0.0035929  -0.191 0.848203    
+## asset_savings            0.0001734  0.0012060   0.144 0.885682    
+## cons_allfood             0.0001879  0.0039604   0.047 0.962151    
+## cons_med_total           0.0065100  0.0081258   0.801 0.423040    
+## cons_ed                 -0.0013735  0.0116827  -0.118 0.906409    
+## cons_social              0.0009665  0.0146599   0.066 0.947435    
+## ent_total_cost          -0.0022172  0.0018419  -1.204 0.228698    
+## fs_adskipm_often         0.0051131  0.0142501   0.359 0.719736    
+## fs_meat                  0.0356918  0.0420609   0.849 0.396118    
+## med_portion_sickinjured  0.6976688  0.3116025   2.239 0.025158 *  
+## ed_sch_missedpc          0.0040800  0.0390692   0.104 0.916829    
+## durable_investment       0.0001230  0.0002654   0.463 0.643063    
+## femaleres               -0.0038577  0.3159358  -0.012 0.990258    
+## married                 -0.3280793  0.2305697  -1.423 0.154763    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 1037.99  on 1142  degrees of freedom
+## Residual deviance:  992.72  on 1122  degrees of freedom
+## AIC: 1034.7
+## 
+## Number of Fisher Scoring iterations: 5</code></pre>
+<pre class="r"><code># Influence plot
+library(car)</code></pre>
+<pre><code>## Loading required package: carData</code></pre>
+<pre><code>## 
+## Attaching package: &#39;carData&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:Lahman&#39;:
+## 
+##     Salaries</code></pre>
+<pre><code>## 
+## Attaching package: &#39;car&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     recode</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     some</code></pre>
+<pre class="r"><code>par(mfrow=c(1,1))
+influencePlot(mod_log,col=&quot;red&quot;)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<pre><code>##         StudRes         Hat       CookD
+## 33   -1.2011290 0.403660391 0.035167313
+## 118   2.3648827 0.007682324 0.005383474
+## 500   2.3354113 0.010175991 0.006567766
+## 1138 -0.7725291 0.720221616 0.058746698</code></pre>
+<pre class="r"><code>covMatrix &lt;- vcov(mod_log)
+corrMatrix &lt;- cov2cor(covMatrix)
+head(corrMatrix) </code></pre>
+<pre><code>##                 (Intercept)         age    children      hhsize         edu
+## (Intercept)       1.0000000 -0.58767242 -0.18049261  0.18897697 -0.58872619
+## age              -0.5876724  1.00000000  0.09229649 -0.09271652  0.40079131
+## children         -0.1804926  0.09229649  1.00000000 -0.90268108 -0.10778845
+## hhsize            0.1889770 -0.09271652 -0.90268108  1.00000000  0.03711347
+## edu              -0.5887262  0.40079131 -0.10778845  0.03711347  1.00000000
+## hh_totalmembers  -0.4235898 -0.06063405  0.57615604 -0.69273439 -0.01139463
+##                 hh_totalmembers hh_children cons_nondurable asset_savings
+## (Intercept)         -0.42358980  0.43156832     0.003444801  -0.013502452
+## age                 -0.06063405  0.07319592     0.034581287   0.001741527
+## children             0.57615604 -0.62417872     0.064147328  -0.005961643
+## hhsize              -0.69273439  0.60145373    -0.041794773   0.006252783
+## edu                 -0.01139463  0.03649214    -0.044695947  -0.045826752
+## hh_totalmembers      1.00000000 -0.90814530     0.001986287   0.025328763
+##                 cons_allfood cons_med_total      cons_ed  cons_social
+## (Intercept)     -0.008670293     0.04996853  0.105296904  0.014145616
+## age             -0.028757980    -0.07119577 -0.128299424 -0.006819089
+## children        -0.028585164    -0.05467656  0.033512947  0.002728769
+## hhsize           0.017111566     0.03717695 -0.032094520  0.003791168
+## edu              0.045558797    -0.03401199 -0.004050992 -0.035335073
+## hh_totalmembers  0.004808727    -0.04013454 -0.059131264  0.008249273
+##                 ent_total_cost fs_adskipm_often     fs_meat
+## (Intercept)       -0.027830441      -0.07640406 -0.22337498
+## age                0.035198495      -0.04698898  0.04521631
+## children          -0.012099015       0.14668604  0.06493849
+## hhsize             0.003904821      -0.12115453 -0.04279511
+## edu                0.016295319      -0.01262028  0.04383048
+## hh_totalmembers    0.030180188       0.10383619  0.06925456
+##                 med_portion_sickinjured ed_sch_missedpc durable_investment
+## (Intercept)                 -0.26324192    -0.021788912         0.04064100
+## age                         -0.05851897     0.032155090        -0.06075429
+## children                     0.27562869    -0.011127963         0.10962697
+## hhsize                      -0.18595088     0.001841729        -0.06540287
+## edu                         -0.02130557    -0.033168424        -0.06908299
+## hh_totalmembers              0.40329323    -0.041375660         0.03272123
+##                    femaleres      married
+## (Intercept)     -0.455430806 -0.139090882
+## age              0.080565443  0.376339515
+## children         0.006614439  0.202703509
+## hhsize          -0.072182383 -0.258845794
+## edu              0.209934920 -0.059728286
+## hh_totalmembers  0.037148208  0.005046537</code></pre>
+<pre class="r"><code>#up sampling for imbalanced data
+set.seed(260)
+datdown &lt;- downSample(x=dat[, -which(names(dat) == &quot;depressed&quot;)], y=dat$depressed)</code></pre>
+<pre><code>## Warning in downSample(x = dat[, -which(names(dat) == &quot;depressed&quot;)], y =
+## dat$depressed): Down-sampling requires a factor variable as the response. The
+## original data was returned.</code></pre>
+<pre class="r"><code>prop.table(table(datdown$y))</code></pre>
+<pre><code>## 
+##         0         1 
+## 0.8311461 0.1688539</code></pre>
+<pre class="r"><code>#ROSE algorithm
+library(ROSE)</code></pre>
+<pre><code>## Loaded ROSE 0.0-4</code></pre>
+<pre class="r"><code>drose &lt;- ROSE(depressed ~ ., N = 1900, data = dat, seed = 260)$data
+table(drose$depressed)</code></pre>
+<pre><code>## 
+##   0   1 
+## 919 981</code></pre>
+<pre class="r"><code>mod_log &lt;- glm(depressed ~ age + children + hhsize + edu + cons_nondurable+ asset_savings + cons_ed+ cons_social+ ent_total_cost+ fs_adskipm_often  + fs_meat + med_portion_sickinjured+ ed_sch_missedpc+ durable_investment+ femaleres + married, data = drose, family = &quot;binomial&quot;)
+summary(mod_log)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = depressed ~ age + children + hhsize + edu + cons_nondurable + 
+##     asset_savings + cons_ed + cons_social + ent_total_cost + 
+##     fs_adskipm_often + fs_meat + med_portion_sickinjured + ed_sch_missedpc + 
+##     durable_investment + femaleres + married, family = &quot;binomial&quot;, 
+##     data = drose)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.7151  -1.1573   0.8263   1.1338   1.5769  
+## 
+## Coefficients:
+##                           Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)              0.0927268  0.2519738   0.368 0.712872    
+## age                      0.0097250  0.0028571   3.404 0.000665 ***
+## children                 0.0882823  0.0254831   3.464 0.000532 ***
+## hhsize                  -0.0318516  0.0224236  -1.420 0.155477    
+## edu                     -0.0369448  0.0133767  -2.762 0.005747 ** 
+## cons_nondurable          0.0001762  0.0003319   0.531 0.595549    
+## asset_savings            0.0011554  0.0008599   1.344 0.179055    
+## cons_ed                 -0.0045480  0.0053931  -0.843 0.399061    
+## cons_social              0.0029860  0.0061296   0.487 0.626158    
+## ent_total_cost          -0.0010053  0.0005321  -1.889 0.058860 .  
+## fs_adskipm_often         0.0065435  0.0063446   1.031 0.302379    
+## fs_meat                  0.0308384  0.0210498   1.465 0.142914    
+## med_portion_sickinjured -0.0478709  0.1148262  -0.417 0.676753    
+## ed_sch_missedpc          0.0450466  0.0199663   2.256 0.024062 *  
+## durable_investment      -0.0001188  0.0001003  -1.184 0.236233    
+## femaleres               -0.1071566  0.1401211  -0.765 0.444425    
+## married                 -0.2660823  0.0958471  -2.776 0.005501 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 2631.9  on 1899  degrees of freedom
+## Residual deviance: 2561.4  on 1883  degrees of freedom
+## AIC: 2595.4
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>influenceIndexPlot(mod_log)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code>library(corrplot)</code></pre>
+<pre><code>## corrplot 0.92 loaded</code></pre>
+<pre class="r"><code>correlations &lt;- cor(dat[, -12], use = &quot;pairwise.complete.obs&quot;)
+corrplot(correlations, method=&#39;number&#39;)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<pre class="r"><code>corrplot.mixed(correlations,upper = &quot;circle&quot;, lower = &quot;number&quot;, tl.col = &quot;black&quot;, tl.pos = &quot;lt&quot;) </code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-18-2.png" width="672" /></p>
+<pre class="r"><code>summary(mod_log)$coefficients</code></pre>
+<pre><code>##                              Estimate   Std. Error    z value     Pr(&gt;|z|)
+## (Intercept)              0.0927267778 0.2519737854  0.3680017 0.7128719772
+## age                      0.0097250035 0.0028571003  3.4038019 0.0006645493
+## children                 0.0882823064 0.0254830912  3.4643484 0.0005315176
+## hhsize                  -0.0318515991 0.0224235997 -1.4204499 0.1554767556
+## edu                     -0.0369447546 0.0133766727 -2.7618792 0.0057469730
+## cons_nondurable          0.0001761661 0.0003318808  0.5308114 0.5955494545
+## asset_savings            0.0011554402 0.0008599139  1.3436696 0.1790552446
+## cons_ed                 -0.0045480196 0.0053931239 -0.8432997 0.3990608750
+## cons_social              0.0029859948 0.0061296320  0.4871410 0.6261584393
+## ent_total_cost          -0.0010052561 0.0005320965 -1.8892363 0.0588601755
+## fs_adskipm_often         0.0065435085 0.0063446332  1.0313454 0.3023788642
+## fs_meat                  0.0308384289 0.0210497812  1.4650237 0.1429144437
+## med_portion_sickinjured -0.0478708512 0.1148261792 -0.4168984 0.6767527191
+## ed_sch_missedpc          0.0450466222 0.0199662671  2.2561364 0.0240620892
+## durable_investment      -0.0001188064 0.0001003048 -1.1844539 0.2362334463
+## femaleres               -0.1071565616 0.1401210982 -0.7647425 0.4444248823
+## married                 -0.2660822913 0.0958471106 -2.7761118 0.0055013293</code></pre>
+<pre class="r"><code>library(pROC)</code></pre>
+<pre><code>## Type &#39;citation(&quot;pROC&quot;)&#39; for a citation.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;pROC&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     cov, smooth, var</code></pre>
+<pre class="r"><code>predprob &lt;- predict(mod_log,type=c(&quot;response&quot;)) 
+roccurve &lt;- roc(drose$depressed ~ predprob)</code></pre>
+<pre><code>## Setting levels: control = 0, case = 1</code></pre>
+<pre><code>## Setting direction: controls &lt; cases</code></pre>
+<pre class="r"><code>plot(roccurve,col=&quot;red&quot;)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<pre class="r"><code>roccurve</code></pre>
+<pre><code>## 
+## Call:
+## roc.formula(formula = drose$depressed ~ predprob)
+## 
+## Data: predprob in 919 controls (drose$depressed 0) &lt; 981 cases (drose$depressed 1).
+## Area under the curve: 0.6066</code></pre>
+<pre class="r"><code>library(rpart)
+#build decision tree models
+tree.rose &lt;- rpart(depressed ~ ., data = drose)
+pred.tree.rose &lt;- predict(tree.rose, newdata = drose)
+roc.curve(drose$depressed, pred.tree.rose)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-19-2.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.854</code></pre>
+<pre class="r"><code>#calculate and intepret the coefficients the odds ratio and 95% CI
+exp(cbind(OR = coef(mod_log), confint(mod_log)))</code></pre>
+<pre><code>## Waiting for profiling to be done...</code></pre>
+<pre><code>##                                OR     2.5 %    97.5 %
+## (Intercept)             1.0971619 0.6696062 1.7989057
+## age                     1.0097724 1.0041529 1.0154683
+## children                1.0922964 1.0392387 1.1484693
+## hhsize                  0.9686503 0.9269281 1.0121389
+## edu                     0.9637294 0.9386972 0.9892606
+## cons_nondurable         1.0001762 0.9995261 1.0008287
+## asset_savings           1.0011561 0.9994846 1.0028866
+## cons_ed                 0.9954623 0.9848940 1.0060123
+## cons_social             1.0029905 0.9910073 1.0151368
+## ent_total_cost          0.9989952 0.9978965 0.9999837
+## fs_adskipm_often        1.0065650 0.9941403 1.0191903
+## fs_meat                 1.0313189 0.9896764 1.0748658
+## med_portion_sickinjured 0.9532569 0.7610186 1.1939373
+## ed_sch_missedpc         1.0460766 1.0061889 1.0882737
+## durable_investment      0.9998812 0.9996839 1.0000776
+## femaleres               0.8983850 0.6820165 1.1818006
+## married                 0.7663761 0.6347538 0.9243907</code></pre>
+<p>We can interpret these coefficients in terms of odds ratios. For
+example, for a one unit increase in the number of children one has, the
+odds of being depressed (versus not being depressed) increase by a
+factor of 1.1225961, on average, holding all other covariates fixed.</p>
+<pre class="r"><code>d &lt;- read_csv(&#39;./data/train.csv&#39;)</code></pre>
+<pre><code>## Rows: 1143 Columns: 75
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (1): survey_date
+## dbl (74): surveyid, village, femaleres, age, married, children, hhsize, edu,...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>d &lt;- d[, !(names(d) %in% c(&quot;surveyid&quot;, &quot;village&quot;, &quot;survey_date&quot;))]
+
+na_cols &lt;- names(which(colSums(is.na(d))&gt;0))
+d &lt;- d[ , !(names(d) %in% na_cols)]
+
+# d$Class&lt;-as.factor(d$depressed) # convert class to factor
+# levels(d$Class) &lt;- c(&#39;not_depressed&#39;, &#39;depressed&#39;) # names of factors
+# summary(d$Class)
+
+# Correct imbalance in data
+#ROSE algorithm
+library(ROSE)
+drose &lt;- ROSE(depressed ~ ., N = 1143, data = d, seed = 260)$data
+table(drose$depressed)</code></pre>
+<pre><code>## 
+##   0   1 
+## 534 609</code></pre>
+<pre class="r"><code>#Data partition
+set.seed(260)
+test_index &lt;- createDataPartition(d$depressed, times = 1, p = 0.2, list = FALSE)
+test_set &lt;- d[test_index, ]
+train_set &lt;- d[-test_index, ]
+
+#predictor / response definition
+predictor_variables &lt;- d[,-48]
+response_variable &lt;- d$depressed
+#swap to have minority class coded as 1
+levels(response_variable) &lt;- c(&#39;0&#39;, &#39;1&#39;) 
+table(d$depressed)</code></pre>
+<pre><code>## 
+##   0   1 
+## 950 193</code></pre>
+<div id="logistic-regression-with-tuned-parameter"
 class="section level3">
-<h3>Logistic Regression with tuned parameters</h3>
+<h3>Logistic Regression with tuned parameter</h3>
+<pre class="r"><code>glm_train &lt;- glm(depressed ~ ., data = train_set, family = &quot;binomial&quot;)
+summary(glm_train)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = depressed ~ ., family = &quot;binomial&quot;, data = train_set)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.6634  -0.6411  -0.5339  -0.3522   2.5294  
+## 
+## Coefficients: (2 not defined because of singularities)
+##                          Estimate Std. Error z value Pr(&gt;|z|)   
+## (Intercept)            -8.455e-01  6.845e-01  -1.235  0.21673   
+## femaleres              -1.741e-02  3.534e-01  -0.049  0.96070   
+## age                     5.845e-03  8.298e-03   0.704  0.48117   
+## married                -3.380e-01  2.629e-01  -1.286  0.19848   
+## children                3.652e-02  1.603e-01   0.228  0.81977   
+## hhsize                  7.128e-03  1.347e-01   0.053  0.95781   
+## edu                    -7.592e-02  3.634e-02  -2.089  0.03669 * 
+## hh_children             3.761e-02  8.980e-02   0.419  0.67537   
+## cons_nondurable         1.376e-02  1.299e-02   1.059  0.28943   
+## asset_livestock         1.305e-03  3.610e-03   0.362  0.71765   
+## asset_durable          -7.700e-04  4.242e-03  -0.182  0.85596   
+## asset_phone             4.752e-03  4.785e-03   0.993  0.32065   
+## asset_savings          -5.852e+04  4.158e+04  -1.407  0.15933   
+## asset_land_owned_total  3.077e-02  6.891e-02   0.447  0.65518   
+## asset_niceroof         -1.092e+01  8.828e+02  -0.012  0.99013   
+## cons_allfood           -1.461e-02  1.351e-02  -1.082  0.27939   
+## cons_ownfood           -4.990e-03  1.592e-02  -0.313  0.75401   
+## cons_med_total         -4.014e-03  1.514e-02  -0.265  0.79092   
+## cons_ed                -5.852e+04  4.158e+04  -1.407  0.15933   
+## cons_social            -1.138e-02  2.177e-02  -0.523  0.60096   
+## cons_other             -1.128e-02  1.411e-02  -0.800  0.42394   
+## ent_wagelabor           1.189e-01  5.856e-01   0.203  0.83916   
+## ent_ownfarm            -6.059e-01  3.145e-01  -1.927  0.05400 . 
+## ent_business           -4.201e-01  4.240e-01  -0.991  0.32186   
+## ent_nonagbusiness       3.415e-02  2.942e-01   0.116  0.90759   
+## ent_employees          -4.400e-01  7.189e-01  -0.612  0.54048   
+## ent_nonag_revenue       2.464e-03  1.313e-03   1.877  0.06058 . 
+## ent_nonag_flowcost      8.070e-02  3.242e-02   2.489  0.01281 * 
+## ent_farmrevenue        -3.388e-02  2.501e-02  -1.355  0.17554   
+## ent_farmexpenses        1.794e-01  5.590e-02   3.210  0.00133 **
+## ent_animalstockrev      1.115e-02  1.218e-02   0.916  0.35989   
+## ent_total_cost         -5.852e+04  4.158e+04  -1.407  0.15933   
+## fs_adskipm_often       -1.921e-02  1.754e-02  -1.095  0.27334   
+## fs_adwholed_often       1.090e-01  3.355e-02   3.247  0.00117 **
+## med_vacc_newborns              NA         NA      NA       NA   
+## med_child_check                NA         NA      NA       NA   
+## labor_primary          -2.661e-01  5.883e-01  -0.452  0.65105   
+## wage_expenditures      -4.160e-04  3.269e-02  -0.013  0.98985   
+## durable_investment     -1.345e-04  3.543e-03  -0.038  0.96970   
+## nondurable_investment   5.852e+04  4.158e+04   1.407  0.15933   
+## given_mpesa            -1.738e-01  9.240e-01  -0.188  0.85076   
+## amount_given_mpesa      3.685e+05  9.687e+05   0.380  0.70368   
+## received_mpesa          3.938e-01  4.254e-01   0.926  0.35458   
+## amount_received_mpesa  -3.685e+05  9.687e+05  -0.380  0.70368   
+## net_mpesa               3.685e+05  9.687e+05   0.380  0.70368   
+## saved_mpesa            -1.758e-02  2.527e-01  -0.070  0.94455   
+## amount_saved_mpesa     -3.852e-03  7.636e-03  -0.504  0.61399   
+## early_survey            2.151e-01  3.168e-01   0.679  0.49708   
+## day_of_week            -3.722e-02  5.570e-02  -0.668  0.50399   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 841.62  on 913  degrees of freedom
+## Residual deviance: 780.71  on 867  degrees of freedom
+## AIC: 874.71
+## 
+## Number of Fisher Scoring iterations: 13</code></pre>
+<pre class="r"><code>pred &lt;- predict(glm_train, test_set, type=&quot;response&quot;)</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre class="r"><code>pred &lt;- as.integer(pred&gt;0.18)
+cm &lt;- confusionMatrix(as.factor(pred), as.factor(test_set$depressed))
+
+
+library(pROC)
+library(verification)</code></pre>
+<pre><code>## Loading required package: fields</code></pre>
+<pre><code>## Loading required package: spam</code></pre>
+<pre><code>## Spam version 2.9-1 (2022-08-07) is loaded.
+## Type &#39;help( Spam)&#39; or &#39;demo( spam)&#39; for a short introduction 
+## and overview of this package.
+## Help for individual functions is also obtained by adding the
+## suffix &#39;.spam&#39; to the function name, e.g. &#39;help( chol.spam)&#39;.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;spam&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:Matrix&#39;:
+## 
+##     det</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     backsolve, forwardsolve</code></pre>
+<pre><code>## Loading required package: viridis</code></pre>
+<pre><code>## Loading required package: viridisLite</code></pre>
+<pre><code>## 
+## Try help(fields) to get started.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;fields&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:Hmisc&#39;:
+## 
+##     describe</code></pre>
+<pre><code>## Loading required package: boot</code></pre>
+<pre><code>## 
+## Attaching package: &#39;boot&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:car&#39;:
+## 
+##     logit</code></pre>
+<pre><code>## The following object is masked from &#39;package:survival&#39;:
+## 
+##     aml</code></pre>
+<pre><code>## The following object is masked from &#39;package:lattice&#39;:
+## 
+##     melanoma</code></pre>
+<pre><code>## Loading required package: CircStats</code></pre>
+<pre><code>## Loading required package: MASS</code></pre>
+<pre><code>## 
+## Attaching package: &#39;MASS&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     select</code></pre>
+<pre><code>## Loading required package: dtw</code></pre>
+<pre><code>## Loading required package: proxy</code></pre>
+<pre><code>## 
+## Attaching package: &#39;proxy&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:spam&#39;:
+## 
+##     as.matrix</code></pre>
+<pre><code>## The following object is masked from &#39;package:Matrix&#39;:
+## 
+##     as.matrix</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     as.dist, dist</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     as.matrix</code></pre>
+<pre><code>## Loaded dtw v1.23-1. See ?dtw for help, citation(&quot;dtw&quot;) for use in publication.</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;verification&#39;:
+##   method    from
+##   lines.roc pROC</code></pre>
+<pre><code>## 
+## Attaching package: &#39;verification&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:pROC&#39;:
+## 
+##     lines.roc</code></pre>
+<pre class="r"><code>roc.curve(test_set$depressed, pred)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.639</code></pre>
+<pre class="r"><code>auc_log &lt;- as.numeric(auc(roc(test_set$depressed, pred)))</code></pre>
+<pre><code>## Setting levels: control = 0, case = 1</code></pre>
+<pre><code>## Setting direction: controls &lt; cases</code></pre>
+<pre class="r"><code>results &lt;- tibble(Method = &quot;Logistic Regression&quot;, AUC = auc_log,
+                     F1 = cm$byClass[&quot;F1&quot;], Specificity = cm$byClass[&quot;Specificity&quot;], 
+                     Balanced_Accuracy = cm$byClass[&quot;Balanced Accuracy&quot;])
+results</code></pre>
+<pre><code>## # A tibble: 1 × 5
+##   Method                AUC    F1 Specificity Balanced_Accuracy
+##   &lt;chr&gt;               &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;             &lt;dbl&gt;
+## 1 Logistic Regression 0.639 0.792       0.571             0.639</code></pre>
+</div>
+<div id="classification-tree" class="section level3">
+<h3>Classification Tree</h3>
+<pre class="r"><code>library(rpart)
+library(rpart.plot)
+#build decision tree models on training set
+
+tree.rose &lt;- rpart(depressed~ ., data = train_set, method = &#39;class&#39;)
+rpart.plot(tree.rose)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<pre class="r"><code>printcp(tree.rose)</code></pre>
+<pre><code>## 
+## Classification tree:
+## rpart(formula = depressed ~ ., data = train_set, method = &quot;class&quot;)
+## 
+## Variables actually used in tree construction:
+## [1] cons_ed           cons_other        ent_farmexpenses  ent_ownfarm      
+## [5] ent_total_cost    fs_adskipm_often  fs_adwholed_often
+## 
+## Root node error: 158/914 = 0.17287
+## 
+## n= 914 
+## 
+##         CP nsplit rel error xerror     xstd
+## 1 0.010549      0   1.00000 1.0000 0.072353
+## 2 0.010000      7   0.92405 1.1962 0.077494</code></pre>
+<pre class="r"><code>pred.tree.rose &lt;- predict(tree.rose, newdata = test_set, type = &quot;prob&quot;)
+pred.tree.rose &lt;- as.integer(pred.tree.rose[,2]&gt;0.2)
+roc.curve(test_set$depressed, pred.tree.rose)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-23-2.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.566</code></pre>
+<pre class="r"><code>cm_tree &lt;- confusionMatrix(as.factor(pred.tree.rose), as.factor(test_set$depressed))
+auc_tree &lt;- as.numeric(auc(roc(test_set$depressed, pred.tree.rose)))</code></pre>
+<pre><code>## Setting levels: control = 0, case = 1</code></pre>
+<pre><code>## Setting direction: controls &lt; cases</code></pre>
+<pre class="r"><code>result_tree &lt;- tibble(Method = &quot;Classification Tree&quot;, 
+                                     AUC = auc_tree,
+                                     F1 = cm_tree$byClass[&quot;F1&quot;], 
+                                     Specificity = cm_tree$byClass[&quot;Specificity&quot;], 
+                                     Balanced_Accuracy = cm_tree$byClass[&quot;Balanced Accuracy&quot;])
+results &lt;- bind_rows(results, result_tree)</code></pre>
+</div>
+<div id="bagging-cart" class="section level3">
+<h3>Bagging CART</h3>
+<p>Bootstrapped Aggregation (Bagging) is an ensemble method that creates
+multiple models of the same type from different sub-samples of the same
+dataset. The predictions from each separate model are combined together
+to provide a superior result. This approach has shown participially
+effective for high-variance methods such as decision trees.</p>
+<p>Here is bagging applied to the recursive partitioning decision tree
+for our depression dataset.</p>
+<pre class="r"><code>library(ipred)
+fit_ipred &lt;- bagging(depressed~., data=train_set)
+pred.ipred &lt;- predict(fit_ipred, newdata = test_set)
+pred.ipred &lt;- as.integer(pred.ipred&gt;0.2)
+
+roc.curve(test_set$depressed, pred.ipred)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.667</code></pre>
+<pre class="r"><code>cm_ipred &lt;- confusionMatrix(as.factor(pred.ipred), as.factor(test_set$depressed))
+
+results &lt;- bind_rows(results, tibble(Method = &quot;Bagging&quot;, 
+                      AUC = as.numeric(auc(roc(test_set$depressed, pred.ipred))),
+                      F1 = cm_ipred$byClass[&quot;F1&quot;], Specificity = cm_ipred$byClass[&quot;Specificity&quot;],
+                      Balanced_Accuracy = cm_ipred$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
+<pre><code>## Setting levels: control = 0, case = 1</code></pre>
+<pre><code>## Setting direction: controls &lt; cases</code></pre>
 </div>
 <div id="knn" class="section level3">
 <h3>kNN</h3>
+<pre class="r"><code>control &lt;- trainControl(method = &quot;cv&quot;,number = 5, p = .8, classProbs = TRUE)
+train_knn &lt;- train(train_set[, -which(names(train_set) == &quot;depressed&quot;)],
+                   make.names(train_set$depressed), method = &quot;knn&quot;,
+                   tuneGrid = data.frame(k = seq(3,10, 2)), trControl = control,
+                   metric = &quot;ROC&quot;, maximize = TRUE
+                   )</code></pre>
+<pre><code>## Warning in train.default(train_set[, -which(names(train_set) == &quot;depressed&quot;)], :
+## The metric &quot;ROC&quot; was not in the result set. Accuracy will be used instead.</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.
+## Setting row names on a tibble is deprecated.</code></pre>
+<pre class="r"><code>train_knn</code></pre>
+<pre><code>## k-Nearest Neighbors 
+## 
+## 914 samples
+##  48 predictor
+##   2 classes: &#39;X0&#39;, &#39;X1&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 732, 730, 731, 732, 731 
+## Resampling results across tuning parameters:
+## 
+##   k  Accuracy   Kappa      
+##   3  0.7867680  0.031216399
+##   5  0.8064105  0.008498618
+##   7  0.8227744  0.015016266
+##   9  0.8271402  0.000000000
+## 
+## Accuracy was used to select the optimal model using the largest value.
+## The final value used for the model was k = 9.</code></pre>
+<pre class="r"><code>fit_knn &lt;- knn3(train_set[, -which(names(train_set) == &quot;depressed&quot;)],
+                factor(train_set$depressed),  k = train_knn$bestTune$k)
+y_hat_knn &lt;- predict(fit_knn, test_set[, -which(names(train_set) == &quot;depressed&quot;)], type=&quot;class&quot;)
+
+cm_knn &lt;- confusionMatrix(as.factor(y_hat_knn), as.factor(test_set$depressed))
+
+roc.curve(test_set$depressed, y_hat_knn)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.512</code></pre>
+<pre class="r"><code>results &lt;- bind_rows(results, tibble(Method = &quot;kNN&quot;, AUC = as.numeric(auc(roc(as.numeric(test_set$depressed), as.numeric(y_hat_knn)))),
+                      F1 = cm_knn$byClass[&quot;F1&quot;], Specificity = cm_knn$byClass[&quot;Specificity&quot;],
+                      Balanced_Accuracy = cm_knn$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
+<pre><code>## Setting levels: control = 0, case = 1</code></pre>
+<pre><code>## Setting direction: controls &lt; cases</code></pre>
 </div>
+<div id="random-forest" class="section level3">
+<h3>Random Forest</h3>
+<pre class="r"><code>control &lt;- trainControl(method = &quot;cv&quot;,number = 5, p = .8)
+grid &lt;- data.frame(mtry=c(1, 5, sqrt(ncol(d)), 10))
+train_rf &lt;- train(train_set[, -which(names(train_set) == &quot;depressed&quot;)],
+                   train_set$depressed, method = &quot;rf&quot;,
+                   tuneGrid = grid, trControl = control,
+                  metric = &quot;F1&quot;, maximize = TRUE)</code></pre>
+<pre><code>## Warning in train.default(train_set[, -which(names(train_set) == &quot;depressed&quot;)], :
+## You are trying to do regression and your outcome only has two possible values
+## Are you trying to do classification? If so, use a 2 level factor as your outcome
+## column.</code></pre>
+<pre><code>## Warning in train.default(train_set[, -which(names(train_set) == &quot;depressed&quot;)], :
+## The metric &quot;F1&quot; was not in the result set. RMSE will be used instead.</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre class="r"><code>train_rf$bestTune</code></pre>
+<pre><code>##   mtry
+## 4   10</code></pre>
+<pre class="r"><code>ggplot(data = NULL, aes(x = train_rf$results$mtry, y = train_rf$results$RMSE)) + 
+  geom_line(colour = &#39;red&#39;) + geom_point() + labs(title = &quot;mtry vs. RMSE&quot;) + xlab(&quot;mtry&quot;) + 
+  ylab(&quot;RMSE&quot;)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<pre class="r"><code>library(randomForest)</code></pre>
+<pre><code>## randomForest 4.7-1.1</code></pre>
+<pre><code>## Type rfNews() to see new features/changes/bug fixes.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;randomForest&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     combine</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     margin</code></pre>
+<pre class="r"><code>fit_rf &lt;- randomForest(depressed~., data=train_set, mtry = train_rf$bestTune$mtry)</code></pre>
+<pre><code>## Warning in randomForest.default(m, y, ...): The response has five or fewer
+## unique values. Are you sure you want to do regression?</code></pre>
+<pre class="r"><code>y_hat_rf &lt;- predict(fit_rf, test_set)
+y_hat_rf &lt;- as.integer(y_hat_rf&gt;0.18)
+roc.curve(test_set$depressed, y_hat_rf)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-26-2.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.681</code></pre>
+<pre class="r"><code>cm_rf &lt;- confusionMatrix(factor(y_hat_rf), factor(test_set$depressed))
+
+results &lt;- bind_rows(results, tibble(Method = &quot;Random Forest&quot;, AUC = as.numeric(auc(roc(test_set$depressed, y_hat_rf))),
+                      F1 = cm_rf$byClass[&quot;F1&quot;], Specificity = cm_rf$byClass[&quot;Specificity&quot;],
+                      Balanced_Accuracy = cm_rf$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
+<pre><code>## Setting levels: control = 0, case = 1</code></pre>
+<pre><code>## Setting direction: controls &lt; cases</code></pre>
+</div>
+<div id="gradient-boosted-machine" class="section level3">
+<h3>Gradient Boosted Machine</h3>
+<pre class="r"><code>library(gbm)</code></pre>
+<pre><code>## Loaded gbm 2.1.8.1</code></pre>
+<pre class="r"><code>grid_gbm &lt;- expand.grid(n.trees = 200, interaction.depth = 3, shrinkage = seq(0.1, 0.9, 0.05), 
+                        n.minobsinnode = 10)
+
+train_gbm &lt;- train(depressed ~ ., data = train_set, method = &quot;gbm&quot;, trControl = control,
+                   verbose = FALSE, tuneGrid = grid_gbm, metric = &quot;F1&quot;, maximize = TRUE)</code></pre>
+<pre><code>## Warning in train.default(x, y, weights = w, ...): You are trying to do
+## regression and your outcome only has two possible values Are you trying to do
+## classification? If so, use a 2 level factor as your outcome column.</code></pre>
+<pre><code>## Warning in train.default(x, y, weights = w, ...): The metric &quot;F1&quot; was not in the
+## result set. RMSE will be used instead.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre class="r"><code>train_gbm$bestTune</code></pre>
+<pre><code>##    n.trees interaction.depth shrinkage n.minobsinnode
+## 17     200                 3       0.9             10</code></pre>
+<pre class="r"><code>ggplot(data = NULL, aes(x = train_gbm$results$shrinkage, 
+                        y = train_gbm$results$RMSE)) + geom_point()+ geom_line(colour = &#39;red&#39;) +
+  geom_point() + labs(title = &quot;shrinkage vs. RMSE&quot;) + xlab(&quot;shrinkage&quot;) + ylab(&quot;RMSE&quot;)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<pre class="r"><code>fit_gbm &lt;- gbm(depressed ~., data=train_set, distribution = &quot;bernoulli&quot;)</code></pre>
+<pre><code>## Warning in gbm.fit(x = x, y = y, offset = offset, distribution = distribution, :
+## variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in gbm.fit(x = x, y = y, offset = offset, distribution = distribution, :
+## variable 35: med_child_check has no variation.</code></pre>
+<pre class="r"><code>y_hat_gbm &lt;- predict(fit_gbm, test_set)</code></pre>
+<pre><code>## Using 100 trees...</code></pre>
+<pre class="r"><code>y_hat_gbm &lt;- as.integer(y_hat_gbm&gt;-1.55)
+roc.curve(test_set$depressed, y_hat_gbm)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-27-2.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.656</code></pre>
+<pre class="r"><code>cm_gbm &lt;- confusionMatrix(as.factor(y_hat_gbm), as.factor(test_set$depressed))
+
+results &lt;- bind_rows(results, tibble(Method = &quot;Gradient Boosted Machine&quot;, AUC = as.numeric(auc(roc(test_set$depressed, y_hat_gbm))),
+                      F1 = cm_gbm$byClass[&quot;F1&quot;], Specificity = cm_gbm$byClass[&quot;Specificity&quot;],
+                      Balanced_Accuracy = cm_gbm$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
+<pre><code>## Setting levels: control = 0, case = 1</code></pre>
+<pre><code>## Setting direction: controls &lt; cases</code></pre>
+</div>
+<div id="svm" class="section level3">
+<h3>SVM</h3>
+<pre class="r"><code>library(e1071)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;e1071&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:Hmisc&#39;:
+## 
+##     impute</code></pre>
+<pre class="r"><code>train_svm &lt;- train(depressed ~ ., data = train_set, method = &quot;svmRadial&quot;, trControl = control,
+                   verbose = FALSE, metric = &quot;F1&quot;, maximize = TRUE)</code></pre>
+<pre><code>## Warning in train.default(x, y, weights = w, ...): You are trying to do
+## regression and your outcome only has two possible values Are you trying to do
+## classification? If so, use a 2 level factor as your outcome column.</code></pre>
+<pre><code>## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.</code></pre>
+<pre><code>## Warning in train.default(x, y, weights = w, ...): The metric &quot;F1&quot; was not in the
+## result set. RMSE will be used instead.</code></pre>
+<pre><code>## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.
+
+## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.
+
+## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.
+
+## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.
+
+## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.
+
+## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.
+
+## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.
+
+## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.
+
+## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.
+
+## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.
+
+## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.
+
+## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.
+
+## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.
+
+## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.
+
+## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.
+
+## Warning in .local(x, ...): Variable(s) `&#39; constant. Cannot scale data.</code></pre>
+<pre class="r"><code>fit_svm &lt;- svm(depressed ~ ., data=train_set, type = &quot;C-classification&quot;, kernel = &quot;radial&quot;)</code></pre>
+<pre><code>## Warning in svm.default(x, y, scale = scale, ..., na.action = na.action):
+## Variable(s) &#39;med_vacc_newborns&#39; and &#39;med_child_check&#39; constant. Cannot scale
+## data.</code></pre>
+<pre class="r"><code>y_hat_svm &lt;- predict(fit_svm, newdata = test_set, type = &quot;decision&quot;)
+
+cm_svm &lt;- confusionMatrix(as.factor(y_hat_svm), as.factor(test_set$depressed))
+
+roc.curve(test_set$depressed, y_hat_svm)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.514</code></pre>
+<pre class="r"><code>results &lt;- bind_rows(results, tibble(Method = &quot;SVM&quot;, AUC = as.numeric(auc(roc(as.numeric(test_set$depressed), as.numeric(y_hat_svm)))),
+                      F1 = cm_svm$byClass[&quot;F1&quot;], Specificity = cm_svm$byClass[&quot;Specificity&quot;],
+                      Balanced_Accuracy = cm_svm$byClass[&quot;Balanced Accuracy&quot;])) </code></pre>
+<pre><code>## Setting levels: control = 0, case = 1</code></pre>
+<pre><code>## Setting direction: controls &lt; cases</code></pre>
+</div>
+</div>
+<div id="rose-data" class="section level2">
+<h2>ROSE data</h2>
+<p>From results before, Random Forest and Gradient Boosted Machine seem
+to perform the best in terms of balanced accuracy and specificity
+measure. Here we attempt these 2 models with resampled balanced
+data.</p>
+<pre class="r"><code>table(drose$depressed)</code></pre>
+<pre><code>## 
+##   0   1 
+## 534 609</code></pre>
+<pre class="r"><code>#Data partition
+set.seed(260)
+test_index &lt;- createDataPartition(drose$depressed, times = 1, p = 0.2, list = FALSE)
+test_rose &lt;- d[test_index, ]
+train_rose &lt;- d[-test_index, ] </code></pre>
+<div id="random-forest-1" class="section level4">
+<h4>Random Forest</h4>
+<pre class="r"><code>control &lt;- trainControl(method = &quot;cv&quot;,number = 5, p = .8)
+grid &lt;- data.frame(mtry=c(1, 5, sqrt(ncol(drose))))
+train_rf_rose &lt;- train(train_rose[, -which(names(train_rose) == &quot;depressed&quot;)],
+                  train_rose$depressed, method = &quot;rf&quot;, tuneGrid = grid, trControl = control,
+                  metric = &quot;F1&quot;, maximize = TRUE)</code></pre>
+<pre><code>## Warning in train.default(train_rose[, -which(names(train_rose) ==
+## &quot;depressed&quot;)], : You are trying to do regression and your outcome only has two
+## possible values Are you trying to do classification? If so, use a 2 level factor
+## as your outcome column.</code></pre>
+<pre><code>## Warning in train.default(train_rose[, -which(names(train_rose) ==
+## &quot;depressed&quot;)], : The metric &quot;F1&quot; was not in the result set. RMSE will be used
+## instead.</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Warning in randomForest.default(x, y, mtry = param$mtry, ...): The response has
+## five or fewer unique values. Are you sure you want to do regression?</code></pre>
+<pre class="r"><code>train_rf_rose$bestTune</code></pre>
+<pre><code>##   mtry
+## 3    7</code></pre>
+<pre class="r"><code>fit_rf_rose &lt;- randomForest(depressed~., data=train_rose, mtry = train_rf_rose$bestTune$mtry)</code></pre>
+<pre><code>## Warning in randomForest.default(m, y, ...): The response has five or fewer
+## unique values. Are you sure you want to do regression?</code></pre>
+<pre class="r"><code>y_rose_rf &lt;- predict(fit_rf_rose, test_rose)
+y_rose_rf &lt;- as.integer(y_hat_rf&gt;0.18)
+roc.curve(test_rose$depressed, y_rose_rf)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.681</code></pre>
+<pre class="r"><code>cm_rf_rose &lt;- confusionMatrix(factor(y_rose_rf), factor(test_rose$depressed))
+
+results &lt;- bind_rows(results, tibble(Method = &quot;ROSE - Random Forest&quot;, 
+                       AUC = as.numeric(auc(roc(test_rose$depressed, y_rose_rf))),
+                       F1 = cm_rf_rose$byClass[&quot;F1&quot;], 
+                       Specificity = cm_rf_rose$byClass[&quot;Specificity&quot;],
+                       Balanced_Accuracy = cm_rf_rose$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
+<pre><code>## Setting levels: control = 0, case = 1</code></pre>
+<pre><code>## Setting direction: controls &lt; cases</code></pre>
+</div>
+<div id="gradient-boosted-machine-1" class="section level3">
+<h3>Gradient Boosted Machine</h3>
+<pre class="r"><code>library(gbm)
+train_gbm_rose &lt;- train(depressed ~ ., data = train_rose, method = &quot;gbm&quot;, trControl = control,
+                   verbose = FALSE, tuneGrid = grid_gbm, metric = &quot;F1&quot;, maximize = TRUE)</code></pre>
+<pre><code>## Warning in train.default(x, y, weights = w, ...): You are trying to do
+## regression and your outcome only has two possible values Are you trying to do
+## classification? If so, use a 2 level factor as your outcome column.</code></pre>
+<pre><code>## Warning in train.default(x, y, weights = w, ...): The metric &quot;F1&quot; was not in the
+## result set. RMSE will be used instead.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 14: asset_niceroof has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 37: wage_expenditures has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
+## &quot;bernoulli&quot;, : variable 35: med_child_check has no variation.</code></pre>
+<pre class="r"><code>#train_gbm_rose$bestTune
+
+
+fit_gbm_rose &lt;- gbm(depressed ~., data=train_rose, distribution = &quot;bernoulli&quot;)</code></pre>
+<pre><code>## Warning in gbm.fit(x = x, y = y, offset = offset, distribution = distribution, :
+## variable 34: med_vacc_newborns has no variation.</code></pre>
+<pre><code>## Warning in gbm.fit(x = x, y = y, offset = offset, distribution = distribution, :
+## variable 35: med_child_check has no variation.</code></pre>
+<pre class="r"><code>y_rose_gbm &lt;- predict(fit_gbm_rose, test_rose)</code></pre>
+<pre><code>## Using 100 trees...</code></pre>
+<pre class="r"><code>y_rose_gbm &lt;- as.integer(y_rose_gbm&gt;-1.55)
+roc.curve(test_rose$depressed, y_rose_gbm)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.710</code></pre>
+<pre class="r"><code>cm_gbm_rose &lt;- confusionMatrix(as.factor(y_rose_gbm), as.factor(test_rose$depressed))
+
+results &lt;- bind_rows(results, tibble(Method = &quot;ROSE - Gradient Boosted Machine&quot;, 
+                                     AUC = as.numeric(auc(roc(test_rose$depressed, y_rose_gbm))),
+                                     F1 = cm_gbm_rose$byClass[&quot;F1&quot;], 
+                                     Specificity = cm_gbm_rose$byClass[&quot;Specificity&quot;],
+                                     Balanced_Accuracy = cm_gbm_rose$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
+<pre><code>## Setting levels: control = 0, case = 1</code></pre>
+<pre><code>## Setting direction: controls &lt; cases</code></pre>
+<pre class="r"><code>ggplot(data = NULL, aes(x = train_gbm_rose$results$shrinkage, 
+                        y = train_gbm_rose$results$RMSE)) + 
+  geom_point()+ geom_line(colour = &#39;red&#39;) +
+  geom_point() + labs(title = &quot;shrinkage vs. RMSE&quot;) + xlab(&quot;shrinkage&quot;) + ylab(&quot;RMSE&quot;)</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-31-2.png" width="672" /></p>
+</div>
+</div>
+<div id="results-1" class="section level2">
+<h2>Results</h2>
+<pre class="r"><code>results</code></pre>
+<pre><code>## # A tibble: 9 × 5
+##   Method                            AUC    F1 Specificity Balanced_Accuracy
+##   &lt;chr&gt;                           &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;             &lt;dbl&gt;
+## 1 Logistic Regression             0.639 0.792      0.571              0.639
+## 2 Classification Tree             0.566 0.898      0.2                0.566
+## 3 Bagging                         0.667 0.829      0.571              0.667
+## 4 kNN                             0.512 0.917      0.0286             0.512
+## 5 Random Forest                   0.681 0.743      0.743              0.681
+## 6 Gradient Boosted Machine        0.656 0.763      0.657              0.656
+## 7 SVM                             0.514 0.919      0.0286             0.514
+## 8 ROSE - Random Forest            0.681 0.743      0.743              0.681
+## 9 ROSE - Gradient Boosted Machine 0.710 0.768      0.771              0.710</code></pre>
+<pre class="r"><code>thresh&lt;-seq(0,1,0.001)
+roc.plot(x=test_set$depressed == &quot;1&quot;, 
+         pred = cbind(pred, pred.tree.rose, pred.ipred, y_hat_gbm, y_hat_knn, y_hat_rf, y_hat_svm, y_rose_gbm, y_rose_rf), legend = T, thresholds = thresh, leg.text = 
+         c(&quot;Logistic&quot;,&quot;Classification Tree&quot;,&quot;Bagging CART&quot;, &quot;Gradient Boosted Machine&quot;,&quot;kNN&quot;,
+           &quot;Random Forest&quot;, &quot;SVM&quot;, &quot;ROSE - GBM&quot;, &quot;ROSE - RF&quot;))$roc.vol</code></pre>
+<p><img src="Report_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<pre><code>##      Model      Area      p.value binorm.area
+## 1 Model  1 0.6388071 7.085554e-04          NA
+## 2 Model  2 0.5664948 5.286094e-03          NA
+## 3 Model  3 0.6671576 3.052970e-05          NA
+## 4 Model  4 0.6558910 2.634191e-04          NA
+## 5 Model  5 0.5117084 8.710193e-02          NA
+## 6 Model  6 0.6807069 3.784849e-05          NA
+## 7 Model  7 0.5142857 9.585435e-03          NA
+## 8 Model  8 0.7104566 1.741092e-06          NA
+## 9 Model  9 0.6807069 3.784849e-05          NA</code></pre>
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse) 
+library(dplyr)
+library(dslabs)
+library(ggplot2)
+library(lubridate) 
+library(caret)
+library(HistData)
+library(Lahman)
+library(purrr)
+library(pdftools)
+library(broom)
+library(stringr)
+library(tidyr)
+library(readr)
+dat &lt;- read_csv(&#39;./data/train.csv&#39;)
+var_explain &lt;- read_csv(&#39;./data/var_explain.csv&#39;)
+var_explain
+glimpse(dat)
+
+
+dat$Class&lt;-as.factor(dat$depressed) # convert class to factor
+levels(dat$Class) &lt;- c(&#39;not_depressed&#39;, &#39;depressed&#39;) # names of factors
+summary(dat$Class)
+
+head(summary(dat))
+depressed_sub &lt;- dat %&gt;% filter(depressed == 1)
+nrow(depressed_sub)
+depressed_percent &lt;- nrow(depressed_sub)/nrow(dat)
+depressed_percent
+
+prop.table(table(dat$depressed))
+# EDA
+ggplot(data = dat, aes(fill = Class)) +geom_bar(aes(x = Class))
+dat_depressed &lt;- dat %&gt;% filter(depressed == 1)
+dat_notDepressed &lt;- dat %&gt;% filter(depressed == 0)
+#check for missing data
+anyNA(dat)
+sum(is.na(dat))
+col_NA &lt;- colnames(dat)[colSums(is.na(dat)) &gt; 0]
+col_NA
+#look at rows with missing data
+dat_NA &lt;- dat[!complete.cases(dat), ]
+nrow(na.omit(dat))
+#look at missing pattern
+library(ggmice)
+plot_pattern(dat[, col_NA])
+for(i in 1:length(col_NA)){
+  dat[col_NA[i]][is.na(dat[col_NA[i]])] &lt;- round(sum(dat[col_NA[i]], na.rm=TRUE)/nrow(dat))
+}
+anyNA(dat)
+cols &lt;- colnames(dat)
+cols
+library(Hmisc)
+hist.data.frame(dat)
+#family factors
+pairs(depressed ~ age + children + hhsize + edu + hh_totalmembers + hh_children, dat)
+
+#socio-economic indicating factors
+pairs(depressed ~ cons_nondurable + asset_savings + cons_allfood + cons_med_total + cons_ed + cons_social + ent_total_cost, dat)
+
+# life-style/financial factors
+pairs(depressed ~ fs_adskipm_often + fs_meat + med_portion_sickinjured + ed_sch_missedpc + durable_investment, dat)
+dat_old &lt;- dat
+# Interested/understandable factors
+cov &lt;- c(&quot;age&quot;, &quot;children&quot;, &quot;hhsize&quot;, &quot;edu&quot; , &quot;hh_totalmembers&quot;, &quot;hh_children&quot;, &quot;cons_nondurable&quot;, &quot;asset_savings&quot;, &quot;cons_allfood&quot;, &quot;cons_med_total&quot;, &quot;cons_ed&quot;, &quot;cons_social&quot;, &quot;ent_total_cost&quot;, &quot;fs_adskipm_often&quot;, &quot;fs_meat&quot;, &quot;med_portion_sickinjured&quot;, &quot;ed_sch_missedpc&quot;, &quot;durable_investment&quot;, &quot;femaleres&quot;, &quot;married&quot;, &quot;depressed&quot;)
+
+dat &lt;- dat[, cov]
+
+hist.data.frame(dat)
+library(glmnet)
+library(vip)
+#define outcome variable
+y &lt;- dat[,&quot;depressed&quot;] |&gt; as.matrix()
+#define matrix of predictor variables
+x &lt;- dat[, c(&quot;age&quot;, &quot;children&quot;, &quot;hhsize&quot;, &quot;edu&quot; , &quot;hh_totalmembers&quot;, &quot;hh_children&quot;, &quot;cons_nondurable&quot;, &quot;asset_savings&quot;, &quot;cons_allfood&quot;, &quot;cons_med_total&quot;, &quot;cons_ed&quot;, &quot;cons_social&quot;, &quot;ent_total_cost&quot;, &quot;fs_adskipm_often&quot;, &quot;fs_meat&quot;, &quot;med_portion_sickinjured&quot;, &quot;ed_sch_missedpc&quot;, &quot;durable_investment&quot;, &quot;femaleres&quot;, &quot;married&quot;)] |&gt; as.matrix()
+elasticnet.mod = glmnet(x,y,alpha=0.5,family=&quot;binomial&quot;)
+vip(elasticnet.mod, num_features=10, geom = &quot;point&quot;)
+ggplot(dat, aes(age, depressed, color=factor(femaleres))) +
+  stat_smooth(method=&quot;loess&quot;, formula=y~x,
+              alpha=0.2, size=2, aes(fill=factor(femaleres))) +
+  geom_point(position=position_jitter(height=0.03, width=0)) +
+  xlab(&quot;Age&quot;) + ylab(&quot;depressed&quot;)
+mod_log &lt;- glm(depressed ~ age + children + hhsize+edu + hh_totalmembers+ hh_children+ cons_nondurable+ asset_savings + cons_allfood+ cons_med_total+ cons_ed+ cons_social+ ent_total_cost+ fs_adskipm_often  + fs_meat + med_portion_sickinjured+ ed_sch_missedpc+ durable_investment+ femaleres + married, data = dat, family = &quot;binomial&quot;)
+summary(mod_log)
+
+# Influence plot
+library(car)
+par(mfrow=c(1,1))
+influencePlot(mod_log,col=&quot;red&quot;)
+covMatrix &lt;- vcov(mod_log)
+corrMatrix &lt;- cov2cor(covMatrix)
+head(corrMatrix) 
+#up sampling for imbalanced data
+set.seed(260)
+datdown &lt;- downSample(x=dat[, -which(names(dat) == &quot;depressed&quot;)], y=dat$depressed)
+prop.table(table(datdown$y))
+
+#ROSE algorithm
+library(ROSE)
+drose &lt;- ROSE(depressed ~ ., N = 1900, data = dat, seed = 260)$data
+table(drose$depressed)
+mod_log &lt;- glm(depressed ~ age + children + hhsize + edu + cons_nondurable+ asset_savings + cons_ed+ cons_social+ ent_total_cost+ fs_adskipm_often  + fs_meat + med_portion_sickinjured+ ed_sch_missedpc+ durable_investment+ femaleres + married, data = drose, family = &quot;binomial&quot;)
+summary(mod_log)
+
+influenceIndexPlot(mod_log)
+library(corrplot)
+correlations &lt;- cor(dat[, -12], use = &quot;pairwise.complete.obs&quot;)
+corrplot(correlations, method=&#39;number&#39;)
+corrplot.mixed(correlations,upper = &quot;circle&quot;, lower = &quot;number&quot;, tl.col = &quot;black&quot;, tl.pos = &quot;lt&quot;) 
+summary(mod_log)$coefficients
+library(pROC)
+predprob &lt;- predict(mod_log,type=c(&quot;response&quot;)) 
+roccurve &lt;- roc(drose$depressed ~ predprob)
+plot(roccurve,col=&quot;red&quot;)
+roccurve
+
+library(rpart)
+#build decision tree models
+tree.rose &lt;- rpart(depressed ~ ., data = drose)
+pred.tree.rose &lt;- predict(tree.rose, newdata = drose)
+roc.curve(drose$depressed, pred.tree.rose)
+#calculate and intepret the coefficients the odds ratio and 95% CI
+exp(cbind(OR = coef(mod_log), confint(mod_log)))
+d &lt;- read_csv(&#39;./data/train.csv&#39;)
+d &lt;- d[, !(names(d) %in% c(&quot;surveyid&quot;, &quot;village&quot;, &quot;survey_date&quot;))]
+
+na_cols &lt;- names(which(colSums(is.na(d))&gt;0))
+d &lt;- d[ , !(names(d) %in% na_cols)]
+
+# d$Class&lt;-as.factor(d$depressed) # convert class to factor
+# levels(d$Class) &lt;- c(&#39;not_depressed&#39;, &#39;depressed&#39;) # names of factors
+# summary(d$Class)
+
+# Correct imbalance in data
+#ROSE algorithm
+library(ROSE)
+drose &lt;- ROSE(depressed ~ ., N = 1143, data = d, seed = 260)$data
+table(drose$depressed)
+
+#Data partition
+set.seed(260)
+test_index &lt;- createDataPartition(d$depressed, times = 1, p = 0.2, list = FALSE)
+test_set &lt;- d[test_index, ]
+train_set &lt;- d[-test_index, ]
+
+#predictor / response definition
+predictor_variables &lt;- d[,-48]
+response_variable &lt;- d$depressed
+#swap to have minority class coded as 1
+levels(response_variable) &lt;- c(&#39;0&#39;, &#39;1&#39;) 
+table(d$depressed)
+glm_train &lt;- glm(depressed ~ ., data = train_set, family = &quot;binomial&quot;)
+summary(glm_train)
+pred &lt;- predict(glm_train, test_set, type=&quot;response&quot;)
+pred &lt;- as.integer(pred&gt;0.18)
+cm &lt;- confusionMatrix(as.factor(pred), as.factor(test_set$depressed))
+
+
+library(pROC)
+library(verification)
+roc.curve(test_set$depressed, pred)
+auc_log &lt;- as.numeric(auc(roc(test_set$depressed, pred)))
+
+
+results &lt;- tibble(Method = &quot;Logistic Regression&quot;, AUC = auc_log,
+                     F1 = cm$byClass[&quot;F1&quot;], Specificity = cm$byClass[&quot;Specificity&quot;], 
+                     Balanced_Accuracy = cm$byClass[&quot;Balanced Accuracy&quot;])
+results
+library(rpart)
+library(rpart.plot)
+#build decision tree models on training set
+
+tree.rose &lt;- rpart(depressed~ ., data = train_set, method = &#39;class&#39;)
+rpart.plot(tree.rose)
+printcp(tree.rose)
+
+pred.tree.rose &lt;- predict(tree.rose, newdata = test_set, type = &quot;prob&quot;)
+pred.tree.rose &lt;- as.integer(pred.tree.rose[,2]&gt;0.2)
+roc.curve(test_set$depressed, pred.tree.rose)
+
+cm_tree &lt;- confusionMatrix(as.factor(pred.tree.rose), as.factor(test_set$depressed))
+auc_tree &lt;- as.numeric(auc(roc(test_set$depressed, pred.tree.rose)))
+result_tree &lt;- tibble(Method = &quot;Classification Tree&quot;, 
+                                     AUC = auc_tree,
+                                     F1 = cm_tree$byClass[&quot;F1&quot;], 
+                                     Specificity = cm_tree$byClass[&quot;Specificity&quot;], 
+                                     Balanced_Accuracy = cm_tree$byClass[&quot;Balanced Accuracy&quot;])
+results &lt;- bind_rows(results, result_tree)
+library(ipred)
+fit_ipred &lt;- bagging(depressed~., data=train_set)
+pred.ipred &lt;- predict(fit_ipred, newdata = test_set)
+pred.ipred &lt;- as.integer(pred.ipred&gt;0.2)
+
+roc.curve(test_set$depressed, pred.ipred)
+cm_ipred &lt;- confusionMatrix(as.factor(pred.ipred), as.factor(test_set$depressed))
+
+results &lt;- bind_rows(results, tibble(Method = &quot;Bagging&quot;, 
+                      AUC = as.numeric(auc(roc(test_set$depressed, pred.ipred))),
+                      F1 = cm_ipred$byClass[&quot;F1&quot;], Specificity = cm_ipred$byClass[&quot;Specificity&quot;],
+                      Balanced_Accuracy = cm_ipred$byClass[&quot;Balanced Accuracy&quot;]))
+control &lt;- trainControl(method = &quot;cv&quot;,number = 5, p = .8, classProbs = TRUE)
+train_knn &lt;- train(train_set[, -which(names(train_set) == &quot;depressed&quot;)],
+                   make.names(train_set$depressed), method = &quot;knn&quot;,
+                   tuneGrid = data.frame(k = seq(3,10, 2)), trControl = control,
+                   metric = &quot;ROC&quot;, maximize = TRUE
+                   )
+train_knn
+fit_knn &lt;- knn3(train_set[, -which(names(train_set) == &quot;depressed&quot;)],
+                factor(train_set$depressed),  k = train_knn$bestTune$k)
+y_hat_knn &lt;- predict(fit_knn, test_set[, -which(names(train_set) == &quot;depressed&quot;)], type=&quot;class&quot;)
+
+cm_knn &lt;- confusionMatrix(as.factor(y_hat_knn), as.factor(test_set$depressed))
+
+roc.curve(test_set$depressed, y_hat_knn)
+
+results &lt;- bind_rows(results, tibble(Method = &quot;kNN&quot;, AUC = as.numeric(auc(roc(as.numeric(test_set$depressed), as.numeric(y_hat_knn)))),
+                      F1 = cm_knn$byClass[&quot;F1&quot;], Specificity = cm_knn$byClass[&quot;Specificity&quot;],
+                      Balanced_Accuracy = cm_knn$byClass[&quot;Balanced Accuracy&quot;]))
+control &lt;- trainControl(method = &quot;cv&quot;,number = 5, p = .8)
+grid &lt;- data.frame(mtry=c(1, 5, sqrt(ncol(d)), 10))
+train_rf &lt;- train(train_set[, -which(names(train_set) == &quot;depressed&quot;)],
+                   train_set$depressed, method = &quot;rf&quot;,
+                   tuneGrid = grid, trControl = control,
+                  metric = &quot;F1&quot;, maximize = TRUE)
+train_rf$bestTune
+ggplot(data = NULL, aes(x = train_rf$results$mtry, y = train_rf$results$RMSE)) + 
+  geom_line(colour = &#39;red&#39;) + geom_point() + labs(title = &quot;mtry vs. RMSE&quot;) + xlab(&quot;mtry&quot;) + 
+  ylab(&quot;RMSE&quot;)
+  
+
+
+library(randomForest)
+fit_rf &lt;- randomForest(depressed~., data=train_set, mtry = train_rf$bestTune$mtry)
+y_hat_rf &lt;- predict(fit_rf, test_set)
+y_hat_rf &lt;- as.integer(y_hat_rf&gt;0.18)
+roc.curve(test_set$depressed, y_hat_rf)
+cm_rf &lt;- confusionMatrix(factor(y_hat_rf), factor(test_set$depressed))
+
+results &lt;- bind_rows(results, tibble(Method = &quot;Random Forest&quot;, AUC = as.numeric(auc(roc(test_set$depressed, y_hat_rf))),
+                      F1 = cm_rf$byClass[&quot;F1&quot;], Specificity = cm_rf$byClass[&quot;Specificity&quot;],
+                      Balanced_Accuracy = cm_rf$byClass[&quot;Balanced Accuracy&quot;]))
+library(gbm)
+
+grid_gbm &lt;- expand.grid(n.trees = 200, interaction.depth = 3, shrinkage = seq(0.1, 0.9, 0.05), 
+                        n.minobsinnode = 10)
+
+train_gbm &lt;- train(depressed ~ ., data = train_set, method = &quot;gbm&quot;, trControl = control,
+                   verbose = FALSE, tuneGrid = grid_gbm, metric = &quot;F1&quot;, maximize = TRUE)
+train_gbm$bestTune
+ggplot(data = NULL, aes(x = train_gbm$results$shrinkage, 
+                        y = train_gbm$results$RMSE)) + geom_point()+ geom_line(colour = &#39;red&#39;) +
+  geom_point() + labs(title = &quot;shrinkage vs. RMSE&quot;) + xlab(&quot;shrinkage&quot;) + ylab(&quot;RMSE&quot;)
+
+
+fit_gbm &lt;- gbm(depressed ~., data=train_set, distribution = &quot;bernoulli&quot;)
+y_hat_gbm &lt;- predict(fit_gbm, test_set)
+y_hat_gbm &lt;- as.integer(y_hat_gbm&gt;-1.55)
+roc.curve(test_set$depressed, y_hat_gbm)
+
+cm_gbm &lt;- confusionMatrix(as.factor(y_hat_gbm), as.factor(test_set$depressed))
+
+results &lt;- bind_rows(results, tibble(Method = &quot;Gradient Boosted Machine&quot;, AUC = as.numeric(auc(roc(test_set$depressed, y_hat_gbm))),
+                      F1 = cm_gbm$byClass[&quot;F1&quot;], Specificity = cm_gbm$byClass[&quot;Specificity&quot;],
+                      Balanced_Accuracy = cm_gbm$byClass[&quot;Balanced Accuracy&quot;]))
+library(e1071)
+train_svm &lt;- train(depressed ~ ., data = train_set, method = &quot;svmRadial&quot;, trControl = control,
+                   verbose = FALSE, metric = &quot;F1&quot;, maximize = TRUE)
+
+fit_svm &lt;- svm(depressed ~ ., data=train_set, type = &quot;C-classification&quot;, kernel = &quot;radial&quot;)
+y_hat_svm &lt;- predict(fit_svm, newdata = test_set, type = &quot;decision&quot;)
+
+cm_svm &lt;- confusionMatrix(as.factor(y_hat_svm), as.factor(test_set$depressed))
+
+roc.curve(test_set$depressed, y_hat_svm)
+
+results &lt;- bind_rows(results, tibble(Method = &quot;SVM&quot;, AUC = as.numeric(auc(roc(as.numeric(test_set$depressed), as.numeric(y_hat_svm)))),
+                      F1 = cm_svm$byClass[&quot;F1&quot;], Specificity = cm_svm$byClass[&quot;Specificity&quot;],
+                      Balanced_Accuracy = cm_svm$byClass[&quot;Balanced Accuracy&quot;])) 
+table(drose$depressed)
+
+#Data partition
+set.seed(260)
+test_index &lt;- createDataPartition(drose$depressed, times = 1, p = 0.2, list = FALSE)
+test_rose &lt;- d[test_index, ]
+train_rose &lt;- d[-test_index, ] 
+control &lt;- trainControl(method = &quot;cv&quot;,number = 5, p = .8)
+grid &lt;- data.frame(mtry=c(1, 5, sqrt(ncol(drose))))
+train_rf_rose &lt;- train(train_rose[, -which(names(train_rose) == &quot;depressed&quot;)],
+                  train_rose$depressed, method = &quot;rf&quot;, tuneGrid = grid, trControl = control,
+                  metric = &quot;F1&quot;, maximize = TRUE)
+train_rf_rose$bestTune
+
+
+fit_rf_rose &lt;- randomForest(depressed~., data=train_rose, mtry = train_rf_rose$bestTune$mtry)
+y_rose_rf &lt;- predict(fit_rf_rose, test_rose)
+y_rose_rf &lt;- as.integer(y_hat_rf&gt;0.18)
+roc.curve(test_rose$depressed, y_rose_rf)
+cm_rf_rose &lt;- confusionMatrix(factor(y_rose_rf), factor(test_rose$depressed))
+
+results &lt;- bind_rows(results, tibble(Method = &quot;ROSE - Random Forest&quot;, 
+                       AUC = as.numeric(auc(roc(test_rose$depressed, y_rose_rf))),
+                       F1 = cm_rf_rose$byClass[&quot;F1&quot;], 
+                       Specificity = cm_rf_rose$byClass[&quot;Specificity&quot;],
+                       Balanced_Accuracy = cm_rf_rose$byClass[&quot;Balanced Accuracy&quot;]))
+library(gbm)
+train_gbm_rose &lt;- train(depressed ~ ., data = train_rose, method = &quot;gbm&quot;, trControl = control,
+                   verbose = FALSE, tuneGrid = grid_gbm, metric = &quot;F1&quot;, maximize = TRUE)
+#train_gbm_rose$bestTune
+
+
+fit_gbm_rose &lt;- gbm(depressed ~., data=train_rose, distribution = &quot;bernoulli&quot;)
+y_rose_gbm &lt;- predict(fit_gbm_rose, test_rose)
+y_rose_gbm &lt;- as.integer(y_rose_gbm&gt;-1.55)
+roc.curve(test_rose$depressed, y_rose_gbm)
+
+cm_gbm_rose &lt;- confusionMatrix(as.factor(y_rose_gbm), as.factor(test_rose$depressed))
+
+results &lt;- bind_rows(results, tibble(Method = &quot;ROSE - Gradient Boosted Machine&quot;, 
+                                     AUC = as.numeric(auc(roc(test_rose$depressed, y_rose_gbm))),
+                                     F1 = cm_gbm_rose$byClass[&quot;F1&quot;], 
+                                     Specificity = cm_gbm_rose$byClass[&quot;Specificity&quot;],
+                                     Balanced_Accuracy = cm_gbm_rose$byClass[&quot;Balanced Accuracy&quot;]))
+
+ggplot(data = NULL, aes(x = train_gbm_rose$results$shrinkage, 
+                        y = train_gbm_rose$results$RMSE)) + 
+  geom_point()+ geom_line(colour = &#39;red&#39;) +
+  geom_point() + labs(title = &quot;shrinkage vs. RMSE&quot;) + xlab(&quot;shrinkage&quot;) + ylab(&quot;RMSE&quot;)
+
+results
+thresh&lt;-seq(0,1,0.001)
+roc.plot(x=test_set$depressed == &quot;1&quot;, 
+         pred = cbind(pred, pred.tree.rose, pred.ipred, y_hat_gbm, y_hat_knn, y_hat_rf, y_hat_svm, y_rose_gbm, y_rose_rf), legend = T, thresholds = thresh, leg.text = 
+         c(&quot;Logistic&quot;,&quot;Classification Tree&quot;,&quot;Bagging CART&quot;, &quot;Gradient Boosted Machine&quot;,&quot;kNN&quot;,
+           &quot;Random Forest&quot;, &quot;SVM&quot;, &quot;ROSE - GBM&quot;, &quot;ROSE - RF&quot;))$roc.vol</code></pre>
 </div>
 
 

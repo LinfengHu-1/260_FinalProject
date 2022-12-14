@@ -126,6 +126,13 @@ elasticnet.mod = glmnet(x,y,alpha=0.5,family="binomial")
 vip(elasticnet.mod, num_features=10, geom = "point")
 ```
 
+```{r}
+ggplot(dat, aes(age, depressed, color=factor(femaleres))) +
+  stat_smooth(method="loess", formula=y~x,
+              alpha=0.2, size=2, aes(fill=factor(femaleres))) +
+  geom_point(position=position_jitter(height=0.03, width=0)) +
+  xlab("Age") + ylab("depressed")
+```
 
 ## Regression - Association
 ```{r}
@@ -195,7 +202,6 @@ exp(cbind(OR = coef(mod_log), confint(mod_log)))
 ```
 
 We can interpret these coefficients in terms of odds ratios. For example, for a one unit increase in the number of children one has, the odds of being depressed (versus not being depressed) increase by a factor of 1.1225961, on average, holding all other covariates fixed. 
-
 
 
 

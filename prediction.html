@@ -514,21 +514,25 @@ roc.curve(test_set$depressed, y_hat_knn)</code></pre>
 <div id="random-forest" class="section level3">
 <h3>Random Forest</h3>
 <pre class="r"><code>control &lt;- trainControl(method = &quot;cv&quot;,number = 5, p = .8)
-grid &lt;- data.frame(mtry=c(1, 5, sqrt(ncol(d))))
+grid &lt;- data.frame(mtry=c(1, 5, sqrt(ncol(d)), 10))
 train_rf &lt;- train(train_set[, -which(names(train_set) == &quot;depressed&quot;)],
                    train_set$depressed, method = &quot;rf&quot;,
                    tuneGrid = grid, trControl = control,
                   metric = &quot;F1&quot;, maximize = TRUE)
 train_rf$bestTune</code></pre>
 <pre><code>##   mtry
-## 3    7</code></pre>
+## 4   10</code></pre>
+<pre class="r"><code>ggplot(data = NULL, aes(x = train_rf$results$mtry, y = train_rf$results$RMSE)) + 
+  geom_line(colour = &#39;red&#39;) + geom_point() + labs(title = &quot;mtry vs. RMSE&quot;) + xlab(&quot;mtry&quot;) + 
+  ylab(&quot;RMSE&quot;)</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code>library(randomForest)
 fit_rf &lt;- randomForest(depressed~., data=train_set, mtry = train_rf$bestTune$mtry)
 y_hat_rf &lt;- predict(fit_rf, test_set)
 y_hat_rf &lt;- as.integer(y_hat_rf&gt;0.18)
 roc.curve(test_set$depressed, y_hat_rf)</code></pre>
-<p><img src="prediction_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<pre><code>## Area under the curve (AUC): 0.683</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.681</code></pre>
 <pre class="r"><code>cm_rf &lt;- confusionMatrix(factor(y_hat_rf), factor(test_set$depressed))
 
 results &lt;- bind_rows(results, tibble(Method = &quot;Random Forest&quot;, AUC = as.numeric(auc(roc(test_set$depressed, y_hat_rf))),
@@ -539,24 +543,47 @@ results &lt;- bind_rows(results, tibble(Method = &quot;Random Forest&quot;, AUC 
 <h3>Gradient Boosted Machine</h3>
 <pre class="r"><code>library(gbm)
 
-grid_gbm &lt;- expand.grid(n.trees = c(50, 100, 200), interaction.depth = c(1,2,3), 
-                        shrinkage = c(0.1, 0.5, 0.8), n.minobsinnode = c(5, 10, 15))
+grid_gbm &lt;- expand.grid(n.trees = 200, interaction.depth = 3, shrinkage = seq(0.1, 0.9, 0.05), 
+                        n.minobsinnode = 10)
+
 train_gbm &lt;- train(depressed ~ ., data = train_set, method = &quot;gbm&quot;, trControl = control,
                    verbose = FALSE, tuneGrid = grid_gbm, metric = &quot;F1&quot;, maximize = TRUE)
 train_gbm$bestTune</code></pre>
 <pre><code>##    n.trees interaction.depth shrinkage n.minobsinnode
-## 78     200                 3       0.8             10</code></pre>
+## 17     200                 3       0.9             10</code></pre>
+<pre class="r"><code>ggplot(data = NULL, aes(x = train_gbm$results$shrinkage, 
+                        y = train_gbm$results$RMSE)) + geom_point()+ geom_line(colour = &#39;red&#39;) +
+  geom_point() + labs(title = &quot;shrinkage vs. RMSE&quot;) + xlab(&quot;shrinkage&quot;) + ylab(&quot;RMSE&quot;)</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <pre class="r"><code>fit_gbm &lt;- gbm(depressed ~., data=train_set, distribution = &quot;bernoulli&quot;)
 y_hat_gbm &lt;- predict(fit_gbm, test_set)
 y_hat_gbm &lt;- as.integer(y_hat_gbm&gt;-1.55)
 roc.curve(test_set$depressed, y_hat_gbm)</code></pre>
-<p><img src="prediction_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-<pre><code>## Area under the curve (AUC): 0.694</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.656</code></pre>
 <pre class="r"><code>cm_gbm &lt;- confusionMatrix(as.factor(y_hat_gbm), as.factor(test_set$depressed))
 
 results &lt;- bind_rows(results, tibble(Method = &quot;Gradient Boosted Machine&quot;, AUC = as.numeric(auc(roc(test_set$depressed, y_hat_gbm))),
                       F1 = cm_gbm$byClass[&quot;F1&quot;], Specificity = cm_gbm$byClass[&quot;Specificity&quot;],
                       Balanced_Accuracy = cm_gbm$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
+</div>
+<div id="svm" class="section level3">
+<h3>SVM</h3>
+<pre class="r"><code>library(e1071)
+train_svm &lt;- train(depressed ~ ., data = train_set, method = &quot;svmRadial&quot;, trControl = control,
+                   verbose = FALSE, metric = &quot;F1&quot;, maximize = TRUE)
+
+fit_svm &lt;- svm(depressed ~ ., data=train_set, type = &quot;C-classification&quot;, kernel = &quot;radial&quot;)
+y_hat_svm &lt;- predict(fit_svm, newdata = test_set, type = &quot;decision&quot;)
+
+cm_svm &lt;- confusionMatrix(as.factor(y_hat_svm), as.factor(test_set$depressed))
+
+roc.curve(test_set$depressed, y_hat_svm)</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.514</code></pre>
+<pre class="r"><code>results &lt;- bind_rows(results, tibble(Method = &quot;SVM&quot;, AUC = as.numeric(auc(roc(as.numeric(test_set$depressed), as.numeric(y_hat_svm)))),
+                      F1 = cm_svm$byClass[&quot;F1&quot;], Specificity = cm_svm$byClass[&quot;Specificity&quot;],
+                      Balanced_Accuracy = cm_svm$byClass[&quot;Balanced Accuracy&quot;])) </code></pre>
 </div>
 <div id="rose-data" class="section level2">
 <h2>ROSE data</h2>
@@ -587,8 +614,8 @@ train_rf_rose$bestTune</code></pre>
 y_rose_rf &lt;- predict(fit_rf_rose, test_rose)
 y_rose_rf &lt;- as.integer(y_hat_rf&gt;0.18)
 roc.curve(test_rose$depressed, y_rose_rf)</code></pre>
-<p><img src="prediction_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<pre><code>## Area under the curve (AUC): 0.683</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.681</code></pre>
 <pre class="r"><code>cm_rf_rose &lt;- confusionMatrix(factor(y_rose_rf), factor(test_rose$depressed))
 
 results &lt;- bind_rows(results, tibble(Method = &quot;ROSE - Random Forest&quot;, 
@@ -609,8 +636,8 @@ fit_gbm_rose &lt;- gbm(depressed ~., data=train_rose, distribution = &quot;berno
 y_rose_gbm &lt;- predict(fit_gbm_rose, test_rose)
 y_rose_gbm &lt;- as.integer(y_rose_gbm&gt;-1.55)
 roc.curve(test_rose$depressed, y_rose_gbm)</code></pre>
-<p><img src="prediction_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<pre><code>## Area under the curve (AUC): 0.665</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre><code>## Area under the curve (AUC): 0.710</code></pre>
 <pre class="r"><code>cm_gbm_rose &lt;- confusionMatrix(as.factor(y_rose_gbm), as.factor(test_rose$depressed))
 
 results &lt;- bind_rows(results, tibble(Method = &quot;ROSE - Gradient Boosted Machine&quot;, 
@@ -618,19 +645,39 @@ results &lt;- bind_rows(results, tibble(Method = &quot;ROSE - Gradient Boosted M
                                      F1 = cm_gbm_rose$byClass[&quot;F1&quot;], 
                                      Specificity = cm_gbm_rose$byClass[&quot;Specificity&quot;],
                                      Balanced_Accuracy = cm_gbm_rose$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
+</div>
+</div>
+<div id="results" class="section level2">
+<h2>Results</h2>
 <pre class="r"><code>results</code></pre>
-<pre><code>## # A tibble: 8 × 5
+<pre><code>## # A tibble: 9 × 5
 ##   Method                            AUC    F1 Specificity Balanced_Accuracy
 ##   &lt;chr&gt;                           &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;             &lt;dbl&gt;
 ## 1 Logistic Regression             0.639 0.792      0.571              0.639
 ## 2 Classification Tree             0.566 0.898      0.2                0.566
 ## 3 Bagging                         0.667 0.829      0.571              0.667
 ## 4 kNN                             0.512 0.917      0.0286             0.512
-## 5 Random Forest                   0.683 0.747      0.743              0.683
-## 6 Gradient Boosted Machine        0.694 0.724      0.8                0.694
-## 7 ROSE - Random Forest            0.683 0.747      0.743              0.683
-## 8 ROSE - Gradient Boosted Machine 0.665 0.793      0.629              0.665</code></pre>
-</div>
+## 5 Random Forest                   0.681 0.743      0.743              0.681
+## 6 Gradient Boosted Machine        0.656 0.763      0.657              0.656
+## 7 SVM                             0.514 0.919      0.0286             0.514
+## 8 ROSE - Random Forest            0.681 0.743      0.743              0.681
+## 9 ROSE - Gradient Boosted Machine 0.710 0.768      0.771              0.710</code></pre>
+<pre class="r"><code>thresh&lt;-seq(0,1,0.001)
+roc.plot(x=test_set$depressed == &quot;1&quot;, 
+         pred = cbind(pred, pred.tree.rose, pred.ipred, y_hat_gbm, y_hat_knn, y_hat_rf, y_hat_svm, y_rose_gbm, y_rose_rf), legend = T, thresholds = thresh, leg.text = 
+         c(&quot;Logistic&quot;,&quot;Classification Tree&quot;,&quot;Bagging CART&quot;, &quot;Gradient Boosted Machine&quot;,&quot;kNN&quot;,
+           &quot;Random Forest&quot;, &quot;SVM&quot;, &quot;ROSE - GBM&quot;, &quot;ROSE - RF&quot;))$roc.vol</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<pre><code>##      Model      Area      p.value binorm.area
+## 1 Model  1 0.6388071 7.085554e-04          NA
+## 2 Model  2 0.5664948 5.286094e-03          NA
+## 3 Model  3 0.6671576 3.052970e-05          NA
+## 4 Model  4 0.6558910 2.634191e-04          NA
+## 5 Model  5 0.5117084 8.710193e-02          NA
+## 6 Model  6 0.6807069 3.784849e-05          NA
+## 7 Model  7 0.5142857 9.585435e-03          NA
+## 8 Model  8 0.7104566 1.741092e-06          NA
+## 9 Model  9 0.6807069 3.784849e-05          NA</code></pre>
 </div>
 
 
