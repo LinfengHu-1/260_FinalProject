@@ -41,13 +41,15 @@ We first drop unnecessary features for our analysis such as village identifier, 
 
 ### ROC combined plot
   Why ROC -- ONLY preliminary here.
+  ![ROCs combined](./ROCs.png)
   
 #### ROSE 
   Not much change
   
 ### Shrinkage plot
-  
-  ![shrinkage plot](./shrinkage.png)
+  Below are how the RMSE changed based on different shrinkage value given to the gradient boosted machine using ROSE data and the original data.
+  ![shrinkage plot - original data](./shrinkage_original.png)
+  ![shrinkage plot - ROSE data](./shrinkage_ROSE.png)
 ### mtry plot
   ![mtry Plot](./mtry.png)
 ### Final Results
