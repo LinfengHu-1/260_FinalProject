@@ -51,21 +51,24 @@ I attempted several machine learning models with tuned parameters using tuneGrid
 ### Random Forest 
 Random forest is a type of machine learning algorithm that draws bootstrapped samples, grow multiple unpruned decision trees, and obtain the predicitons by majority votes for the classification and average the results for regression. From previous tuning of the n.trees parameter to be 200. I chose this number so that the model has enough number of trees to control for potential error while not overfitting too much to the training set. mtry parameter refers to the number of observations randomly sampled at each split. Below are 2 plots for the root mean squared error(RMSE) values that corresponds to using different mtry parameters, for the original data set and the ROSE-balanced data set respectively.
 
-  ![mtry Plot - original data](./mtry_original.png)
+  ![mtry Plot - original data](./mtry_original.png){width=50%}
   
-  ![mtry Plot - ROSE data](./mtry_rose.png)
-We can see from both plots that the increase of mtry parameter corresponds to an increased RMSE. A lower RMSE usually means a "better fit" of the model to the given data. However, the best tuned parameter given from the function, while maximizing for F1 score (combined metric for evaluating both precision and recall of a classifier) is mtry = 10, which has the highest RMSE here in both original data set and ROSE-balanced data set. The high RMSE value of this model also has resulted in a mediocore prediction accuracy in the end. But this may be traced back to the fact that the data set has very little information on the observations that has the outcome depression. Thus when we 
+  ![mtry Plot - ROSE data](./mtry_rose.png){width=50%}
+We can see from both plots that the increase of mtry parameter corresponds to an increased RMSE. A lower RMSE usually means a "better fit" of the model to the given data. However, the best tuned parameter given from the function, while maximizing for F1 score (combined metric for evaluating both precision and recall of a classifier) is mtry = 10, which has the highest RMSE here in both original data set and ROSE-balanced data set. The high RMSE value of this model also has resulted in a mediocore prediction accuracy in the end. But this may be traced back to the fact that the data set has very little information on the observations that has the outcome depression.  
   
 ### Gradient Boosted Machine 
-  Below are how the RMSE changed based on different shrinkage value given to the gradient boosted machine using ROSE data and the original data.
-  ![shrinkage plot - original data](./shrinkage_original.png)
-  ![shrinkage plot - ROSE data](./shrinkage_ROSE.png)
 
+Gradient boosted machine is a type of machine learning algorithm that builds an ensemble of multiple regression methods ---- ensemble of weak successive tree learners, with each learner improving based on the previous until certain threshold. The key parameter when using GBM is shrinkage, meaning the learning rate that can reduce regression coefficients in order to reduce the impact of potentially unstable steps since the ensemble did include weaker regression methods as well. Below are how the RMSE changed based on different shrinkage value given to the gradient boosted machine using ROSE data and the original data.
+  
+  ![shrinkage plot - original data](./shrinkage_original.png){width=50%}
+  ![shrinkage plot - ROSE data](./shrinkage_ROSE.png){width=50%}
+We can see from both plots that the increase of shrinkage parameter corresponds to an increased RMSE. A similar rationale from teh evaluation of the random forest model may be present here as well. The best tuned parameter while maximizing for F1 score is shrinkage = 0.85, which has the highest RMSE here in both original data set and ROSE-balanced data set. Here we can see that it is not the case higher the shrinkage, better the performance. It does make sense that the optimal shrinkage value is relatively large because it is applied on a large data set with a lot of features. 
 
 ### Final Results
-Why specificty & AUC/balanced accuracy
-  ![Results Table](./resultTable.png)
 
+The resulting preformances of the models I have examined are included in the table below. 
+  ![Results Table](./resultTable.png)
+I have chosen the metrics listed for their usefulness in evaluating imbalanced data binary classification. Here I chose to include AUC score/balanced accuracy is for the ability to measure the degree of separatability accomplished by the models. Higher AUC can be translated to better ability to predict true positive as positive, and true negative as negative. The best performing model is the gradient boosted machine using the ROSE balanced data. I also included metrics F1 score, sensitivity and specificity to measure true positive and true negative rate. These three metrics should all be taken into consideration as our goal here would be both to correct predict on the onset of depression and not to wrongly predict depression.
 
 ## Conclusion
 
@@ -77,7 +80,7 @@ Rafael A. Irizarry, October 24, 2019, Introduction to Data Science: Data Analysi
 
 
 ## Appendix
-
+Code: 
 ```{r}
 library(tidyverse) 
 library(dplyr)

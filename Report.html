@@ -244,13 +244,13 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
+  <a href="Report.html">Report</a>
+</li>
+<li>
   <a href="index.html">Exploratory Data Analysis</a>
 </li>
 <li>
   <a href="prediction.html">Prediction</a>
-</li>
-<li>
-  <a href="Report.html">Report</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -272,13 +272,15 @@ $(document).ready(function () {
 
 <div id="introduction-background" class="section level2">
 <h2>Introduction &amp; Background</h2>
-<p>This project aims to examine the potential association between 75
-individual-level features such as socioeconomic status and health
-indicators, and depression onset. The original data come from a 2015
-study conducted by the Busara Center in rural Siaya County in western
-Kenya; all study participants were asked to complete depression
-screening to determine the outcome of interest. (The Original Link is
-here: <a
+<p>The world health organization has collected information on potential
+individual factors in their relations to Kenyans who are suffering from
+untreated major depressive disorder. This project aims to examine the
+potential association between 75 individual-level features such as
+socioeconomic status and health indicators, and depression onset. The
+original data come from a 2015 study conducted by the Busara Center in
+rural Siaya County in western Kenya; all study participants were asked
+to complete depression screening to determine the outcome of interest.
+(The Original Link is here: <a
 href="https://zindi.africa/competitions/busara-mental-health-prediction-challenge/data"
 class="uri">https://zindi.africa/competitions/busara-mental-health-prediction-challenge/data</a>).
 From this heterogeneous data, we aim to use regression in investigating
@@ -304,8 +306,9 @@ Cook’s distance. We can see that there are around 4 points with large
 studentized residuals with their Cook’s distances labeled. We can see
 that although these 4 points are labeled because of their large residual
 values, none of the points have an absolute value larger than 3.
-Therefore we temporarily conclude that there is no obvious outlier in
-our data set. <img src="influencePlot.png" alt="Influence Plot" /></p>
+Therefore one can temporarily conclude that there is no obvious outlier
+in our data set. <img src="influencePlot.png"
+alt="Influence Plot" /></p>
 <p>From the correlation matrix of all our covariates, we can observe
 that factors that are highly correlated (correlation &gt; 0.6) include
 hhsize &amp; children &amp; hh_totalmembers &amp; hhchildren,
@@ -328,43 +331,133 @@ class="section level3">
 <h3>Description &amp; justification of Methodology</h3>
 <p>The data set is heavily imbalanced with only 16% of participants
 having the outcome of interest. Using imbalanced data set may result in
-poor outcomes in the ROC-AUC result. Therefore we attempted to generate
-a sample of synthetic data by Randomly Over Sampling Examples (ROSE)
-which resulted in a roughly balanced data set to combat this problem.
-However, the degree of imbalance was still severe and generating
-synthetic data seem to worsen the prediction accuracy. Therefore, we
-moved forward with changing the cutoff threshold for prediction.</p>
+poor outcomes in the ROC-AUC(receiver operating characteristic and area
+under the curve scores) result. Therefore we attempted to generate a
+sample of synthetic data by Randomly Over Sampling Examples (ROSE) which
+resulted in a roughly balanced data set to combat this problem. However,
+the degree of imbalance was still severe and generating synthetic data
+seem to worsen the prediction accuracy. Therefore, we moved forward with
+changing the cutoff threshold for prediction.</p>
 <p>From the ROC curve of a general logistic regression fitted for this
-dataset, we can see that it comes quite closer to the diagonal line,
-indicating low accuracy. From the general model summary, we can also see
-that most of the covariates are not statistically significant in the
-classification. This may be due to the fact that the linearity
-assumption in the predictors does not hold well.</p>
+dataset in the exploratory data analysis, we can see that it comes quite
+closer to the diagonal line, indicating low accuracy. From the general
+model summary, we can also see that most of the covariates are not
+statistically significant in the classification. This may be due to the
+fact that the linearity assumption in the predictors does not hold
+well.</p>
 <p>Therefore we can conclude that this general linear model is not
 sufficient to depict the relationship of the covariates listed and the
 outcome of interest depression status. We proceed with other machine
-learning approaches.</p>
+learning approaches that can hopefully better characterize the
+relationships between depression onset with socioeconomic and health
+factors.</p>
 </div>
 </div>
 <div id="results" class="section level2">
 <h2>Results</h2>
 <p>We first drop unnecessary features for our analysis such as village
 identifier, personal identification number and the survey date. We then
-create initial data partition for further examination.</p>
+create initial data partition for further examination using training set
+(containing 80% of observations) and test sets (containing 20% of
+observations).</p>
 <div id="roc-combined-plot" class="section level3">
 <h3>ROC combined plot</h3>
-<p>Why ROC – ONLY preliminary here.</p>
+<p>I attempted several machine learning models with tuned parameters
+using tuneGrid of the caret package to specify customized parameters
+that I am interested in learning. Models include logistic regression,
+classification tree, decision tree using bootstrap aggregating method to
+reduce the variance, gradient boosted machine, k-nearest neigherbos,
+random forest and support vector machine. Cross-validation in the caret
+package is also used when choosing the most optimal parameter settings
+for each algorithm. The combined ROC curves plot below shows a
+preliminary measure of the classification performances of these tuned
+models. <img src="ROCs.png" alt="ROCs combined" /> As we can see from
+the ROC plots and AUC statistics that are not shown here, random forest
+and gradient boosted machine are the two better performing algorithms.
+This means that these two algorithms have a higher probability to
+correctly discriminate between the positive and negative classes
+(depression and no depression). Therefore, we focus more on these two
+algorithms more in the following sections.</p>
 <div id="rose" class="section level4">
 <h4>ROSE</h4>
-<p>Not much change</p>
+<p>To remedy the effect of imbalanced data set on the overall
+classification performance, I also attempted to use ROSE package, which
+generates synthetic balanced data from the original information by
+random over-sampling. This function used Through the ROSE function, I
+hoped to improve subsequent prediction. As shown in the above section,
+we focus more on tuning parameters for random forest and the gradient
+boosted machine.</p>
 </div>
 </div>
-<div id="shrinkage-plot" class="section level3">
-<h3>Shrinkage plot</h3>
-<p><img src="shrinkage.png" alt="shrinkage plot" /> ### mtry plot <img
-src="mtry.png" alt="mtry Plot" /> ### Final Results Why specificty
-&amp; AUC/balanced accuracy <img src="resultTable.png"
-alt="Results Table" /></p>
+<div id="random-forest" class="section level3">
+<h3>Random Forest</h3>
+<p>Random forest is a type of machine learning algorithm that draws
+bootstrapped samples, grow multiple unpruned decision trees, and obtain
+the predicitons by majority votes for the classification and average the
+results for regression. From previous tuning of the n.trees parameter to
+be 200. I chose this number so that the model has enough number of trees
+to control for potential error while not overfitting too much to the
+training set. mtry parameter refers to the number of observations
+randomly sampled at each split. Below are 2 plots for the root mean
+squared error(RMSE) values that corresponds to using different mtry
+parameters, for the original data set and the ROSE-balanced data set
+respectively.</p>
+<div class="figure">
+<img src="mtry_original.png" style="width:50.0%" alt="" />
+<p class="caption">mtry Plot - original data</p>
+</div>
+<p><img src="mtry_rose.png" style="width:50.0%"
+alt="mtry Plot - ROSE data" /> We can see from both plots that the
+increase of mtry parameter corresponds to an increased RMSE. A lower
+RMSE usually means a “better fit” of the model to the given data.
+However, the best tuned parameter given from the function, while
+maximizing for F1 score (combined metric for evaluating both precision
+and recall of a classifier) is mtry = 10, which has the highest RMSE
+here in both original data set and ROSE-balanced data set. The high RMSE
+value of this model also has resulted in a mediocore prediction accuracy
+in the end. But this may be traced back to the fact that the data set
+has very little information on the observations that has the outcome
+depression.</p>
+</div>
+<div id="gradient-boosted-machine" class="section level3">
+<h3>Gradient Boosted Machine</h3>
+<p>Gradient boosted machine is a type of machine learning algorithm that
+builds an ensemble of multiple regression methods —- ensemble of weak
+successive tree learners, with each learner improving based on the
+previous until certain threshold. The key parameter when using GBM is
+shrinkage, meaning the learning rate that can reduce regression
+coefficients in order to reduce the impact of potentially unstable steps
+since the ensemble did include weaker regression methods as well. Below
+are how the RMSE changed based on different shrinkage value given to the
+gradient boosted machine using ROSE data and the original data.</p>
+<p><img src="shrinkage_original.png" style="width:50.0%"
+alt="shrinkage plot - original data" /> <img src="shrinkage_ROSE.png"
+style="width:50.0%" alt="shrinkage plot - ROSE data" /> We can see from
+both plots that the increase of shrinkage parameter corresponds to an
+increased RMSE. A similar rationale from teh evaluation of the random
+forest model may be present here as well. The best tuned parameter while
+maximizing for F1 score is shrinkage = 0.85, which has the highest RMSE
+here in both original data set and ROSE-balanced data set. Here we can
+see that it is not the case higher the shrinkage, better the
+performance. It does make sense that the optimal shrinkage value is
+relatively large because it is applied on a large data set with a lot of
+features.</p>
+</div>
+<div id="final-results" class="section level3">
+<h3>Final Results</h3>
+<p>The resulting preformances of the models I have examined are included
+in the table below. <img src="resultTable.png" alt="Results Table" />
+I have chosen the metrics listed for their usefulness in evaluating
+imbalanced data binary classification. Here I chose to include AUC
+score/balanced accuracy is for the ability to measure the degree of
+separatability accomplished by the models. Higher AUC can be translated
+to better ability to predict true positive as positive, and true
+negative as negative. The best performing model is the gradient boosted
+machine using the ROSE balanced data. I also included metrics F1 score,
+sensitivity and specificity to measure true positive and true negative
+rate. These three metrics should all be taken into consideration as our
+goal here would be both to correct predict on the onset of depression
+and not to wrongly predict depression.</p>
 </div>
 </div>
 <div id="conclusion" class="section level2">
@@ -372,9 +465,16 @@ alt="Results Table" /></p>
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>
+<p>Busara Center for Behavioral Economics, “Busara Mental Health
+Prediction Challenge”, published 17 November 2018, <a
+href="https://zindi.africa/competitions/busara-mental-health-prediction-challenge/data"
+class="uri">https://zindi.africa/competitions/busara-mental-health-prediction-challenge/data</a></p>
+<p>Rafael A. Irizarry, October 24, 2019, Introduction to Data Science:
+Data Analysis and Prediction Algorithms with R</p>
 </div>
 <div id="appendix" class="section level2">
 <h2>Appendix</h2>
+<p>Code:</p>
 <pre class="r"><code>library(tidyverse) </code></pre>
 <pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
 ## ✔ ggplot2 3.4.0      ✔ purrr   0.3.5 
@@ -1437,7 +1537,7 @@ roc.curve(test_set$depressed, y_hat_knn)</code></pre>
 <pre><code>## Setting levels: control = 0, case = 1</code></pre>
 <pre><code>## Setting direction: controls &lt; cases</code></pre>
 </div>
-<div id="random-forest" class="section level3">
+<div id="random-forest-1" class="section level3">
 <h3>Random Forest</h3>
 <pre class="r"><code>control &lt;- trainControl(method = &quot;cv&quot;,number = 5, p = .8)
 grid &lt;- data.frame(mtry=c(1, 5, sqrt(ncol(d)), 10))
@@ -1548,7 +1648,7 @@ results &lt;- bind_rows(results, tibble(Method = &quot;Random Forest&quot;, AUC 
 <pre><code>## Setting levels: control = 0, case = 1</code></pre>
 <pre><code>## Setting direction: controls &lt; cases</code></pre>
 </div>
-<div id="gradient-boosted-machine" class="section level3">
+<div id="gradient-boosted-machine-1" class="section level3">
 <h3>Gradient Boosted Machine</h3>
 <pre class="r"><code>library(gbm)</code></pre>
 <pre><code>## Loaded gbm 2.1.8.1</code></pre>
@@ -2080,7 +2180,7 @@ set.seed(260)
 test_index &lt;- createDataPartition(drose$depressed, times = 1, p = 0.2, list = FALSE)
 test_rose &lt;- d[test_index, ]
 train_rose &lt;- d[-test_index, ] </code></pre>
-<div id="random-forest-1" class="section level4">
+<div id="random-forest-2" class="section level4">
 <h4>Random Forest</h4>
 <pre class="r"><code>control &lt;- trainControl(method = &quot;cv&quot;,number = 5, p = .8)
 grid &lt;- data.frame(mtry=c(1, 5, sqrt(ncol(drose))))
@@ -2163,7 +2263,7 @@ results &lt;- bind_rows(results, tibble(Method = &quot;ROSE - Random Forest&quot
 <pre><code>## Setting levels: control = 0, case = 1</code></pre>
 <pre><code>## Setting direction: controls &lt; cases</code></pre>
 </div>
-<div id="gradient-boosted-machine-1" class="section level3">
+<div id="gradient-boosted-machine-2" class="section level3">
 <h3>Gradient Boosted Machine</h3>
 <pre class="r"><code>library(gbm)
 train_gbm_rose &lt;- train(depressed ~ ., data = train_rose, method = &quot;gbm&quot;, trControl = control,
