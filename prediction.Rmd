@@ -153,8 +153,8 @@ train_rf <- train(train_set[, -which(names(train_set) == "depressed")],
                   metric = "F1", maximize = TRUE)
 train_rf$bestTune
 ggplot(data = NULL, aes(x = train_rf$results$mtry, y = train_rf$results$RMSE)) + 
-  geom_line(colour = 'red') + geom_point() + labs(title = "mtry vs. RMSE") + xlab("mtry") + 
-  ylab("RMSE")
+  geom_line(colour = 'red') + geom_point() + labs(title = "mtry vs. RMSE - original data") +
+  xlab("mtry") + ylab("RMSE")
   
 
 
@@ -200,6 +200,7 @@ results <- bind_rows(results, tibble(Method = "Gradient Boosted Machine", AUC = 
                       Balanced_Accuracy = cm_gbm$byClass["Balanced Accuracy"]))
 ```
 
+
 ### SVM
 ```{r}
 library(e1071)
@@ -242,7 +243,9 @@ train_rf_rose <- train(train_rose[, -which(names(train_rose) == "depressed")],
                   train_rose$depressed, method = "rf", tuneGrid = grid, trControl = control,
                   metric = "F1", maximize = TRUE)
 train_rf_rose$bestTune
-
+ggplot(data = NULL, aes(x = train_rf_rose$results$mtry, y = train_rf_rose$results$RMSE)) + 
+  geom_line(colour = 'red') + geom_point() + labs(title = "mtry vs. RMSE - ROSE data") +
+  xlab("mtry") + ylab("RMSE")
 
 fit_rf_rose <- randomForest(depressed~., data=train_rose, mtry = train_rf_rose$bestTune$mtry)
 y_rose_rf <- predict(fit_rf_rose, test_rose)
@@ -287,9 +290,22 @@ ggplot(data = NULL, aes(x = train_gbm_rose$results$shrinkage,
 
 ```
 
+```{r}
+plt <- as.data.frame(cm_gbm_rose$table)
+ggplot(plt, aes(Prediction,Reference, fill= Freq)) +
+        geom_tile() + geom_text(aes(label=Freq)) +
+        scale_fill_gradient(low="white", high="#009194") +
+        labs(x = "Reference",y = "Prediction") +
+        scale_x_discrete(labels=c("Class_1","Class_2","Class_3","Class_4")) +
+        scale_y_discrete(labels=c("Class_4","Class_3","Class_2","Class_1"))
+```
+
+
+
 ## Results
 ```{r}
 results
+ggplot(results, aes(x = AUC, y = Specificity)) + geom_line()
 ```
 
 ```{r}
@@ -301,8 +317,6 @@ rocs <- roc.plot(x=test_set$depressed == "1",
 
 ```
 
-```{r}
 
-```
 
 

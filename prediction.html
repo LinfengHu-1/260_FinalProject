@@ -243,13 +243,13 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
+  <a href="Report.html">Report</a>
+</li>
+<li>
   <a href="index.html">Exploratory Data Analysis</a>
 </li>
 <li>
   <a href="prediction.html">Prediction</a>
-</li>
-<li>
-  <a href="Report.html">Report</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -523,8 +523,8 @@ train_rf$bestTune</code></pre>
 <pre><code>##   mtry
 ## 4   10</code></pre>
 <pre class="r"><code>ggplot(data = NULL, aes(x = train_rf$results$mtry, y = train_rf$results$RMSE)) + 
-  geom_line(colour = &#39;red&#39;) + geom_point() + labs(title = &quot;mtry vs. RMSE&quot;) + xlab(&quot;mtry&quot;) + 
-  ylab(&quot;RMSE&quot;)</code></pre>
+  geom_line(colour = &#39;red&#39;) + geom_point() + labs(title = &quot;mtry vs. RMSE - original data&quot;) +
+  xlab(&quot;mtry&quot;) + ylab(&quot;RMSE&quot;)</code></pre>
 <p><img src="prediction_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code>library(randomForest)
 fit_rf &lt;- randomForest(depressed~., data=train_set, mtry = train_rf$bestTune$mtry)
@@ -553,7 +553,8 @@ train_gbm$bestTune</code></pre>
 ## 17     200                 3       0.9             10</code></pre>
 <pre class="r"><code>ggplot(data = NULL, aes(x = train_gbm$results$shrinkage, 
                         y = train_gbm$results$RMSE)) + geom_point()+ geom_line(colour = &#39;red&#39;) +
-  geom_point() + labs(title = &quot;shrinkage vs. RMSE&quot;) + xlab(&quot;shrinkage&quot;) + ylab(&quot;RMSE&quot;)</code></pre>
+  geom_point() + labs(title = &quot;shrinkage vs. RMSE - Original data&quot;) + 
+  xlab(&quot;shrinkage&quot;) + ylab(&quot;RMSE&quot;)</code></pre>
 <p><img src="prediction_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <pre class="r"><code>fit_gbm &lt;- gbm(depressed ~., data=train_set, distribution = &quot;bernoulli&quot;)
 y_hat_gbm &lt;- predict(fit_gbm, test_set)
@@ -610,11 +611,15 @@ train_rf_rose &lt;- train(train_rose[, -which(names(train_rose) == &quot;depress
 train_rf_rose$bestTune</code></pre>
 <pre><code>##   mtry
 ## 3    7</code></pre>
+<pre class="r"><code>ggplot(data = NULL, aes(x = train_rf_rose$results$mtry, y = train_rf_rose$results$RMSE)) + 
+  geom_line(colour = &#39;red&#39;) + geom_point() + labs(title = &quot;mtry vs. RMSE - ROSE data&quot;) +
+  xlab(&quot;mtry&quot;) + ylab(&quot;RMSE&quot;)</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <pre class="r"><code>fit_rf_rose &lt;- randomForest(depressed~., data=train_rose, mtry = train_rf_rose$bestTune$mtry)
 y_rose_rf &lt;- predict(fit_rf_rose, test_rose)
 y_rose_rf &lt;- as.integer(y_hat_rf&gt;0.18)
 roc.curve(test_rose$depressed, y_rose_rf)</code></pre>
-<p><img src="prediction_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="prediction_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
 <pre><code>## Area under the curve (AUC): 0.681</code></pre>
 <pre class="r"><code>cm_rf_rose &lt;- confusionMatrix(factor(y_rose_rf), factor(test_rose$depressed))
 
@@ -644,7 +649,22 @@ results &lt;- bind_rows(results, tibble(Method = &quot;ROSE - Gradient Boosted M
                                      AUC = as.numeric(auc(roc(test_rose$depressed, y_rose_gbm))),
                                      F1 = cm_gbm_rose$byClass[&quot;F1&quot;], 
                                      Specificity = cm_gbm_rose$byClass[&quot;Specificity&quot;],
-                                     Balanced_Accuracy = cm_gbm_rose$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
+                                     Balanced_Accuracy = cm_gbm_rose$byClass[&quot;Balanced Accuracy&quot;]))
+
+ggplot(data = NULL, aes(x = train_gbm_rose$results$shrinkage, 
+                        y = train_gbm_rose$results$RMSE)) + 
+  geom_point()+ geom_line(colour = &#39;red&#39;) +
+  geom_point() + labs(title = &quot;shrinkage vs. RMSE - using ROSE data&quot;) + 
+  xlab(&quot;shrinkage&quot;) + ylab(&quot;RMSE&quot;)</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
+<pre class="r"><code>plt &lt;- as.data.frame(cm_gbm_rose$table)
+ggplot(plt, aes(Prediction,Reference, fill= Freq)) +
+        geom_tile() + geom_text(aes(label=Freq)) +
+        scale_fill_gradient(low=&quot;white&quot;, high=&quot;#009194&quot;) +
+        labs(x = &quot;Reference&quot;,y = &quot;Prediction&quot;) +
+        scale_x_discrete(labels=c(&quot;Class_1&quot;,&quot;Class_2&quot;,&quot;Class_3&quot;,&quot;Class_4&quot;)) +
+        scale_y_discrete(labels=c(&quot;Class_4&quot;,&quot;Class_3&quot;,&quot;Class_2&quot;,&quot;Class_1&quot;))</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 </div>
 <div id="results" class="section level2">
@@ -662,22 +682,14 @@ results &lt;- bind_rows(results, tibble(Method = &quot;ROSE - Gradient Boosted M
 ## 7 SVM                             0.514 0.919      0.0286             0.514
 ## 8 ROSE - Random Forest            0.681 0.743      0.743              0.681
 ## 9 ROSE - Gradient Boosted Machine 0.710 0.768      0.771              0.710</code></pre>
+<pre class="r"><code>ggplot(results, aes(x = AUC, y = Specificity)) + geom_line()</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <pre class="r"><code>thresh&lt;-seq(0,1,0.001)
-roc.plot(x=test_set$depressed == &quot;1&quot;, 
+rocs &lt;- roc.plot(x=test_set$depressed == &quot;1&quot;, 
          pred = cbind(pred, pred.tree.rose, pred.ipred, y_hat_gbm, y_hat_knn, y_hat_rf, y_hat_svm, y_rose_gbm, y_rose_rf), legend = T, thresholds = thresh, leg.text = 
          c(&quot;Logistic&quot;,&quot;Classification Tree&quot;,&quot;Bagging CART&quot;, &quot;Gradient Boosted Machine&quot;,&quot;kNN&quot;,
-           &quot;Random Forest&quot;, &quot;SVM&quot;, &quot;ROSE - GBM&quot;, &quot;ROSE - RF&quot;))$roc.vol</code></pre>
-<p><img src="prediction_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
-<pre><code>##      Model      Area      p.value binorm.area
-## 1 Model  1 0.6388071 7.085554e-04          NA
-## 2 Model  2 0.5664948 5.286094e-03          NA
-## 3 Model  3 0.6671576 3.052970e-05          NA
-## 4 Model  4 0.6558910 2.634191e-04          NA
-## 5 Model  5 0.5117084 8.710193e-02          NA
-## 6 Model  6 0.6807069 3.784849e-05          NA
-## 7 Model  7 0.5142857 9.585435e-03          NA
-## 8 Model  8 0.7104566 1.741092e-06          NA
-## 9 Model  9 0.6807069 3.784849e-05          NA</code></pre>
+           &quot;Random Forest&quot;, &quot;SVM&quot;, &quot;ROSE - GBM&quot;, &quot;ROSE - RF&quot;))</code></pre>
+<p><img src="prediction_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 
 
