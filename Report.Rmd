@@ -27,7 +27,7 @@ A VIP score is the measure of a variable's importance for the overall model. Fro
 
 ### Description  & justification of Methodology
 
-The data set is heavily imbalanced with only 16% of participants having the outcome of interest. Using imbalanced data set may result in poor outcomes in the ROC-AUC result. Therefore we attempted to generate a sample of synthetic data by Randomly Over Sampling Examples (ROSE) which resulted in a roughly balanced data set to combat this problem. However, the degree of imbalance was still severe and generating synthetic data seem to worsen the prediction accuracy. Therefore, we moved forward with changing the cutoff threshold for prediction.
+The data set is heavily imbalanced with only 16% of participants having the outcome of interest. Using imbalanced data set may result in poor outcomes in the ROC-AUC(receiver operating characteristic and area under the curve scores) result. Therefore we attempted to generate a sample of synthetic data by Randomly Over Sampling Examples (ROSE) which resulted in a roughly balanced data set to combat this problem. However, the degree of imbalance was still severe and generating synthetic data seem to worsen the prediction accuracy. Therefore, we moved forward with changing the cutoff threshold for prediction.
 
 From the ROC curve of a general logistic regression fitted for this dataset in the exploratory data analysis, we can see that it comes quite closer to the diagonal line, indicating low accuracy. From the general model summary, we can also see that most of the covariates are not statistically significant in the classification. This may be due to the fact that the linearity assumption in the predictors does not hold well. 
 
@@ -41,20 +41,27 @@ We first drop unnecessary features for our analysis such as village identifier, 
 
 ### ROC combined plot
   
-I attempted several machine learning models with tuned parameters using tuneGrid of the caret package to specify customized parameters that I am interested in learning. Models include logistic regression, classification tree, decision tree using bootstrap aggregating method to reduce the variance, gradient boosted machine, k-nearest neigherbos, random forest and support vector machine. The combined ROC curves plot below shows a preliminary measure of the classification performances of these tuned models.
+I attempted several machine learning models with tuned parameters using tuneGrid of the caret package to specify customized parameters that I am interested in learning. Models include logistic regression, classification tree, decision tree using bootstrap aggregating method to reduce the variance, gradient boosted machine, k-nearest neigherbos, random forest and support vector machine. Cross-validation in the caret package is also used when choosing the most optimal parameter settings for each algorithm. The combined ROC curves plot below shows a preliminary measure of the classification performances of these tuned models.
   ![ROCs combined](./ROCs.png)
-  As we can see from the ROC plots
+  As we can see from the ROC plots and AUC statistics that are not shown here, random forest and gradient boosted machine are the two better performing algorithms. This means that these two algorithms have a higher probability to correctly discriminate between the positive and negative classes (depression and no depression). Therefore, we focus more on these two algorithms more in the following sections.
   
 #### ROSE 
-  To remedy the effect of imbalanced data set on the overall classification performance, I also attempted to use ROSE package, which generates synthetic balanced data from the original information by random over-sampling. Through the ROSE function, I hoped to improve subsequent prediction.
+  To remedy the effect of imbalanced data set on the overall classification performance, I also attempted to use ROSE package, which generates synthetic balanced data from the original information by random over-sampling. This function used Through the ROSE function, I hoped to improve subsequent prediction. As shown in the above section, we focus more on tuning parameters for random forest and the gradient boosted machine.
   
-### Shrinkage plot
+### Random Forest 
+Random forest is a type of machine learning algorithm that draws bootstrapped samples, grow multiple unpruned decision trees, and obtain the predicitons by majority votes for the classification and average the results for regression. From previous tuning of the n.trees parameter to be 200. I chose this number so that the model has enough number of trees to control for potential error while not overfitting too much to the training set. mtry parameter refers to the number of observations randomly sampled at each split. Below are 2 plots for the root mean squared error(RMSE) values that corresponds to using different mtry parameters, for the original data set and the ROSE-balanced data set respectively.
+
+  ![mtry Plot - original data](./mtry_original.png)
+  
+  ![mtry Plot - ROSE data](./mtry_rose.png)
+We can see from both plots that the increase of mtry parameter corresponds to an increased RMSE. A lower RMSE usually means a "better fit" of the model to the given data. However, the best tuned parameter given from the function, while maximizing for F1 score (combined metric for evaluating both precision and recall of a classifier) is mtry = 10, which has the highest RMSE here in both original data set and ROSE-balanced data set. The high RMSE value of this model also has resulted in a mediocore prediction accuracy in the end. But this may be traced back to the fact that the data set has very little information on the observations that has the outcome depression. Thus when we 
+  
+### Gradient Boosted Machine 
   Below are how the RMSE changed based on different shrinkage value given to the gradient boosted machine using ROSE data and the original data.
   ![shrinkage plot - original data](./shrinkage_original.png)
   ![shrinkage plot - ROSE data](./shrinkage_ROSE.png)
-### mtry plot
-  ![mtry Plot](./mtry_rose.png)
-  ![mtry Plot](./mtry_original.png)
+
+
 ### Final Results
 Why specificty & AUC/balanced accuracy
   ![Results Table](./resultTable.png)
@@ -64,9 +71,9 @@ Why specificty & AUC/balanced accuracy
 
 
 ## References
-Data source: https://zindi.africa/competitions/busara-mental-health-prediction-challenge/data 
+Busara Center for Behavioral Economics, "Busara Mental Health Prediction Challenge", published 17 November 2018, https://zindi.africa/competitions/busara-mental-health-prediction-challenge/data 
 
-
+Rafael A. Irizarry, October 24, 2019, Introduction to Data Science: Data Analysis and Prediction Algorithms with R
 
 
 ## Appendix

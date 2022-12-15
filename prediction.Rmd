@@ -68,6 +68,7 @@ auc_log <- as.numeric(auc(roc(test_set$depressed, pred)))
 
 results <- tibble(Method = "Logistic Regression", AUC = auc_log,
                      F1 = cm$byClass["F1"], Specificity = cm$byClass["Specificity"], 
+                  Sensitivity = cm$byClass["Sensitivity"],
                      Balanced_Accuracy = cm$byClass["Balanced Accuracy"])
 results
 ```
@@ -93,6 +94,7 @@ result_tree <- tibble(Method = "Classification Tree",
                                      AUC = auc_tree,
                                      F1 = cm_tree$byClass["F1"], 
                                      Specificity = cm_tree$byClass["Specificity"], 
+                      Sensitivity = cm_tree$byClass["Sensitivity"],
                                      Balanced_Accuracy = cm_tree$byClass["Balanced Accuracy"])
 results <- bind_rows(results, result_tree)
 ```
@@ -114,6 +116,7 @@ cm_ipred <- confusionMatrix(as.factor(pred.ipred), as.factor(test_set$depressed)
 results <- bind_rows(results, tibble(Method = "Bagging", 
                       AUC = as.numeric(auc(roc(test_set$depressed, pred.ipred))),
                       F1 = cm_ipred$byClass["F1"], Specificity = cm_ipred$byClass["Specificity"],
+                      Sensitivity = cm_ipred$byClass["Sensitivity"],
                       Balanced_Accuracy = cm_ipred$byClass["Balanced Accuracy"]))
 ```
 
@@ -138,6 +141,7 @@ roc.curve(test_set$depressed, y_hat_knn)
 
 results <- bind_rows(results, tibble(Method = "kNN", AUC = as.numeric(auc(roc(as.numeric(test_set$depressed), as.numeric(y_hat_knn)))),
                       F1 = cm_knn$byClass["F1"], Specificity = cm_knn$byClass["Specificity"],
+                      Sensitivity = cm_knn$byClass["Sensitivity"],
                       Balanced_Accuracy = cm_knn$byClass["Balanced Accuracy"]))
 ```
 
@@ -167,6 +171,7 @@ cm_rf <- confusionMatrix(factor(y_hat_rf), factor(test_set$depressed))
 
 results <- bind_rows(results, tibble(Method = "Random Forest", AUC = as.numeric(auc(roc(test_set$depressed, y_hat_rf))),
                       F1 = cm_rf$byClass["F1"], Specificity = cm_rf$byClass["Specificity"],
+                      Sensitivity = cm_rf$byClass["Sensitivity"],
                       Balanced_Accuracy = cm_rf$byClass["Balanced Accuracy"]))
 ```
 
@@ -197,6 +202,7 @@ cm_gbm <- confusionMatrix(as.factor(y_hat_gbm), as.factor(test_set$depressed))
 
 results <- bind_rows(results, tibble(Method = "Gradient Boosted Machine", AUC = as.numeric(auc(roc(test_set$depressed, y_hat_gbm))),
                       F1 = cm_gbm$byClass["F1"], Specificity = cm_gbm$byClass["Specificity"],
+                      Sensitivity = cm_gbm$byClass["Sensitivity"],
                       Balanced_Accuracy = cm_gbm$byClass["Balanced Accuracy"]))
 ```
 
@@ -216,6 +222,7 @@ roc.curve(test_set$depressed, y_hat_svm)
 
 results <- bind_rows(results, tibble(Method = "SVM", AUC = as.numeric(auc(roc(as.numeric(test_set$depressed), as.numeric(y_hat_svm)))),
                       F1 = cm_svm$byClass["F1"], Specificity = cm_svm$byClass["Specificity"],
+                      Sensitivity = cm_svm$byClass["Sensitivity"],
                       Balanced_Accuracy = cm_svm$byClass["Balanced Accuracy"])) 
 ```
 
@@ -257,6 +264,7 @@ results <- bind_rows(results, tibble(Method = "ROSE - Random Forest",
                        AUC = as.numeric(auc(roc(test_rose$depressed, y_rose_rf))),
                        F1 = cm_rf_rose$byClass["F1"], 
                        Specificity = cm_rf_rose$byClass["Specificity"],
+                       Sensitivity = cm_rf_rose$byClass["Sensitivity"],
                        Balanced_Accuracy = cm_rf_rose$byClass["Balanced Accuracy"]))
 ```
 
@@ -280,6 +288,7 @@ results <- bind_rows(results, tibble(Method = "ROSE - Gradient Boosted Machine",
                                      AUC = as.numeric(auc(roc(test_rose$depressed, y_rose_gbm))),
                                      F1 = cm_gbm_rose$byClass["F1"], 
                                      Specificity = cm_gbm_rose$byClass["Specificity"],
+                                     Sensitivity = cm_gbm_rose$byClass["Sensitivity"],
                                      Balanced_Accuracy = cm_gbm_rose$byClass["Balanced Accuracy"]))
 
 ggplot(data = NULL, aes(x = train_gbm_rose$results$shrinkage, 
