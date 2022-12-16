@@ -31,7 +31,7 @@ The data set is heavily imbalanced with only 16% of participants having the outc
 
 From the ROC curve of a general logistic regression fitted for this dataset in the exploratory data analysis, we can see that it comes quite closer to the diagonal line, indicating low accuracy. From the general model summary, we can also see that most of the covariates are not statistically significant in the classification. This may be due to the fact that the linearity assumption in the predictors does not hold well. 
 
-Therefore we can conclude that this general linear model is not sufficient to depict the relationship of the covariates listed and the outcome of interest depression status. We proceed with other machine learning approaches, mostly ensembled methods that can hopefully better characterize the relationships between depression onset with socioeconomic and health factors. Algorithms with all three types(bagging, boosting and stacking) of ensembled learning techniques were used to compare for the best-performing one that is most suitable for this dataset. 
+Therefore we can conclude that this general linear model is not sufficient to depict the relationship of the covariates listed and the outcome of interest depression status. We proceed with other machine learning approaches, mostly ensembled methods that can hopefully better characterize the relationships between depression onset with socioeconomic and health factors than one single classifier. Algorithms with all three types(bagging, boosting and stacking) of ensembled learning techniques were used to compare for the best-performing one that is most suitable for this dataset. 
 
 ## Results
 
