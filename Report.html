@@ -301,10 +301,7 @@ points are labeled because of their large residual values, none of the
 points have an absolute value larger than 3. Therefore one can
 temporarily conclude that there is no obvious outlier in our data
 set.</p>
-<div class="figure">
-<img src="influencePlot.png" style="width:50.0%" alt="" />
-<p class="caption">Influence Plot</p>
-</div>
+<p><img src="influencePlot.png" style="width:50.0%" /></p>
 <p>From the correlation matrix of all our covariates, we can observe
 that factors that are highly correlated (correlation &gt; 0.6) include
 hhsize &amp; children &amp; hh_totalmembers &amp; hhchildren,
@@ -312,10 +309,7 @@ cons_nondurable and cons_allfood and cons_med_total. Therefore, we
 proceed to eliminate covariates that are highly correlated in our model.
 After further cleaning, we can obtain the VIP scores for most
 influential factors below.</p>
-<div class="figure">
-<img src="vipScore.png" style="width:50.0%" alt="" />
-<p class="caption">Vip Score Plot</p>
-</div>
+<p><img src="vipScore.png" style="width:50.0%" /></p>
 <p>A VIP score is the measure of a variable’s importance for the overall
 model. From the plot, we can observe that the factors that seem to be
 contributing the most to the outcome depression are the size of
@@ -368,10 +362,7 @@ package is also used when choosing the most optimal parameter settings
 for each algorithm. The combined ROC curves plot below shows a
 preliminary measure of the classification performances of these tuned
 models.</p>
-<div class="figure">
-<img src="ROCs.png" style="width:50.0%" alt="" />
-<p class="caption">ROCs combined</p>
-</div>
+<p><img src="ROCs.png" style="width:50.0%" /></p>
 <p>As we can see from the ROC plots and AUC statistics that are not
 shown here, random forest and gradient boosted machine are the two
 better performing algorithms. This means that these two algorithms have
@@ -402,14 +393,8 @@ randomly sampled at each split. Below are 2 plots for the root mean
 squared error(RMSE) values that corresponds to using different mtry
 parameters, for the original data set and the ROSE-balanced data set
 respectively.</p>
-<div class="figure">
-<img src="mtry_original.png" style="width:50.0%" alt="" />
-<p class="caption">mtry Plot - original data</p>
-</div>
-<div class="figure">
-<img src="mtry_rose.png" style="width:50.0%" alt="" />
-<p class="caption">mtry Plot - ROSE data</p>
-</div>
+<p><img src="mtry_original.png" style="width:50.0%" /></p>
+<p><img src="mtry_rose.png" style="width:50.0%" /></p>
 <p>We can see from both plots that the increase of mtry parameter
 corresponds to an increased RMSE. A lower RMSE usually means a “better
 fit” of the model to the given data. However, the best tuned parameter
@@ -432,14 +417,8 @@ coefficients in order to reduce the impact of potentially unstable steps
 since the ensemble did include weaker regression methods as well. Below
 are how the RMSE changed based on different shrinkage value given to the
 gradient boosted machine using ROSE data and the original data.</p>
-<div class="figure">
-<img src="shrinkage_original.png" style="width:50.0%" alt="" />
-<p class="caption">shrinkage plot - original data</p>
-</div>
-<div class="figure">
-<img src="shrinkage_ROSE.png" style="width:50.0%" alt="" />
-<p class="caption">shrinkage plot - ROSE data</p>
-</div>
+<p><img src="shrinkage_original.png" style="width:50.0%" /></p>
+<p><img src="shrinkage_ROSE.png" style="width:50.0%" /></p>
 <p>We can see from both plots that the increase of shrinkage parameter
 corresponds to an increased RMSE. A similar rationale from teh
 evaluation of the random forest model may be present here as well. The
@@ -454,18 +433,17 @@ large data set with a lot of features.</p>
 <h3>Final Results</h3>
 <p>The resulting preformances of the models I have examined are included
 in the table below.</p>
-<p><img src="resultTable.png" alt="Results Table" /> I have chosen the
-metrics listed for their usefulness in evaluating imbalanced data binary
-classification. Here I chose to include AUC score/balanced accuracy is
-for the ability to measure the degree of separatability accomplished by
-the models. Higher AUC can be translated to better ability to predict
-true positive as positive, and true negative as negative. The best
-performing model is the gradient boosted machine using the ROSE balanced
-data. I also included metrics F1 score, sensitivity and specificity to
-measure true positive and true negative rate. These three metrics should
-all be taken into consideration as our goal here would be both to
-correct predict on the onset of depression and not to wrongly predict
-depression.</p>
+<p><img src="resultTable.png" /> I have chosen the metrics listed for
+their usefulness in evaluating imbalanced data binary classification.
+Here I chose to include AUC score/balanced accuracy is for the ability
+to measure the degree of separatability accomplished by the models.
+Higher AUC can be translated to better ability to predict true positive
+as positive, and true negative as negative. The best performing model is
+the gradient boosted machine using the ROSE balanced data. I also
+included metrics F1 score, sensitivity and specificity to measure true
+positive and true negative rate. These three metrics should all be taken
+into consideration as our goal here would be both to correct predict on
+the onset of depression and not to wrongly predict depression.</p>
 </div>
 </div>
 <div id="conclusion" class="section level2">

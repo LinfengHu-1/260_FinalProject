@@ -17,11 +17,11 @@ First, I checked for missing data included in our dataset. There are in total 23
 
 I then chose to examine the covariates that I have a clear understanding for, since we need to understand potential correlations in the model. There are only 20 features left for modeling the association. I used an influence plot which graphs the studentized residuals against hat values ---- fitted values made by my logistic model, and the sizes and fill color of the red circles are proportional to Cook’s distance. We can see that there are around 4 points with large studentized residuals with their Cook’s distances labeled. We can see that although these 4 points are labeled because of their large residual values, none of the points have an absolute value larger than 3. Therefore one can temporarily conclude that there is no obvious outlier in our data set.
 
-![Influence Plot](./influencePlot.png){width=50%}
+  ![ ](./influencePlot.png){width=50%}
 
 From the correlation matrix of all our covariates, we can observe that factors that are highly correlated (correlation > 0.6) include hhsize & children & hh_totalmembers & hhchildren, cons_nondurable and cons_allfood and cons_med_total. Therefore, we proceed to eliminate covariates that are highly correlated in our model. After further cleaning, we can obtain the VIP scores for most influential factors below. 
 
-![Vip Score Plot](./vipScore.png){width=50%}
+  ![ ](./vipScore.png){width=50%}
 
 A VIP score is the measure of a variable's importance for the overall model. From the plot, we can observe that the factors that seem to be contributing the most to the outcome depression are the size of household, proportion of household sick or injured in the last month, marital status and years of education completed. These covariates mentioned seem to point to common sources of stress and emotional turbulence that may be introduced in one's life. From this data set, these factors seem to have high importance in explaining the variance of the dependent variable depression.
 
@@ -41,7 +41,7 @@ We first drop unnecessary features for our analysis such as village identifier, 
   
 I attempted several machine learning models with tuned parameters using tuneGrid of the caret package to specify customized parameters that I am interested in learning. Models include logistic regression, classification tree, decision tree using bootstrap aggregating method to reduce the variance, gradient boosted machine, k-nearest neigherbos, random forest and support vector machine. Cross-validation in the caret package is also used when choosing the most optimal parameter settings for each algorithm. The combined ROC curves plot below shows a preliminary measure of the classification performances of these tuned models.
 
-![ROCs combined](./ROCs.png){width=50%}
+  ![ ](./ROCs.png){width=50%}
 
 As we can see from the ROC plots and AUC statistics that are not shown here, random forest and gradient boosted machine are the two better performing algorithms. This means that these two algorithms have a higher probability to correctly discriminate between the positive and negative classes (depression and no depression). Therefore, we focus more on these two algorithms more in the following sections.
   
@@ -53,10 +53,10 @@ To remedy the effect of imbalanced data set on the overall classification perfor
 
 Random forest is a type of machine learning algorithm that draws bootstrapped samples, grow multiple unpruned decision trees, and obtain the predicitons by majority votes for the classification and average the results for regression. From previous tuning of the n.trees parameter to be 200. I chose this number so that the model has enough number of trees to control for potential error while not overfitting too much to the training set. mtry parameter refers to the number of observations randomly sampled at each split. Below are 2 plots for the root mean squared error(RMSE) values that corresponds to using different mtry parameters, for the original data set and the ROSE-balanced data set respectively.
 
-![mtry Plot - original data](./mtry_original.png){width=50%}
+  ![ ](./mtry_original.png){width=50%}
 
   
-![mtry Plot - ROSE data](./mtry_rose.png){width=50%}
+  ![ ](./mtry_rose.png){width=50%}
 
 We can see from both plots that the increase of mtry parameter corresponds to an increased RMSE. A lower RMSE usually means a "better fit" of the model to the given data. However, the best tuned parameter given from the function, while maximizing for F1 score (combined metric for evaluating both precision and recall of a classifier) is mtry = 10, which has the highest RMSE here in both original data set and ROSE-balanced data set. The high RMSE value of this model also has resulted in a mediocore prediction accuracy in the end. But this may be traced back to the fact that the data set has very little information on the observations that has the outcome depression.  
   
@@ -64,9 +64,9 @@ We can see from both plots that the increase of mtry parameter corresponds to an
 
 Gradient boosted machine is a type of machine learning algorithm that builds an ensemble of multiple regression methods ---- ensemble of weak successive tree learners, with each learner improving based on the previous until certain threshold. The key parameter when using GBM is shrinkage, meaning the learning rate that can reduce regression coefficients in order to reduce the impact of potentially unstable steps since the ensemble did include weaker regression methods as well. Below are how the RMSE changed based on different shrinkage value given to the gradient boosted machine using ROSE data and the original data.
   
-![shrinkage plot - original data](./shrinkage_original.png){width=50%}
+  ![ ](./shrinkage_original.png){width=50%}
 
-![shrinkage plot - ROSE data](./shrinkage_ROSE.png){width=50%}
+  ![ ](./shrinkage_ROSE.png){width=50%}
 
 We can see from both plots that the increase of shrinkage parameter corresponds to an increased RMSE. A similar rationale from teh evaluation of the random forest model may be present here as well. The best tuned parameter while maximizing for F1 score is shrinkage = 0.85, which has the highest RMSE here in both original data set and ROSE-balanced data set. Here we can see that it is not the case higher the shrinkage, better the performance. It does make sense that the optimal shrinkage value is relatively large because it is applied on a large data set with a lot of features. 
 
@@ -74,7 +74,7 @@ We can see from both plots that the increase of shrinkage parameter corresponds 
 
 The resulting preformances of the models I have examined are included in the table below. 
 
-![Results Table](./resultTable.png)
+  ![ ](./resultTable.png)
 I have chosen the metrics listed for their usefulness in evaluating imbalanced data binary classification. Here I chose to include AUC score/balanced accuracy is for the ability to measure the degree of separatability accomplished by the models. Higher AUC can be translated to better ability to predict true positive as positive, and true negative as negative. The best performing model is the gradient boosted machine using the ROSE balanced data. I also included metrics F1 score, sensitivity and specificity to measure true positive and true negative rate. These three metrics should all be taken into consideration as our goal here would be both to correct predict on the onset of depression and not to wrongly predict depression.
 
 ## Conclusion
