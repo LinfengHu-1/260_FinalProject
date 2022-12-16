@@ -646,6 +646,12 @@ x &lt;- dat[, c(&quot;age&quot;, &quot;children&quot;, &quot;hhsize&quot;, &quot
 elasticnet.mod = glmnet(x,y,alpha=0.5,family=&quot;binomial&quot;)
 vip(elasticnet.mod, num_features=10, geom = &quot;point&quot;)</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(dat, aes(age, depressed, color=factor(femaleres))) +
+  stat_smooth(method=&quot;loess&quot;, formula=y~x,
+              alpha=0.2, size=2, aes(fill=factor(femaleres))) +
+  geom_point(position=position_jitter(height=0.03, width=0)) +
+  xlab(&quot;Age&quot;) + ylab(&quot;depressed&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 </div>
 <div id="regression---association" class="section level2">
@@ -702,7 +708,7 @@ summary(mod_log)</code></pre>
 library(car)
 par(mfrow=c(1,1))
 influencePlot(mod_log,col=&quot;red&quot;)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <pre><code>##         StudRes         Hat       CookD
 ## 33   -1.2011290 0.403660391 0.035167313
 ## 118   2.3648827 0.007682324 0.005383474
@@ -811,13 +817,13 @@ summary(mod_log)</code></pre>
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
 <pre class="r"><code>influenceIndexPlot(mod_log)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 <pre class="r"><code>library(corrplot)
 correlations &lt;- cor(dat[, -12], use = &quot;pairwise.complete.obs&quot;)
 corrplot(correlations, method=&#39;number&#39;)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <pre class="r"><code>corrplot.mixed(correlations,upper = &quot;circle&quot;, lower = &quot;number&quot;, tl.col = &quot;black&quot;, tl.pos = &quot;lt&quot;) </code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-18-2.png" width="672" /></p>
 <pre class="r"><code>summary(mod_log)$coefficients</code></pre>
 <pre><code>##                              Estimate   Std. Error    z value     Pr(&gt;|z|)
 ## (Intercept)              0.0927267778 0.2519737854  0.3680017 0.7128719772
@@ -841,7 +847,7 @@ corrplot(correlations, method=&#39;number&#39;)</code></pre>
 predprob &lt;- predict(mod_log,type=c(&quot;response&quot;)) 
 roccurve &lt;- roc(drose$depressed ~ predprob)
 plot(roccurve,col=&quot;red&quot;)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <pre class="r"><code>roccurve</code></pre>
 <pre><code>## 
 ## Call:
@@ -854,7 +860,7 @@ plot(roccurve,col=&quot;red&quot;)</code></pre>
 tree.rose &lt;- rpart(depressed ~ ., data = drose)
 pred.tree.rose &lt;- predict(tree.rose, newdata = drose)
 roc.curve(drose$depressed, pred.tree.rose)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-18-2.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-19-2.png" width="672" /></p>
 <pre><code>## Area under the curve (AUC): 0.854</code></pre>
 <pre class="r"><code>#calculate and intepret the coefficients the odds ratio and 95% CI
 exp(cbind(OR = coef(mod_log), confint(mod_log)))</code></pre>

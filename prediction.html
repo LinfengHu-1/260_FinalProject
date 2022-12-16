@@ -243,13 +243,13 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="Report.html">Report</a>
-</li>
-<li>
   <a href="index.html">Exploratory Data Analysis</a>
 </li>
 <li>
   <a href="prediction.html">Prediction</a>
+</li>
+<li>
+  <a href="Report.html">Report</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -400,12 +400,13 @@ roc.curve(test_set$depressed, pred)</code></pre>
 
 results &lt;- tibble(Method = &quot;Logistic Regression&quot;, AUC = auc_log,
                      F1 = cm$byClass[&quot;F1&quot;], Specificity = cm$byClass[&quot;Specificity&quot;], 
+                  Sensitivity = cm$byClass[&quot;Sensitivity&quot;],
                      Balanced_Accuracy = cm$byClass[&quot;Balanced Accuracy&quot;])
 results</code></pre>
-<pre><code>## # A tibble: 1 × 5
-##   Method                AUC    F1 Specificity Balanced_Accuracy
-##   &lt;chr&gt;               &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;             &lt;dbl&gt;
-## 1 Logistic Regression 0.639 0.792       0.571             0.639</code></pre>
+<pre><code>## # A tibble: 1 × 6
+##   Method                AUC    F1 Specificity Sensitivity Balanced_Accuracy
+##   &lt;chr&gt;               &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;             &lt;dbl&gt;
+## 1 Logistic Regression 0.639 0.792       0.571       0.706             0.639</code></pre>
 </div>
 <div id="classification-tree" class="section level3">
 <h3>Classification Tree</h3>
@@ -443,6 +444,7 @@ result_tree &lt;- tibble(Method = &quot;Classification Tree&quot;,
                                      AUC = auc_tree,
                                      F1 = cm_tree$byClass[&quot;F1&quot;], 
                                      Specificity = cm_tree$byClass[&quot;Specificity&quot;], 
+                      Sensitivity = cm_tree$byClass[&quot;Sensitivity&quot;],
                                      Balanced_Accuracy = cm_tree$byClass[&quot;Balanced Accuracy&quot;])
 results &lt;- bind_rows(results, result_tree)</code></pre>
 </div>
@@ -468,6 +470,7 @@ roc.curve(test_set$depressed, pred.ipred)</code></pre>
 results &lt;- bind_rows(results, tibble(Method = &quot;Bagging&quot;, 
                       AUC = as.numeric(auc(roc(test_set$depressed, pred.ipred))),
                       F1 = cm_ipred$byClass[&quot;F1&quot;], Specificity = cm_ipred$byClass[&quot;Specificity&quot;],
+                      Sensitivity = cm_ipred$byClass[&quot;Sensitivity&quot;],
                       Balanced_Accuracy = cm_ipred$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
 </div>
 <div id="knn" class="section level3">
@@ -509,6 +512,7 @@ roc.curve(test_set$depressed, y_hat_knn)</code></pre>
 <pre><code>## Area under the curve (AUC): 0.512</code></pre>
 <pre class="r"><code>results &lt;- bind_rows(results, tibble(Method = &quot;kNN&quot;, AUC = as.numeric(auc(roc(as.numeric(test_set$depressed), as.numeric(y_hat_knn)))),
                       F1 = cm_knn$byClass[&quot;F1&quot;], Specificity = cm_knn$byClass[&quot;Specificity&quot;],
+                      Sensitivity = cm_knn$byClass[&quot;Sensitivity&quot;],
                       Balanced_Accuracy = cm_knn$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
 </div>
 <div id="random-forest" class="section level3">
@@ -537,6 +541,7 @@ roc.curve(test_set$depressed, y_hat_rf)</code></pre>
 
 results &lt;- bind_rows(results, tibble(Method = &quot;Random Forest&quot;, AUC = as.numeric(auc(roc(test_set$depressed, y_hat_rf))),
                       F1 = cm_rf$byClass[&quot;F1&quot;], Specificity = cm_rf$byClass[&quot;Specificity&quot;],
+                      Sensitivity = cm_rf$byClass[&quot;Sensitivity&quot;],
                       Balanced_Accuracy = cm_rf$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
 </div>
 <div id="gradient-boosted-machine" class="section level3">
@@ -566,6 +571,7 @@ roc.curve(test_set$depressed, y_hat_gbm)</code></pre>
 
 results &lt;- bind_rows(results, tibble(Method = &quot;Gradient Boosted Machine&quot;, AUC = as.numeric(auc(roc(test_set$depressed, y_hat_gbm))),
                       F1 = cm_gbm$byClass[&quot;F1&quot;], Specificity = cm_gbm$byClass[&quot;Specificity&quot;],
+                      Sensitivity = cm_gbm$byClass[&quot;Sensitivity&quot;],
                       Balanced_Accuracy = cm_gbm$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
 </div>
 <div id="svm" class="section level3">
@@ -584,6 +590,7 @@ roc.curve(test_set$depressed, y_hat_svm)</code></pre>
 <pre><code>## Area under the curve (AUC): 0.514</code></pre>
 <pre class="r"><code>results &lt;- bind_rows(results, tibble(Method = &quot;SVM&quot;, AUC = as.numeric(auc(roc(as.numeric(test_set$depressed), as.numeric(y_hat_svm)))),
                       F1 = cm_svm$byClass[&quot;F1&quot;], Specificity = cm_svm$byClass[&quot;Specificity&quot;],
+                      Sensitivity = cm_svm$byClass[&quot;Sensitivity&quot;],
                       Balanced_Accuracy = cm_svm$byClass[&quot;Balanced Accuracy&quot;])) </code></pre>
 </div>
 <div id="rose-data" class="section level2">
@@ -627,6 +634,7 @@ results &lt;- bind_rows(results, tibble(Method = &quot;ROSE - Random Forest&quot
                        AUC = as.numeric(auc(roc(test_rose$depressed, y_rose_rf))),
                        F1 = cm_rf_rose$byClass[&quot;F1&quot;], 
                        Specificity = cm_rf_rose$byClass[&quot;Specificity&quot;],
+                       Sensitivity = cm_rf_rose$byClass[&quot;Sensitivity&quot;],
                        Balanced_Accuracy = cm_rf_rose$byClass[&quot;Balanced Accuracy&quot;]))</code></pre>
 </div>
 <div id="gradient-boosted-machine-1" class="section level3">
@@ -649,6 +657,7 @@ results &lt;- bind_rows(results, tibble(Method = &quot;ROSE - Gradient Boosted M
                                      AUC = as.numeric(auc(roc(test_rose$depressed, y_rose_gbm))),
                                      F1 = cm_gbm_rose$byClass[&quot;F1&quot;], 
                                      Specificity = cm_gbm_rose$byClass[&quot;Specificity&quot;],
+                                     Sensitivity = cm_gbm_rose$byClass[&quot;Sensitivity&quot;],
                                      Balanced_Accuracy = cm_gbm_rose$byClass[&quot;Balanced Accuracy&quot;]))
 
 ggplot(data = NULL, aes(x = train_gbm_rose$results$shrinkage, 
@@ -670,18 +679,19 @@ ggplot(plt, aes(Prediction,Reference, fill= Freq)) +
 <div id="results" class="section level2">
 <h2>Results</h2>
 <pre class="r"><code>results</code></pre>
-<pre><code>## # A tibble: 9 × 5
-##   Method                            AUC    F1 Specificity Balanced_Accuracy
-##   &lt;chr&gt;                           &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;             &lt;dbl&gt;
-## 1 Logistic Regression             0.639 0.792      0.571              0.639
-## 2 Classification Tree             0.566 0.898      0.2                0.566
-## 3 Bagging                         0.667 0.829      0.571              0.667
-## 4 kNN                             0.512 0.917      0.0286             0.512
-## 5 Random Forest                   0.681 0.743      0.743              0.681
-## 6 Gradient Boosted Machine        0.656 0.763      0.657              0.656
-## 7 SVM                             0.514 0.919      0.0286             0.514
-## 8 ROSE - Random Forest            0.681 0.743      0.743              0.681
-## 9 ROSE - Gradient Boosted Machine 0.710 0.768      0.771              0.710</code></pre>
+<pre><code>## # A tibble: 9 × 6
+##   Method                            AUC    F1 Specificity Sensitivity Balanced…¹
+##   &lt;chr&gt;                           &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;
+## 1 Logistic Regression             0.639 0.792      0.571        0.706      0.639
+## 2 Classification Tree             0.566 0.898      0.2          0.933      0.566
+## 3 Bagging                         0.667 0.829      0.571        0.763      0.667
+## 4 kNN                             0.512 0.917      0.0286       0.995      0.512
+## 5 Random Forest                   0.681 0.743      0.743        0.619      0.681
+## 6 Gradient Boosted Machine        0.656 0.763      0.657        0.655      0.656
+## 7 SVM                             0.514 0.919      0.0286       1          0.514
+## 8 ROSE - Random Forest            0.681 0.743      0.743        0.619      0.681
+## 9 ROSE - Gradient Boosted Machine 0.710 0.768      0.771        0.649      0.710
+## # … with abbreviated variable name ¹​Balanced_Accuracy</code></pre>
 <pre class="r"><code>ggplot(results, aes(x = AUC, y = Specificity)) + geom_line()</code></pre>
 <p><img src="prediction_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <pre class="r"><code>thresh&lt;-seq(0,1,0.001)
