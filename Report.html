@@ -281,8 +281,8 @@ depression screening to determine the outcome of interest. From this
 heterogeneous data, we aim to use regression in investigating the
 association, and use machine learning methods in predicting individual
 level depression.</p>
-<div id="eda" class="section level3">
-<h3>EDA</h3>
+<div id="exploratory-data-analysis" class="section level3">
+<h3>Exploratory Data Analysis</h3>
 <p>First, I checked for missing data included in our dataset. There are
 in total 23 out of 75 features that includes missing NAs. Since there
 are a huge number of features included, it is understandable that there
@@ -309,7 +309,7 @@ cons_nondurable and cons_allfood and cons_med_total. Therefore, we
 proceed to eliminate covariates that are highly correlated in our model.
 After further cleaning, we can obtain the VIP scores for most
 influential factors below.</p>
-<p><img src="vipScore.png" style="width:50.0%" /></p>
+<p><img src="vipScore.png" style="width:60.0%" /></p>
 <p>A VIP score is the measure of a variable’s importance for the overall
 model. From the plot, we can observe that the factors that seem to be
 contributing the most to the outcome depression are the size of
@@ -338,9 +338,12 @@ well.</p>
 <p>Therefore we can conclude that this general linear model is not
 sufficient to depict the relationship of the covariates listed and the
 outcome of interest depression status. We proceed with other machine
-learning approaches that can hopefully better characterize the
-relationships between depression onset with socioeconomic and health
-factors.</p>
+learning approaches, mostly ensembled methods that can hopefully better
+characterize the relationships between depression onset with
+socioeconomic and health factors. Algorithms with all three
+types(bagging, boosting and stacking) of ensembled learning techniques
+were used to compare for the best-performing one that is most suitable
+for this dataset.</p>
 </div>
 </div>
 <div id="results" class="section level2">
@@ -393,8 +396,8 @@ randomly sampled at each split. Below are 2 plots for the root mean
 squared error(RMSE) values that corresponds to using different mtry
 parameters, for the original data set and the ROSE-balanced data set
 respectively.</p>
-<p><img src="mtry_original.png" style="width:50.0%" /></p>
-<p><img src="mtry_rose.png" style="width:50.0%" /></p>
+<p><img src="mtry_original.png" style="width:50.0%" /> <img
+src="mtry_rose.png" style="width:50.0%" /></p>
 <p>We can see from both plots that the increase of mtry parameter
 corresponds to an increased RMSE. A lower RMSE usually means a “better
 fit” of the model to the given data. However, the best tuned parameter
@@ -417,8 +420,8 @@ coefficients in order to reduce the impact of potentially unstable steps
 since the ensemble did include weaker regression methods as well. Below
 are how the RMSE changed based on different shrinkage value given to the
 gradient boosted machine using ROSE data and the original data.</p>
-<p><img src="shrinkage_original.png" style="width:50.0%" /></p>
-<p><img src="shrinkage_ROSE.png" style="width:50.0%" /></p>
+<p><img src="shrinkage_original.png" style="width:50.0%" /> <img
+src="shrinkage_ROSE.png" style="width:50.0%" /></p>
 <p>We can see from both plots that the increase of shrinkage parameter
 corresponds to an increased RMSE. A similar rationale from teh
 evaluation of the random forest model may be present here as well. The
@@ -457,15 +460,19 @@ evaluation metrics above, the two best performing models include the
 gradient boosted machine and the random forest model. Both models
 achieved relatively high balanced classification accuracy, specificity
 and sensitivity as all these metrics are important when trying to
-predict disease onset. The ROSE algorithm also helped with balancing the
-data set and improving prediction accuracy.</p>
+predict disease onset. Both algorithms are ensemble-based, which are
+often used to classify imbalanced data sets since it is believed that
+combining multiple learning models may correct the misclassification
+that one single classifier would make, thus improving the predictions.
+The ROSE algorithm also helped with balancing the data set and improving
+prediction accuracy.</p>
 <p>The prediction overall did not achieve a high balanced accuracy as
-the highest was around 71%. However, for a data set that has little
-information for observations with the outcome, the balance between true
-positive and true negative rate was achieved. For future scope, with
-more time, I would explore different algorithms that are specifically
-designed for classification on imbalanced dataset, and hopefully achieve
-a higher precision/recall.</p>
+the highest was still only around 71%. However, for a data set that has
+little information for observations with the outcome, this model was
+able to achieve balance between true positive and true negative rate.
+For future scope, with more time, I would explore different algorithms
+that are specifically designed for classification on imbalanced dataset,
+and hopefully achieve a higher precision/recall.</p>
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>
@@ -517,7 +524,7 @@ library(stringr)
 library(tidyr)
 library(readr)</code></pre>
 </div>
-<div id="exploratory-data-analysis" class="section level2">
+<div id="exploratory-data-analysis-1" class="section level2">
 <h2>Exploratory Data Analysis</h2>
 <pre class="r"><code>dat &lt;- read_csv(&#39;./data/train.csv&#39;)</code></pre>
 <pre><code>## Rows: 1143 Columns: 75
